@@ -1,5 +1,5 @@
-// API Configuration for localhost only
-const API_BASE_URL = 'http://localhost:3001/api';
+// API Configuration for environment flexibility
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -24,5 +24,5 @@ export const API_ENDPOINTS = {
     LIST: `${API_BASE_URL}/users`,
     CREATE: `${API_BASE_URL}/users`,
   },
-  HEALTH: `http://localhost:3001/health`,
+  HEALTH: `${API_BASE_URL.replace(/\/api$/, '')}/health`,
 }; 
