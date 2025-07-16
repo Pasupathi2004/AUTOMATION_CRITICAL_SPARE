@@ -22,7 +22,10 @@ const server = createServer(app);
 // Socket.IO setup
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://your-vercel-domain.vercel.app" // <-- Add your Vercel domain here
+    ],
     methods: ["GET", "POST"]
   }
 });
@@ -31,7 +34,10 @@ const PORT = 3001;
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'https://your-vercel-domain.vercel.app' // <-- Add your Vercel domain here
+  ],
   credentials: true
 }));
 
