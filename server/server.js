@@ -19,13 +19,14 @@ dotenv.config();
 const app = express();
 const server = createServer(app);
 
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+  : ['http://localhost:5173'];
+
 // Socket.IO setup
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://automation-critical-spare.vercel.app" // <-- Add your Vercel domain here
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"]
   }
 });
@@ -34,10 +35,7 @@ const PORT = 3001;
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://automation-critical-spare.vercel.app' // <-- Add your Vercel domain here
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
 
