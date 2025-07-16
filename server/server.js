@@ -24,7 +24,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://your-vercel-domain.vercel.app" // <-- Add your Vercel domain here
+      "https://automation-critical-spare.vercel.app" // <-- Add your Vercel domain here
     ],
     methods: ["GET", "POST"]
   }
@@ -36,7 +36,7 @@ const PORT = 3001;
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://your-vercel-domain.vercel.app' // <-- Add your Vercel domain here
+    'https://automation-critical-spare.vercel.app' // <-- Add your Vercel domain here
   ],
   credentials: true
 }));
