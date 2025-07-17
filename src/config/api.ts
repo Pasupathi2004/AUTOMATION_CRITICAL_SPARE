@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
     CREATE: `${API_BASE_URL}/inventory`,
     UPDATE: (id: string) => `${API_BASE_URL}/inventory/${id}`,
     DELETE: (id: string) => `${API_BASE_URL}/inventory/${id}`,
+    BULK_UPLOAD: `${API_BASE_URL}/inventory/bulk-upload`,
   },
   TRANSACTIONS: {
     LIST: `${API_BASE_URL}/transactions`,
