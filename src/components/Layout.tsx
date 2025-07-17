@@ -13,6 +13,7 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 
@@ -35,7 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
 
   const fetchLowStockAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/analytics', {
+      const response = await fetch(API_ENDPOINTS.ANALYTICS.DASHBOARD, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -88,9 +89,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
               {/* Socket.IO Connection Status */}
               <div className="flex items-center space-x-2">
                 {isConnected ? (
-                  <Wifi size={16} className="text-green-300" title="Real-time updates connected" />
+                  <Wifi size={16} className="text-green-300" />
                 ) : (
-                  <WifiOff size={16} className="text-red-300" title="Real-time updates disconnected" />
+                  <WifiOff size={16} className="text-red-300" />
                 )}
                 <span className="text-xs text-gray-300 hidden sm:inline">
                   {isConnected ? 'Live' : 'Offline'}
