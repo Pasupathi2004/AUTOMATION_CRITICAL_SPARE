@@ -167,4 +167,10 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), asyncHandler(as
   });
 }));
 
+// Get user count (admin only)
+router.get('/count', authenticateToken, requireRole(['admin']), asyncHandler(async (req, res) => {
+  const users = readJSON(DB_PATHS.USERS);
+  res.json({ success: true, count: users.length });
+}));
+
 export default router;
