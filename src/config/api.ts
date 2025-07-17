@@ -13,13 +13,14 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `${API_BASE_URL}/inventory/${id}`,
     BULK_UPLOAD: `${API_BASE_URL}/inventory/bulk-upload`,
   },
-  TRANSACTIONS: {
-    LIST: `${API_BASE_URL}/transactions`,
-    CREATE: `${API_BASE_URL}/transactions`,
-  },
+  TRANSACTIONS: `${API_BASE_URL}/transactions`,
   ANALYTICS: {
     DASHBOARD: `${API_BASE_URL}/analytics/dashboard`,
     REPORTS: `${API_BASE_URL}/analytics/reports`,
+    INTEGRITY: `${API_BASE_URL}/analytics/integrity`,
+    SETTINGS: {
+      STORAGE: `${API_BASE_URL}/analytics/settings/storage`,
+    },
   },
   USERS: {
     LIST: `${API_BASE_URL}/users`,
