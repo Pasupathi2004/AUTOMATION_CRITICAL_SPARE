@@ -3,6 +3,7 @@ import { Search, Mic, MicOff, Package, MapPin, Plus, Minus } from 'lucide-react'
 import { InventoryItem } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { API_ENDPOINTS } from '../config/api';
 
 const SearchPage: React.FC = () => {
   const { token, user } = useAuth();
@@ -52,7 +53,7 @@ const SearchPage: React.FC = () => {
 
   const fetchInventory = async () => {
     try {
-      const response = await  fetch('http://localhost:3001/api/inventory', {
+      const response = await  fetch(API_ENDPOINTS.INVENTORY.LIST, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ const SearchPage: React.FC = () => {
     setUpdatingItems(prev => new Set(prev).add(itemId));
     
     try {
-      const response = await  fetch(`http://localhost:3001/api/inventory/${itemId}`, {
+      const response = await  fetch(API_ENDPOINTS.INVENTORY.UPDATE(itemId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

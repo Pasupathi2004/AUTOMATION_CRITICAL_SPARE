@@ -29,7 +29,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const connect = () => {
     if (socket?.connected) return;
 
-    const newSocket = io('http://localhost:3001', {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+    const newSocket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       timeout: 20000,
     });

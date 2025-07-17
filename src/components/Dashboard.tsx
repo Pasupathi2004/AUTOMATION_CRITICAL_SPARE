@@ -3,6 +3,7 @@ import { Package, TrendingUp, Users, AlertTriangle, Plus, Search } from 'lucide-
 import { Analytics } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { API_ENDPOINTS } from '../config/api';
 
 interface DashboardProps {
   onPageChange: (page: string) => void;
@@ -43,7 +44,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/analytics', {
+      const response = await fetch(API_ENDPOINTS.ANALYTICS.DASHBOARD, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

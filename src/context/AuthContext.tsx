@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { API_ENDPOINTS } from '../config/api';
 
 interface User {
   id: string;
@@ -31,11 +32,11 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const response = await  fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

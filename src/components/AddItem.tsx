@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Package } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_ENDPOINTS } from '../config/api';
 
 const AddItem: React.FC = () => {
   const { user, token } = useAuth();
@@ -33,7 +34,7 @@ const AddItem: React.FC = () => {
     setMessage(null);
 
     try {
-      const response = await fetch('http://localhost:3001/api/inventory', {
+      const response = await fetch(API_ENDPOINTS.INVENTORY.CREATE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +285,7 @@ const AddItem: React.FC = () => {
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
             try {
-              const response = await fetch('http://localhost:3001/api/inventory/bulk-upload', {
+              const response = await fetch(API_ENDPOINTS.INVENTORY.BULK_UPLOAD, {
                 method: 'POST',
                 headers: {
                   'Authorization': `Bearer ${token}`

@@ -7,6 +7,7 @@ import { format, addMonths, subMonths } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import * as XLSX from 'xlsx';
+import { API_ENDPOINTS } from '../config/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
@@ -59,7 +60,7 @@ const Analytics: React.FC = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/analytics', {
+      const response = await fetch(API_ENDPOINTS.ANALYTICS.DASHBOARD, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const Analytics: React.FC = () => {
 
   const fetchUserCount = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/users/count', {
+      const response = await fetch(API_ENDPOINTS.USERS.LIST + '/count', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ const Analytics: React.FC = () => {
 
   const fetchStorageMB = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/settings/storage', {
+      const response = await fetch(API_ENDPOINTS.ANALYTICS.SETTINGS.STORAGE, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ const Analytics: React.FC = () => {
   const handleDeleteHistory = async () => {
     if (!window.confirm('Are you sure you want to delete all transaction history? This cannot be undone.')) return;
     try {
-      const response = await fetch('http://localhost:3001/api/transactions', {
+      const response = await fetch(API_ENDPOINTS.TRANSACTIONS, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -271,7 +272,7 @@ const Analytics: React.FC = () => {
   // Add data integrity check
   const checkDataIntegrity = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/analytics/integrity', {
+      const response = await fetch(API_ENDPOINTS.ANALYTICS.INTEGRITY, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -288,7 +289,7 @@ const Analytics: React.FC = () => {
   // Add storage check
   const checkStorage = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/analytics/settings/storage', {
+      const response = await fetch(API_ENDPOINTS.ANALYTICS.SETTINGS.STORAGE, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -3,6 +3,7 @@ import { Users, Plus, Edit, Trash2, Shield, User as UserIcon } from 'lucide-reac
 import { User } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { API_ENDPOINTS } from '../config/api';
 
 const UserManagement: React.FC = () => {
   const { user: currentUser, token } = useAuth();
@@ -54,7 +55,7 @@ const UserManagement: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/users', {
+      const response = await fetch(API_ENDPOINTS.USERS.LIST, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ const UserManagement: React.FC = () => {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/users', {
+      const response = await fetch(API_ENDPOINTS.USERS.CREATE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ const UserManagement: React.FC = () => {
     if (!editingUser) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/users/${editingUser.id}`, {
+      const response = await fetch(API_ENDPOINTS.USERS.UPDATE(editingUser.id), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ const UserManagement: React.FC = () => {
     if (!confirm('Are you sure you want to delete this user?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/users/${userId}`, {
+      const response = await fetch(API_ENDPOINTS.USERS.DELETE(userId), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
