@@ -54,4 +54,26 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Update user password
+router.put('/:id', async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({ success: false, message: 'Password is required' });
+    }
+    // Store password as plain text
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { password },
+      { new: true }
+    );
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, user: { ...user.toObject(), id: user._id.toString() } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to update password' });
+  }
+});
+
 export default router;
