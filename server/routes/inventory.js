@@ -3,6 +3,7 @@ import multer from 'multer';
 import * as XLSX from 'xlsx';
 import Inventory from '../models/Inventory.js';
 import { authenticateToken } from '../middleware/auth.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -38,13 +39,21 @@ router.post('/', authenticateToken, async (req, res) => {
 
 // Update an item
 router.put('/:id', authenticateToken, async (req, res) => {
-  const item = await Inventory.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: 'Invalid item ID' });
+  }
+  const item = await Inventory.findByIdAndUpdate(id, req.body, { new: true });
   res.json({ success: true, item });
 });
 
 // Delete an item
 router.delete('/:id', authenticateToken, async (req, res) => {
-  await Inventory.findByIdAndDelete(req.params.id);
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: 'Invalid item ID' });
+  }
+  await Inventory.findByIdAndDelete(id);
   res.json({ success: true });
 });
 
