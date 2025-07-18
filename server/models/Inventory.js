@@ -8,8 +8,7 @@ const InventorySchema = new mongoose.Schema({
   quantity: Number,
   rack: String,
   bin: String,
-  updatedAt: Date,
   updatedBy: String
-});
+}, { timestamps: true }); // Enable timestamps
 
 export default mongoose.model('Inventory', InventorySchema); 
