@@ -76,6 +76,7 @@ const SparesList: React.FC = () => {
     socket.on('inventoryDeleted', (data: { id: string, item: InventoryItem }) => {
       console.log('🔌 Received inventoryDeleted event:', data);
       setInventory(prev => prev.filter(item => item.id !== data.id));
+      setFilteredInventory(prev => prev.filter(item => item.id !== data.id));
     });
 
     socket.on('bulkUploadCompleted', (data: { count: number, items: InventoryItem[] }) => {
@@ -161,7 +162,7 @@ const SparesList: React.FC = () => {
   };
 
   type InventoryId = string;
-  const handleDelete = async (id: InventoryId) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
@@ -171,7 +172,7 @@ const SparesList: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ deletedBy: user?.username }),
+        // No body for DELETE
       });
 
       if (response.ok) {
