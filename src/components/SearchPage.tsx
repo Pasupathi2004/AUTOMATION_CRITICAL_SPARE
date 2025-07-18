@@ -147,9 +147,9 @@ const SearchPage: React.FC = () => {
       return;
     }
     setUpdatingItems(prev => new Set(prev).add(itemId));
-    
+    const item = inventory.find(i => i.id === itemId);
     try {
-      const response = await  fetch(API_ENDPOINTS.INVENTORY.UPDATE(itemId), {
+      const response = await fetch(API_ENDPOINTS.INVENTORY.UPDATE(itemId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -157,6 +157,7 @@ const SearchPage: React.FC = () => {
         },
         body: JSON.stringify({
           quantity: newQuantity,
+          minimumQuantity: item ? item.minimumQuantity : 0,
           updatedBy: user?.username
         }),
       });
