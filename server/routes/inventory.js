@@ -81,7 +81,25 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
   }
-  await Inventory.findByIdAndDelete(id);
+  const deletedItem = await Inventory.findByIdAndDelete(id);
+  if (!deletedItem) {
+    return res.status(404).json({ success: false, message: 'Item not found' });
+  }
+  // Create a transaction record for deletion
+  const transaction = new Transaction({
+    itemId: id,
+    itemName: deletedItem.name,
+    type: 'deleted',
+    quantity: deletedItem.quantity,
+    user: req.user?.username || 'system',
+    timestamp: new Date().toISOString()
+  });
+  await transaction.save();
+  // Emit socket event for real-time updates
+  if (req.app.get('io')) {
+    req.app.get('io').emit('inventoryDeleted', { id, item: deletedItem });
+    req.app.get('io').emit('transactionCreated', transaction);
+  }
   res.json({ success: true });
 });
 
