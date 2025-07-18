@@ -6,6 +6,14 @@ import { useSocket } from '../context/SocketContext';
 import { format } from 'date-fns';
 import { API_ENDPOINTS } from '../config/api';
 
+// Helper function for safe date formatting
+const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
+  if (!dateValue) return 'N/A';
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return 'N/A';
+  return format(date, fmt);
+};
+
 const SparesList: React.FC = () => {
   const { user, token } = useAuth();
   const { socket, isConnected } = useSocket();
@@ -65,7 +73,7 @@ const SparesList: React.FC = () => {
       ));
     });
 
-    socket.on('inventoryDeleted', (data: { id: number, item: InventoryItem }) => {
+    socket.on('inventoryDeleted', (data: { id: string, item: InventoryItem }) => {
       console.log('🔌 Received inventoryDeleted event:', data);
       setInventory(prev => prev.filter(item => item.id !== data.id));
     });
@@ -152,7 +160,8 @@ const SparesList: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  type InventoryId = string;
+  const handleDelete = async (id: InventoryId) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
@@ -189,8 +198,8 @@ const SparesList: React.FC = () => {
       item.bin,
       item.quantity,
       getStockStatus(item.quantity).status,
-      format(new Date(item.createdAt), 'yyyy-MM-dd HH:mm:ss'),
-      format(new Date(item.updatedAt), 'yyyy-MM-dd HH:mm:ss'),
+      safeFormatDate(item.createdAt),
+      safeFormatDate(item.updatedAt),
       item.updatedBy
     ]);
 
@@ -212,6 +221,17 @@ const SparesList: React.FC = () => {
     if (quantity <= 5) return { status: 'Low Stock', color: 'text-orange-600 bg-orange-100' };
     if (quantity <= 20) return { status: 'Medium Stock', color: 'text-yellow-600 bg-yellow-100' };
     return { status: 'In Stock', color: 'text-green-600 bg-green-100' };
+  };
+
+  const getLastUpdated = () => {
+    if (inventory.length === 0) return 'N/A';
+    const times = inventory.map(item => {
+      const t = new Date(item.updatedAt).getTime();
+      return isNaN(t) ? 0 : t;
+    });
+    const maxTime = Math.max(...times);
+    if (maxTime === 0) return 'N/A';
+    return safeFormatDate(new Date(maxTime));
   };
 
   if (isLoading) {
@@ -276,7 +296,7 @@ const SparesList: React.FC = () => {
             )}
           </h2>
           <div className="text-sm text-gray-600">
-            Last updated: {inventory.length > 0 ? format(new Date(Math.max(...inventory.map(item => new Date(item.updatedAt).getTime()))), 'PPpp') : 'N/A'}
+            Last updated: {getLastUpdated()}
           </div>
         </div>
       </div>
@@ -363,7 +383,7 @@ const SparesList: React.FC = () => {
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <div className="flex items-center space-x-1">
                       <Calendar size={14} />
-                      <span>{format(new Date(item.updatedAt), 'MMM dd, yyyy')}</span>
+                      <span>{safeFormatDate(item.updatedAt)}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <User size={14} />
