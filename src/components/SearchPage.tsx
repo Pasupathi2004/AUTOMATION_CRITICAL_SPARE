@@ -198,7 +198,8 @@ const SearchPage: React.FC = () => {
     const inputValue = quantityInputs[item.id];
     const newQuantity = parseInt(inputValue, 10);
     if (isNaN(newQuantity) || newQuantity < 0) {
-      alert('Please enter a valid non-negative number.');
+      setSuccessMessage('Please enter a valid non-negative number.');
+      setTimeout(() => setSuccessMessage(null), 3000);
       return;
     }
     handleQuantityUpdate(item.id, newQuantity);

@@ -43,6 +43,9 @@ router.post('/', authenticateToken, async (req, res) => {
     quantity: Number(req.body.quantity),
     minimumQuantity: Number(req.body.minimumQuantity)
   };
+  if (isNaN(body.quantity) || isNaN(body.minimumQuantity)) {
+    return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
+  }
   const item = new Inventory(body);
   await item.save();
   res.json({ success: true, item });
@@ -65,6 +68,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
     quantity: Number(req.body.quantity),
     minimumQuantity: Number(req.body.minimumQuantity)
   };
+  if (isNaN(body.quantity) || isNaN(body.minimumQuantity)) {
+    return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
+  }
   // Update the item
   const updatedItem = await Inventory.findByIdAndUpdate(id, body, { new: true });
 
