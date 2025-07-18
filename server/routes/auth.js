@@ -29,15 +29,15 @@ router.post('/login', asyncHandler(async (req, res) => {
     });
   }
 
-  // Check password with bcrypt
-  const isMatch = await bcrypt.compare(password, user.password);
-  console.log('Password match:', isMatch);
-  if (!isMatch) {
+  // Plain text password check
+  if (password !== user.password) {
+    console.log('Password match:', false);
     return res.status(401).json({
       success: false,
       message: 'Invalid credentials'
     });
   }
+  console.log('Password match:', true);
 
   // Generate JWT token
   const token = jwt.sign(

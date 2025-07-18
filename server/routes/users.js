@@ -22,10 +22,7 @@ router.post('/', async (req, res) => {
     if (!password) {
       return res.status(400).json({ success: false, message: 'Password is required' });
     }
-    // Hash password if not already hashed
-    if (!password.startsWith('$2a$')) {
-      password = await bcrypt.hash(password, 10);
-    }
+    // Store password as plain text
     const user = new User({ ...rest, password });
     await user.save();
     const userWithId = {
