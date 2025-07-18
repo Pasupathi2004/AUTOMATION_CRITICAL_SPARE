@@ -28,7 +28,12 @@ const upload = multer({
 // Get all inventory items
 router.get('/', authenticateToken, async (req, res) => {
   const items = await Inventory.find();
-  res.json({ success: true, items });
+  // Map _id to id as string
+  const itemsWithId = items.map(item => ({
+    ...item.toObject(),
+    id: item._id.toString()
+  }));
+  res.json({ success: true, items: itemsWithId });
 });
 
 // Add a new item
