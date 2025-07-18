@@ -13,6 +13,7 @@ import userRoutes from './routes/users.js';
 import inventoryRoutes from './routes/inventory.js';
 import transactionRoutes from './routes/transactions.js';
 import analyticsRoutes from './routes/analytics.js';
+import User from './models/User.js';
 
 // Load environment variables
 dotenv.config();
@@ -87,7 +88,7 @@ app.set('io', io);
 const startServer = async () => {
   try {
     await connectDB(); // Connect to MongoDB before starting the server
-    // Do NOT call initializeDatabase() for users
+    await User.ensureDefaultAdmin(); // Ensure default admin user exists
     console.log('Database initialized successfully');
     // Start server
     server.listen(PORT, () => {
