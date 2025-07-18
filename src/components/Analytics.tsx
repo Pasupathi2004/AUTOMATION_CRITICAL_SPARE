@@ -11,6 +11,13 @@ import { API_ENDPOINTS } from '../config/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
+const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
+  if (!dateValue) return 'N/A';
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return 'N/A';
+  return format(date, fmt);
+};
+
 const Analytics: React.FC = () => {
   const { token } = useAuth();
   const { socket, isConnected } = useSocket();
@@ -496,7 +503,7 @@ const Analytics: React.FC = () => {
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar size={14} />
-                        <span>{format(new Date(transaction.timestamp), 'MMM dd, yyyy HH:mm')}</span>
+                        <span>{safeFormatDate(transaction.timestamp, 'MMM dd, yyyy HH:mm')}</span>
                       </div>
                     </div>
                   </div>

@@ -4,6 +4,7 @@ import { InventoryItem } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { API_ENDPOINTS } from '../config/api';
+import { format } from 'date-fns';
 
 const SearchPage: React.FC = () => {
   const { token, user } = useAuth();
@@ -213,6 +214,13 @@ const SearchPage: React.FC = () => {
     handleQuantityUpdate(item.id, item.quantity - takeQty);
   };
 
+  const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
+    if (!dateValue) return 'N/A';
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return 'N/A';
+    return format(date, fmt);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -321,7 +329,7 @@ const SearchPage: React.FC = () => {
                             <span>Location: {item.rack}-{item.bin}</span>
                           </div>
                           <div>
-                            <strong>Updated:</strong> {new Date(item.updatedAt).toLocaleDateString()}
+                            <strong>Updated:</strong> {safeFormatDate(item.updatedAt)}
                           </div>
                           <div>
                             <strong>By:</strong> {item.updatedBy}
