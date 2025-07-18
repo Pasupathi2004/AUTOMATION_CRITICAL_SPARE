@@ -6,6 +6,7 @@ const InventorySchema = new mongoose.Schema({
   model: String,
   specification: String,
   quantity: Number,
+  minimumQuantity: Number,
   rack: String,
   bin: String,
   updatedBy: String

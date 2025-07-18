@@ -67,3 +67,29 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 export default migrateData; 
+
+// Script to add minimumQuantity to all inventory items if missing
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
+
+import Inventory from '../models/Inventory.js';
+
+const MONGO_URI = process.env.MONGO_URI;
+
+async function addMinimumQuantity() {
+  try {
+    await mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    const result = await Inventory.updateMany(
+      { minimumQuantity: { $exists: false } },
+      { $set: { minimumQuantity: 0 } }
+    );
+    console.log(`Updated ${result.modifiedCount} inventory items to add minimumQuantity.`);
+    await mongoose.disconnect();
+  } catch (error) {
+    console.error('Error updating inventory:', error);
+    process.exit(1);
+  }
+}
+
+addMinimumQuantity(); 
