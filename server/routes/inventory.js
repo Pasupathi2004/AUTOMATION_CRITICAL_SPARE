@@ -38,7 +38,12 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // Add a new item
 router.post('/', authenticateToken, async (req, res) => {
-  const item = new Inventory(req.body);
+  const body = {
+    ...req.body,
+    quantity: Number(req.body.quantity),
+    minimumQuantity: Number(req.body.minimumQuantity)
+  };
+  const item = new Inventory(body);
   await item.save();
   res.json({ success: true, item });
 });
