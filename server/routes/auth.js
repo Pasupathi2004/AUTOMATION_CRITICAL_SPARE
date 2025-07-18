@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { readJSON, writeJSON, DB_PATHS } from '../config/database.js';
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { authenticateToken } from '../middleware/auth.js';
 
@@ -17,9 +18,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     });
   }
 
-  const users = readJSON(DB_PATHS.USERS);
-  const user = users.find(u => u.username === username);
-
+  const user = await User.findOne({ username });
   if (!user) {
     return res.status(401).json({
       success: false,
@@ -27,8 +26,9 @@ router.post('/login', asyncHandler(async (req, res) => {
     });
   }
 
-  // Simple plain text password comparison
-  if (password !== user.password) {
+  // Check password with bcrypt
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
     return res.status(401).json({
       success: false,
       message: 'Invalid credentials'
@@ -46,7 +46,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
   );
 
-  const { password: _, ...userWithoutPassword } = user;
+  const { password: _, ...userWithoutPassword } = user.toObject();
 
   res.json({
     success: true,
