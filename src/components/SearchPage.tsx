@@ -135,9 +135,16 @@ const SearchPage: React.FC = () => {
     return { status: 'In Stock', color: 'text-green-600 bg-green-100' };
   };
 
+  // Helper to check for valid MongoDB ObjectId
+  const isValidObjectId = (id: string) => /^[a-fA-F0-9]{24}$/.test(id);
+
   const handleQuantityUpdate = async (itemId: string, newQuantity: number) => {
-    if (newQuantity < 0) return; // Prevent negative quantities
-    
+    if (newQuantity < 0) return;
+    if (!isValidObjectId(itemId)) {
+      setSuccessMessage('Invalid item ID');
+      setTimeout(() => setSuccessMessage(null), 3000);
+      return;
+    }
     setUpdatingItems(prev => new Set(prev).add(itemId));
     
     try {
