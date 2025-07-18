@@ -4,6 +4,7 @@ import Transaction from '../models/Transaction.js';
 import User from '../models/User.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -70,26 +71,35 @@ router.get('/dashboard', async (req, res) => {
   res.json({ success: true, analytics });
 });
 
-// Get data integrity status (admin only)
-router.get('/integrity', authenticateToken, requireRole(['admin']), (req, res) => {
+// Data Integrity Endpoint
+router.get('/integrity', authenticateToken, async (req, res) => {
   try {
-    // For MongoDB, we can check if collections exist and have data
-    const integrity = {
-      inventory: { valid: true, count: 0 },
-      transactions: { valid: true, count: 0 },
-      users: { valid: true, count: 0 }
-    };
-    res.json({ success: true, integrity });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to check data integrity' });
+    const userCount = await User.countDocuments();
+    const inventoryCount = await Inventory.countDocuments();
+    const transactionCount = await Transaction.countDocuments();
+    res.json({
+      success: true,
+      integrity: {
+        users: { valid: true, count: userCount },
+        inventory: { valid: true, count: inventoryCount },
+        transactions: { valid: true, count: transactionCount }
+      }
+    });
+  } catch (error) {
+    res.json({ success: false, message: 'Integrity check failed', error: error.message });
   }
 });
 
-// Get storage usage in MB (admin only)
-router.get('/settings/storage', authenticateToken, requireRole(['admin']), (req, res) => {
-  // For MongoDB, we can't easily calculate storage without admin commands
-  // Return a placeholder for now
-  res.json({ success: true, storageMB: 0 });
+// Storage Usage Endpoint
+router.get('/settings/storage', authenticateToken, async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const stats = await db.stats();
+    const storageMB = (stats.storageSize / (1024 * 1024)).toFixed(2);
+    res.json({ success: true, storageMB });
+  } catch (error) {
+    res.json({ success: false, message: 'Storage check failed', error: error.message });
+  }
 });
 
 export default router;
