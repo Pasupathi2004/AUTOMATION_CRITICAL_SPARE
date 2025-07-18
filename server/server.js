@@ -59,7 +59,7 @@ app.get('/health', (req, res) => {
     message: 'Server is running',
     timestamp: new Date().toISOString(),
     environment: 'development',
-    database: 'File-based JSON'
+    database: 'MongoDB'
   });
 });
 
@@ -87,10 +87,8 @@ app.set('io', io);
 const startServer = async () => {
   try {
     await connectDB(); // Connect to MongoDB before starting the server
-    // Initialize database
-    initializeDatabase();
+    // Do NOT call initializeDatabase() for users
     console.log('Database initialized successfully');
-
     // Start server
     server.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
@@ -98,7 +96,7 @@ const startServer = async () => {
       console.log(`🔐 JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Not Set'}`);
       console.log(`🌐 CORS Origin: http://localhost:5173`);
       console.log(`🔌 Socket.IO enabled`);
-      console.log(`🗄️ Database: File-based JSON`);
+      console.log(`🗄️ Database: MongoDB`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
