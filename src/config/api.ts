@@ -25,6 +25,8 @@ export const API_ENDPOINTS = {
   USERS: {
     LIST: `${API_BASE_URL}/users`,
     CREATE: `${API_BASE_URL}/users`,
+    UPDATE: (id: string) => `${API_BASE_URL}/users/${id}`,
+    DELETE: (id: string) => `${API_BASE_URL}/users/${id}`,
   },
   HEALTH: `${API_BASE_URL.replace(/\/api$/, '')}/health`,
 }; 

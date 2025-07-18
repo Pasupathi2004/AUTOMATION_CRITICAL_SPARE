@@ -1,5 +1,5 @@
 export interface User {
-  id: number;
+  id: string;
   username: string;
   role: 'admin' | 'user';
   createdAt: string;
@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface InventoryItem {
-  id: number;
+  id: string;
   name: string;
   make: string;
   model: string;
@@ -22,8 +22,8 @@ export interface InventoryItem {
 }
 
 export interface Transaction {
-  id: number;
-  itemId: number;
+  id: string;
+  itemId: string;
   itemName: string;
   type: 'added' | 'taken' | 'deleted';
   quantity: number;

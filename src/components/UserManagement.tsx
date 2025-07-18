@@ -41,7 +41,7 @@ const UserManagement: React.FC = () => {
       ));
     });
 
-    socket.on('userDeleted', (data: { id: number, user: User }) => {
+    socket.on('userDeleted', (data: { id: string, user: User }) => {
       console.log('🔌 Received userDeleted event:', data);
       setUsers(prev => prev.filter(user => user.id !== data.id));
     });
@@ -128,7 +128,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const handleDeleteUser = async (userId: number) => {
+  const handleDeleteUser = async (userId: string) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
 
     try {
@@ -248,7 +248,7 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
