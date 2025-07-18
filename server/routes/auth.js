@@ -10,6 +10,7 @@ const router = express.Router();
 // Login
 router.post('/login', asyncHandler(async (req, res) => {
   const { username, password } = req.body;
+  console.log('Login attempt:', username, password);
 
   if (!username || !password) {
     return res.status(400).json({
@@ -19,6 +20,8 @@ router.post('/login', asyncHandler(async (req, res) => {
   }
 
   const user = await User.findOne({ username });
+  console.log('User found:', user);
+
   if (!user) {
     return res.status(401).json({
       success: false,
@@ -28,6 +31,7 @@ router.post('/login', asyncHandler(async (req, res) => {
 
   // Check password with bcrypt
   const isMatch = await bcrypt.compare(password, user.password);
+  console.log('Password match:', isMatch);
   if (!isMatch) {
     return res.status(401).json({
       success: false,
