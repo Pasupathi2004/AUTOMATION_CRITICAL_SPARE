@@ -248,6 +248,11 @@ const SparesList: React.FC = () => {
     return safeFormatDate(new Date(maxTime));
   };
 
+  // Filter out invalid items before rendering
+  const validInventory = inventory.filter(item => isValidObjectId(item.id));
+  const validFilteredInventory = filteredInventory.filter(item => isValidObjectId(item.id));
+  const invalidItems = inventory.filter(item => !isValidObjectId(item.id));
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -315,9 +320,15 @@ const SparesList: React.FC = () => {
         </div>
       </div>
 
-      {filteredInventory.length > 0 ? (
+      {invalidItems.length > 0 && (
+        <div className="mt-4 p-3 rounded-lg bg-yellow-100 text-yellow-800">
+          Warning: {invalidItems.length} item(s) with invalid ID(s) were hidden. Please check your data.
+        </div>
+      )}
+
+      {validFilteredInventory.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredInventory.map((item) => {
+          {validFilteredInventory.map((item) => {
             const stockStatus = getStockStatus(item.quantity);
             return (
               <div key={item.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
