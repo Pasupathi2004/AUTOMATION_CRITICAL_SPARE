@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useAuth } from './AuthContext'; // Import useAuth
 
 interface SocketContextType {
   socket: Socket | null;
@@ -26,7 +25,6 @@ interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { token } = useAuth(); // Get token from AuthContext
 
   const connect = () => {
     if (socket?.connected) return;
@@ -35,7 +33,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const newSocket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       timeout: 20000,
-      auth: { token }, // Pass token here!
     });
 
     newSocket.on('connect', () => {
@@ -65,14 +62,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    disconnect(); // Disconnect previous socket if any
-    if (token) {
-      connect();
-    }
+    connect();
+
     return () => {
       disconnect();
     };
-  }, [token]); // Reconnect when token changes
+  }, []);
 
   const value: SocketContextType = {
     socket,
