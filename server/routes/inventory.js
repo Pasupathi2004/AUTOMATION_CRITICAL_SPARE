@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import * as XLSX from 'xlsx';
 import Inventory from '../models/Inventory.js';
+import Transaction from '../models/Transaction.js';
 import { authenticateToken } from '../middleware/auth.js';
 import mongoose from 'mongoose';
 
@@ -43,8 +44,35 @@ router.put('/:id', authenticateToken, async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
   }
-  const item = await Inventory.findByIdAndUpdate(id, req.body, { new: true });
-  res.json({ success: true, item });
+  // Find the current item
+  const currentItem = await Inventory.findById(id);
+  if (!currentItem) {
+    return res.status(404).json({ success: false, message: 'Item not found' });
+  }
+  // Update the item
+  const updatedItem = await Inventory.findByIdAndUpdate(id, req.body, { new: true });
+
+  // If quantity changed, create a transaction
+  if (typeof req.body.quantity === 'number' && req.body.quantity !== currentItem.quantity) {
+    const change = req.body.quantity - currentItem.quantity;
+    const transactionType = change > 0 ? 'added' : 'taken';
+    const transaction = new Transaction({
+      itemId: id,
+      itemName: currentItem.name,
+      type: transactionType,
+      quantity: Math.abs(change),
+      user: req.user?.username || 'system',
+      timestamp: new Date().toISOString()
+    });
+    await transaction.save();
+    // Emit socket event for real-time updates
+    if (req.app.get('io')) {
+      req.app.get('io').emit('inventoryUpdated', updatedItem);
+      req.app.get('io').emit('transactionCreated', transaction);
+    }
+  }
+
+  res.json({ success: true, item: updatedItem });
 });
 
 // Delete an item
