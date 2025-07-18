@@ -1,16 +1,21 @@
 import express from 'express';
+import Inventory from '../models/Inventory.js';
+import Transaction from '../models/Transaction.js';
+import User from '../models/User.js';
 import { readJSON, checkDataIntegrity, DB_PATHS } from '../config/database.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import fs from 'fs';
 import path from 'path';
+import mongoose from 'mongoose';
+import { connectDB } from './config/mongodb.js';
 
 const router = express.Router();
 
 // Get analytics data
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
-  const inventory = readJSON(DB_PATHS.INVENTORY);
-  const transactions = readJSON(DB_PATHS.TRANSACTIONS);
+  const inventory = await Inventory.find();
+  const transactions = await Transaction.find();
 
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
@@ -44,9 +49,9 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get analytics dashboard data (duplicate of root for compatibility)
-router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
-  const inventory = readJSON(DB_PATHS.INVENTORY);
-  const transactions = readJSON(DB_PATHS.TRANSACTIONS);
+router.get('/dashboard', async (req, res) => {
+  const inventory = await Inventory.find();
+  const transactions = await Transaction.find();
 
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
@@ -60,24 +65,15 @@ router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
     totalItems: inventory.length,
     lowStockItems: inventory.filter(i => i.quantity <= 5).length,
     totalTransactions: monthlyTransactions.length,
-    itemsConsumed: monthlyTransactions
-      .filter(t => t.type === 'taken')
-      .reduce((sum, t) => sum + t.quantity, 0),
-    itemsAdded: monthlyTransactions
-      .filter(t => t.type === 'added')
-      .reduce((sum, t) => sum + t.quantity, 0),
+    itemsConsumed: monthlyTransactions.filter(t => t.type === 'taken').reduce((sum, t) => sum + t.quantity, 0),
+    itemsAdded: monthlyTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + t.quantity, 0),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
-    recentTransactions: transactions
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 10),
+    recentTransactions: transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10),
     lowStockAlerts: inventory.filter(i => i.quantity <= 5)
   };
 
-  res.json({
-    success: true,
-    analytics
-  });
-}));
+  res.json({ success: true, analytics });
+});
 
 // Get data integrity status (admin only)
 router.get('/integrity', authenticateToken, requireRole(['admin']), (req, res) => {

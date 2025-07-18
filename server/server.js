@@ -5,6 +5,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { initializeDatabase } from './config/database.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import { connectDB } from './config/mongodb.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -85,6 +86,7 @@ app.set('io', io);
 // Initialize database and start server
 const startServer = async () => {
   try {
+    await connectDB(); // Connect to MongoDB before starting the server
     // Initialize database
     initializeDatabase();
     console.log('Database initialized successfully');
