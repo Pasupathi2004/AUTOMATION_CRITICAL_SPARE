@@ -13,10 +13,10 @@ const SearchPage: React.FC = () => {
   const [filteredItems, setFilteredItems] = useState<InventoryItem[]>([]);
   const [isListening, setIsListening] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [updatingItems, setUpdatingItems] = useState<Set<number>>(new Set());
+  const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const recognition = useRef<any>(null);
-  const [quantityInputs, setQuantityInputs] = useState<{ [key: number]: string }>({});
+  const [quantityInputs, setQuantityInputs] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     fetchInventory();
@@ -33,20 +33,22 @@ const SearchPage: React.FC = () => {
 
     // Listen for inventory updates
     socket.on('inventoryUpdated', (updatedItem: InventoryItem) => {
-      console.log('🔌 Received inventoryUpdated event in SearchPage:', updatedItem);
       setInventory(prev => prev.map(item => 
         item.id === updatedItem.id ? updatedItem : item
       ));
     });
 
+    socket.on('transactionCreated', () => {
+      fetchInventory();
+    });
+
     socket.on('lowStockAlert', (data: { item: InventoryItem, message: string }) => {
-      console.log('🔌 Received lowStockAlert event in SearchPage:', data);
-      // You can show a notification here
       alert(`⚠️ ${data.message}`);
     });
 
     return () => {
       socket.off('inventoryUpdated');
+      socket.off('transactionCreated');
       socket.off('lowStockAlert');
     };
   }, [socket, isConnected]);
@@ -133,7 +135,7 @@ const SearchPage: React.FC = () => {
     return { status: 'In Stock', color: 'text-green-600 bg-green-100' };
   };
 
-  const handleQuantityUpdate = async (itemId: number, newQuantity: number) => {
+  const handleQuantityUpdate = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 0) return; // Prevent negative quantities
     
     setUpdatingItems(prev => new Set(prev).add(itemId));
@@ -150,26 +152,17 @@ const SearchPage: React.FC = () => {
           updatedBy: user?.username
         }),
       });
-
-      if (response.ok) {
-        // Update local state
-        const updatedInventory = inventory.map(item => 
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        );
-        setInventory(updatedInventory);
-        
-        // Update filtered items
-        const updatedFilteredItems = filteredItems.map(item => 
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        );
-        setFilteredItems(updatedFilteredItems);
-        
-        // Show success message
-        setSuccessMessage(`Quantity updated successfully!`);
-        setTimeout(() => setSuccessMessage(null), 3000);
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSuccessMessage('Quantity updated successfully!');
+        fetchInventory();
+      } else {
+        setSuccessMessage(data.message || 'Failed to update quantity.');
       }
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      setSuccessMessage('Error updating quantity.');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } finally {
       setUpdatingItems(prev => {
         const newSet = new Set(prev);
@@ -189,7 +182,7 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  const handleQuantityInputChange = (itemId: number, value: string) => {
+  const handleQuantityInputChange = (itemId: string, value: string) => {
     setQuantityInputs((prev) => ({ ...prev, [itemId]: value }));
   };
 
