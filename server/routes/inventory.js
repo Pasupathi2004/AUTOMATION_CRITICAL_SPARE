@@ -59,12 +59,18 @@ router.put('/:id', authenticateToken, async (req, res) => {
   if (!currentItem) {
     return res.status(404).json({ success: false, message: 'Item not found' });
   }
+  // Parse quantity and minimumQuantity as numbers
+  const body = {
+    ...req.body,
+    quantity: Number(req.body.quantity),
+    minimumQuantity: Number(req.body.minimumQuantity)
+  };
   // Update the item
-  const updatedItem = await Inventory.findByIdAndUpdate(id, req.body, { new: true });
+  const updatedItem = await Inventory.findByIdAndUpdate(id, body, { new: true });
 
   // If quantity changed, create a transaction
-  if (typeof req.body.quantity === 'number' && req.body.quantity !== currentItem.quantity) {
-    const change = req.body.quantity - currentItem.quantity;
+  if (typeof body.quantity === 'number' && body.quantity !== currentItem.quantity) {
+    const change = body.quantity - currentItem.quantity;
     const transactionType = change > 0 ? 'added' : 'taken';
     const transaction = new Transaction({
       itemId: id,
