@@ -14,6 +14,9 @@ const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
   return format(date, fmt);
 };
 
+// Helper to check for valid MongoDB ObjectId
+const isValidObjectId = (id: string) => /^[a-fA-F0-9]{24}$/.test(id);
+
 const SparesList: React.FC = () => {
   const { user, token } = useAuth();
   const { socket, isConnected } = useSocket();
@@ -33,6 +36,7 @@ const SparesList: React.FC = () => {
     quantity: '',
     minimumQuantity: ''
   });
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     fetchInventory();
@@ -136,9 +140,12 @@ const SparesList: React.FC = () => {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
-
+    if (!isValidObjectId(editingItem.id)) {
+      setMessage({ type: 'error', text: 'Invalid item ID' });
+      return;
+    }
     try {
-      const response = await  fetch(API_ENDPOINTS.INVENTORY.UPDATE(editingItem.id), {
+      const response = await fetch(API_ENDPOINTS.INVENTORY.UPDATE(editingItem.id), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -150,36 +157,42 @@ const SparesList: React.FC = () => {
           updatedBy: user?.username
         }),
       });
-
-      if (response.ok) {
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setMessage({ type: 'success', text: 'Item updated successfully!' });
         fetchInventory();
         setShowEditModal(false);
         setEditingItem(null);
+      } else {
+        setMessage({ type: 'error', text: data.message || 'Failed to update item.' });
       }
     } catch (error) {
-      console.error('Error updating item:', error);
+      setMessage({ type: 'error', text: 'Error updating item.' });
     }
   };
 
-  type InventoryId = string;
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
-
+    if (!isValidObjectId(id)) {
+      setMessage({ type: 'error', text: 'Invalid item ID' });
+      return;
+    }
     try {
       const response = await fetch(API_ENDPOINTS.INVENTORY.DELETE(id), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-        },
-        // No body for DELETE
+        }
       });
-
       if (response.ok) {
+        setMessage({ type: 'success', text: 'Item deleted successfully!' });
         fetchInventory();
+      } else {
+        setMessage({ type: 'error', text: 'Failed to delete item.' });
       }
     } catch (error) {
-      console.error('Error deleting item:', error);
+      setMessage({ type: 'error', text: 'Error deleting item.' });
     }
   };
 
@@ -557,6 +570,9 @@ const SparesList: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+      {message && (
+        <div className={`mt-4 p-3 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{message.text}</div>
       )}
     </div>
   );
