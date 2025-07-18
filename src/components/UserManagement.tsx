@@ -4,6 +4,14 @@ import { User } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { API_ENDPOINTS } from '../config/api';
+import { format } from 'date-fns';
+
+const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
+  if (!dateValue) return 'N/A';
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return 'N/A';
+  return format(date, fmt);
+};
 
 const UserManagement: React.FC = () => {
   const { user: currentUser, token } = useAuth();
@@ -248,7 +256,7 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                      {safeFormatDate(user.createdAt)}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
