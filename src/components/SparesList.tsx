@@ -211,7 +211,7 @@ const SparesList: React.FC = () => {
       item.rack,
       item.bin,
       item.quantity,
-      getStockStatus(item.quantity).status,
+      getStockStatus(item.quantity, item.minimumQuantity).status,
       safeFormatDate(item.createdAt),
       safeFormatDate(item.updatedAt),
       item.updatedBy
@@ -230,10 +230,10 @@ const SparesList: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const getStockStatus = (quantity: number) => {
+  const getStockStatus = (quantity: number, minimumQuantity: number = 5) => {
     if (quantity === 0) return { status: 'Out of Stock', color: 'text-red-600 bg-red-100' };
-    if (quantity <= 5) return { status: 'Low Stock', color: 'text-orange-600 bg-orange-100' };
-    if (quantity <= 20) return { status: 'Medium Stock', color: 'text-yellow-600 bg-yellow-100' };
+    if (quantity <= minimumQuantity) return { status: 'Low Stock', color: 'text-orange-600 bg-orange-100' };
+    if (quantity <= minimumQuantity * 2) return { status: 'Medium Stock', color: 'text-yellow-600 bg-yellow-100' };
     return { status: 'In Stock', color: 'text-green-600 bg-green-100' };
   };
 
@@ -329,7 +329,7 @@ const SparesList: React.FC = () => {
       {validFilteredInventory.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {validFilteredInventory.map((item) => {
-            const stockStatus = getStockStatus(item.quantity);
+            const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
             return (
               <div key={item.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <div className="p-6">

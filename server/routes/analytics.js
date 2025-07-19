@@ -23,7 +23,7 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 
   const analytics = {
     totalItems: inventory.length,
-    lowStockItems: inventory.filter(i => i.quantity <= 5).length,
+    lowStockItems: inventory.filter(i => i.quantity <= i.minimumQuantity).length,
     totalTransactions: monthlyTransactions.length,
     itemsConsumed: monthlyTransactions
       .filter(t => t.type === 'taken')
@@ -35,7 +35,7 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     recentTransactions: transactions
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
       .slice(0, 10),
-    lowStockAlerts: inventory.filter(i => i.quantity <= 5)
+    lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity)
   };
 
   res.json({
@@ -59,13 +59,13 @@ router.get('/dashboard', async (req, res) => {
 
   const analytics = {
     totalItems: inventory.length,
-    lowStockItems: inventory.filter(i => i.quantity <= 5).length,
+    lowStockItems: inventory.filter(i => i.quantity <= i.minimumQuantity).length,
     totalTransactions: monthlyTransactions.length,
     itemsConsumed: monthlyTransactions.filter(t => t.type === 'taken').reduce((sum, t) => sum + t.quantity, 0),
     itemsAdded: monthlyTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + t.quantity, 0),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10),
-    lowStockAlerts: inventory.filter(i => i.quantity <= 5)
+    lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity)
   };
 
   res.json({ success: true, analytics });

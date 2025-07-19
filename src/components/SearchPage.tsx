@@ -129,10 +129,10 @@ const SearchPage: React.FC = () => {
     setFilteredItems(filtered);
   };
 
-  const getStockStatus = (quantity: number) => {
+  const getStockStatus = (quantity: number, minimumQuantity: number = 5) => {
     if (quantity === 0) return { status: 'Out of Stock', color: 'text-red-600 bg-red-100' };
-    if (quantity <= 5) return { status: 'Low Stock', color: 'text-orange-600 bg-orange-100' };
-    if (quantity <= 20) return { status: 'Medium Stock', color: 'text-yellow-600 bg-yellow-100' };
+    if (quantity <= minimumQuantity) return { status: 'Low Stock', color: 'text-orange-600 bg-orange-100' };
+    if (quantity <= minimumQuantity * 2) return { status: 'Medium Stock', color: 'text-yellow-600 bg-yellow-100' };
     return { status: 'In Stock', color: 'text-green-600 bg-green-100' };
   };
 
@@ -300,7 +300,7 @@ const SearchPage: React.FC = () => {
           {filteredItems.length > 0 ? (
             <div className="divide-y divide-gray-200">
               {filteredItems.map((item) => {
-                const stockStatus = getStockStatus(item.quantity);
+                const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
                 return (
                   <div key={item.id} className="p-6 hover:bg-gray-50">
                     <div className="flex items-start justify-between">
