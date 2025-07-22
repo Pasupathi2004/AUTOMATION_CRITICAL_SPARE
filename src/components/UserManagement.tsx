@@ -176,11 +176,11 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center w-full">User Management</h1>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+          className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors mt-2 sm:mt-0"
         >
           <Plus size={20} />
           <span>Add User</span>
@@ -197,7 +197,7 @@ const UserManagement: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md overflow-x-auto">
         <div className="p-6 border-b">
           <div className="flex items-center space-x-3">
             <Users className="text-[#2E8B57]" size={24} />
@@ -294,13 +294,13 @@ const UserManagement: React.FC = () => {
 
       {/* Add User Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <h3 className="text-lg font-medium text-gray-900">Add New User</h3>
             </div>
             
-            <form onSubmit={handleAddUser} className="p-6">
+            <form onSubmit={handleAddUser} className="p-4 sm:p-6">
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
@@ -337,20 +337,20 @@ const UserManagement: React.FC = () => {
                 </div>
               </div>
               
-              <div className="mt-6 flex justify-end space-x-3">
+              <div className="mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddModal(false);
                     setFormData({ username: '', password: '', role: 'user' });
                   }}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
+                  className="w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
                 >
                   Add User
                 </button>
@@ -362,15 +362,15 @@ const UserManagement: React.FC = () => {
 
       {/* Edit Password Modal */}
       {showEditModal && editingUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <h3 className="text-lg font-medium text-gray-900">
                 Change Password for {editingUser.username}
               </h3>
             </div>
             
-            <form onSubmit={handleUpdatePassword} className="p-6">
+            <form onSubmit={handleUpdatePassword} className="p-4 sm:p-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
                 <input
@@ -382,7 +382,7 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               
-              <div className="mt-6 flex justify-end space-x-3">
+              <div className="mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -390,13 +390,13 @@ const UserManagement: React.FC = () => {
                     setEditingUser(null);
                     setFormData({ username: '', password: '', role: 'user' });
                   }}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
+                  className="w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
                 >
                   Update Password
                 </button>

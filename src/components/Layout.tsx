@@ -118,7 +118,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                 )}
               </button>
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-white rounded-lg shadow-lg border z-50">
+                <div className="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-80 bg-white rounded-lg shadow-lg border z-50 max-w-xs sm:max-w-none mx-auto sm:mx-0">
                   <div className="p-4 border-b">
                     <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
                   </div>
