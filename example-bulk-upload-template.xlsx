@@ -1,6 +1,0 @@
-// This is a binary Excel file and cannot be created as text. Please use the following CSV structure to create your Excel file:
-
-Name,Make,Model,Specification,Row,Column,Quantity,Minimum Quantity,Updated By
-Sample Item,BrandX,ModelY,Specs here,1,A,10,2,admin
-
-Open Excel, paste these headers and sample row, and save as example-bulk-upload-template.xlsx. 

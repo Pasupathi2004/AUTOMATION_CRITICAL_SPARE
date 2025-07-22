@@ -323,7 +323,7 @@ const AddItem: React.FC = () => {
             {bulkUploading ? 'Uploading...' : 'Upload Excel File'}
           </button>
           <a
-            href="/example-bulk-upload-template.xlsx"
+            href="/example-bulk-upload-template.csv"
             download
             className="ml-4 text-blue-600 underline text-sm"
           >
