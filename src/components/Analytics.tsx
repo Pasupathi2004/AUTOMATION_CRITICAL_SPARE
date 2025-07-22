@@ -370,24 +370,24 @@ const Analytics: React.FC = () => {
         </div>
       )}
       
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Analytics & Reports</h1>
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
           <button
             onClick={handleDeleteHistory}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             Delete History
           </button>
           <button
             onClick={() => setShowSettings(s => !s)}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
             Settings
           </button>
           <button
             onClick={generateExcelReport}
-            className="flex items-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
           >
             <FileSpreadsheet size={20} />
             <span>Generate Excel Report</span>
@@ -403,7 +403,7 @@ const Analytics: React.FC = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center">
             <div className="bg-blue-100 rounded-lg p-3">
@@ -454,7 +454,7 @@ const Analytics: React.FC = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Status Distribution</h3>
           <div className="h-64">
@@ -472,13 +472,13 @@ const Analytics: React.FC = () => {
 
       {/* Recent Transactions */}
       <div className="bg-white rounded-lg shadow-md">
-        <div className="p-6 border-b">
+        <div className="p-4 sm:p-6 border-b">
           <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
         </div>
         <div className="divide-y divide-gray-200">
           {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
             analytics.recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="p-6 hover:bg-gray-50">
+              <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gray-50">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
@@ -523,12 +523,12 @@ const Analytics: React.FC = () => {
       {/* Low Stock Alerts */}
       {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
         <div className="bg-white rounded-lg shadow-md">
-          <div className="p-6 border-b">
+          <div className="p-4 sm:p-6 border-b">
             <h3 className="text-lg font-semibold text-gray-900 text-red-600">Low Stock Alerts</h3>
           </div>
           <div className="divide-y divide-gray-200">
             {analytics.lowStockAlerts.map((item) => (
-              <div key={item.id} className="p-6 hover:bg-red-50">
+              <div key={item.id} className="p-4 sm:p-6 hover:bg-red-50">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-medium text-gray-900">{item.name}</h4>

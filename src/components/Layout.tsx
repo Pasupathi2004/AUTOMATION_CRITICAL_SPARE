@@ -72,9 +72,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-[#2E8B57] text-white shadow-lg">
-        <div className="px-2 sm:px-4 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-2 sm:py-0">
+      <header className="bg-[#2E8B57] text-white shadow-lg w-full">
+        <div className="px-2 sm:px-4 lg:px-8 w-full">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-2 sm:py-0 w-full">
             <div className="flex items-center w-full sm:w-auto justify-between">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -82,10 +82,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <h1 className="ml-2 text-lg sm:text-xl font-bold truncate">Automation Inventory Manager</h1>
+              <h1 className="ml-2 text-base sm:text-xl font-bold truncate max-w-[60vw] sm:max-w-none">Automation Inventory Manager</h1>
             </div>
             
-            <div className="flex items-center space-x-2 sm:space-x-4 mt-2 sm:mt-0">
+            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 space-x-0 sm:space-x-4 mt-2 sm:mt-0 w-full sm:w-auto">
               {/* Socket.IO Connection Status */}
               <div className="flex items-center space-x-1 sm:space-x-2">
                 {isConnected ? (
@@ -140,10 +140,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                 )}
               </div>
               
-              <span className="text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">Welcome, {user?.username}</span>
+              <span className="text-xs sm:text-sm truncate max-w-[80vw] sm:max-w-none text-center w-full sm:w-auto">Welcome, {user?.username}</span>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-1 px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
+                className="flex items-center justify-center space-x-1 w-full sm:w-auto px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
               >
                 <LogOut size={16} />
                 <span className="hidden sm:inline">Logout</span>
