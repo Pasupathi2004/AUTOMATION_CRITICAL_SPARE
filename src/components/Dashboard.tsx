@@ -199,7 +199,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                   </p>
                 </div>
                 <p className="text-xs sm:text-sm text-gray-500">
-                  {new Date(transaction.timestamp).toLocaleDateString()}
+                  {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                 </p>
               </div>
             ))}

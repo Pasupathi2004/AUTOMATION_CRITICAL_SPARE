@@ -15,7 +15,8 @@ const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
   if (!dateValue) return 'N/A';
   const date = new Date(dateValue);
   if (isNaN(date.getTime())) return 'N/A';
-  return format(date, fmt);
+  // Use toLocaleString for IST
+  return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 };
 
 const Analytics: React.FC = () => {
@@ -157,7 +158,7 @@ const Analytics: React.FC = () => {
     // Summary Sheet
     const summaryData = [
       [`Inventory Management System - Analytics Report (${timestamp})`],
-      ['Generated At:', format(new Date(), 'yyyy-MM-dd HH:mm:ss')],
+      ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
       [''],
       ['Metric', 'Value'],
       ['Total Items', analytics.totalItems.toString()],
@@ -183,7 +184,7 @@ const Analytics: React.FC = () => {
           (transaction.type ?? '').toUpperCase(),
           transaction.quantity?.toString() ?? '',
           transaction.user ?? '',
-          transaction.timestamp ? format(new Date(transaction.timestamp), 'yyyy-MM-dd HH:mm:ss') : '',
+          transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
           action
         ]);
       });
@@ -204,7 +205,7 @@ const Analytics: React.FC = () => {
     // Summary Sheet
     const summaryData = [
       ['Inventory Management System - Analytics Report'],
-      ['Generated At:', format(new Date(), 'yyyy-MM-dd HH:mm:ss')],
+      ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
       [''],
       ['Metric', 'Value'],
       ['Total Items', analytics.totalItems.toString()],
@@ -233,7 +234,7 @@ const Analytics: React.FC = () => {
           (transaction.type ?? '').toUpperCase(),
           transaction.quantity?.toString() ?? '',
           transaction.user ?? '',
-          transaction.timestamp ? format(new Date(transaction.timestamp), 'yyyy-MM-dd HH:mm:ss') : '',
+          transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
           action
         ]);
       });
@@ -258,7 +259,7 @@ const Analytics: React.FC = () => {
           item.specification,
           item.quantity.toString(),
           `${item.rack}-${item.bin}`,
-          format(new Date(item.updatedAt), 'yyyy-MM-dd HH:mm:ss'),
+          new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
           item.updatedBy,
           status
         ]);

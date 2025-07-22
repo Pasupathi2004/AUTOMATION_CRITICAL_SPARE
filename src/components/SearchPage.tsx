@@ -220,7 +220,8 @@ const SearchPage: React.FC = () => {
     if (!dateValue) return 'N/A';
     const date = new Date(dateValue);
     if (isNaN(date.getTime())) return 'N/A';
-    return format(date, fmt);
+    // Use toLocaleString for IST
+    return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
   };
 
   if (isLoading) {
