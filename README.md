@@ -4,8 +4,8 @@ spare
 
 To bulk upload items, use an Excel file (.xlsx, .xls) or CSV with the following columns (case-sensitive):
 
-| Name | Make | Model | Specification | Rack | Bin | Quantity | MinimumQuantity |
-|------|------|-------|---------------|------|-----|----------|-----------------|
+| Name | Make | Model | Specification | Row | Column | Quantity | MinimumQuantity |
+|------|------|-------|---------------|------|------|----------|-----------------|
 | Example Item | ExampleMake | X100 | 10mm, 5V | R1 | B2 | 50 | 5 |
 
 - All columns are required for each row.
