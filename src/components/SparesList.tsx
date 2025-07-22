@@ -199,7 +199,7 @@ const SparesList: React.FC = () => {
 
   const exportToCSV = () => {
     const headers = [
-      'ID', 'Name', 'Make', 'Model', 'Specification', 'Rack', 'Bin', 
+      'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
       'Quantity', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
     ];
     
@@ -283,7 +283,7 @@ const SparesList: React.FC = () => {
           </div>
           <input
             type="text"
-            placeholder="Search by name, make, model, specification, location, quantity, or user..."
+            placeholder="Search by name, make, model, specification, row, column, quantity, or user..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent bg-white"
@@ -383,7 +383,7 @@ const SparesList: React.FC = () => {
                         <div className="flex items-center space-x-2">
                           <Building className="text-blue-600" size={16} />
                           <div>
-                            <div className="text-xs font-medium text-gray-500 uppercase">Rack</div>
+                            <div className="text-xs font-medium text-gray-500 uppercase">Row</div>
                             <div className="text-lg font-bold text-gray-900">{item.rack}</div>
                           </div>
                         </div>
@@ -392,7 +392,7 @@ const SparesList: React.FC = () => {
                         <div className="flex items-center space-x-2">
                           <Archive className="text-purple-600" size={16} />
                           <div>
-                            <div className="text-xs font-medium text-gray-500 uppercase">Bin</div>
+                            <div className="text-xs font-medium text-gray-500 uppercase">Column</div>
                             <div className="text-lg font-bold text-gray-900">{item.bin}</div>
                           </div>
                         </div>
@@ -400,7 +400,7 @@ const SparesList: React.FC = () => {
                     </div>
                     <div className="mt-2 text-center">
                       <div className="inline-flex items-center space-x-1 px-3 py-1 bg-[#2E8B57] text-white rounded-full text-sm font-medium">
-                        <span>Location: {item.rack}-{item.bin}</span>
+                        <span>Location: Row {item.rack} - Column {item.bin}</span>
                       </div>
                     </div>
                   </div>
@@ -531,7 +531,7 @@ const SparesList: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Rack Location</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Row Location</label>
                   <input
                     type="text"
                     value={formData.rack}
@@ -542,7 +542,7 @@ const SparesList: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bin Location</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Column Location</label>
                   <input
                     type="text"
                     value={formData.bin}

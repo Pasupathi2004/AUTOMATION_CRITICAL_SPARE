@@ -160,7 +160,7 @@ const AddItem: React.FC = () => {
 
             <div>
               <label htmlFor="rack" className="block text-sm font-medium text-gray-700 mb-2">
-                Rack Location *
+                Row Location *
               </label>
               <input
                 type="text"
@@ -170,13 +170,13 @@ const AddItem: React.FC = () => {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
-                placeholder="Enter rack location"
+                placeholder="Enter row location"
               />
             </div>
 
             <div>
               <label htmlFor="bin" className="block text-sm font-medium text-gray-700 mb-2">
-                Bin Location *
+                Column Location *
               </label>
               <input
                 type="text"
@@ -186,7 +186,7 @@ const AddItem: React.FC = () => {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
-                placeholder="Enter bin location"
+                placeholder="Enter column location"
               />
             </div>
 

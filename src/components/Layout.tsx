@@ -134,7 +134,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                               Low stock: {item.quantity} remaining
                             </p>
                             <p className="text-xs text-gray-500">
-                              Location: {item.rack}-{item.bin}
+                              Location: Row {item.rack} - Column {item.bin}
                             </p>
                           </div>
                         ))
@@ -160,7 +160,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                               Low stock: {item.quantity} remaining
                             </p>
                             <p className="text-xs text-gray-500">
-                              Location: {item.rack}-{item.bin}
+                              Location: Row {item.rack} - Column {item.bin}
                             </p>
                           </div>
                         ))

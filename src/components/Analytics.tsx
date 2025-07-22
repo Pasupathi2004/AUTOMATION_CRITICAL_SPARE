@@ -258,7 +258,7 @@ const Analytics: React.FC = () => {
           item.model,
           item.specification,
           item.quantity.toString(),
-          `${item.rack}-${item.bin}`,
+          `Row ${item.rack} - Column ${item.bin}`,
           new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
           item.updatedBy,
           status
@@ -534,7 +534,7 @@ const Analytics: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-gray-900">{item.name}</h4>
                     <p className="text-sm text-gray-600">{item.make} - {item.model}</p>
-                    <p className="text-sm text-gray-500">Location: {item.rack}-{item.bin}</p>
+                    <p className="text-sm text-gray-500">Location: Row {item.rack} - Column {item.bin}</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-red-600">{item.quantity}</div>

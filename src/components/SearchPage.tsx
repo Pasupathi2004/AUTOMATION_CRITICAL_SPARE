@@ -260,7 +260,7 @@ const SearchPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, make, model, specification, or location..."
+              placeholder="Search by name, make, model, specification, row, column, quantity, or location..."
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
             />
           </div>
@@ -329,7 +329,7 @@ const SearchPage: React.FC = () => {
                         <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
                             <MapPin size={16} />
-                            <span>Location: {item.rack}-{item.bin}</span>
+                            <span>Location: Row {item.rack} - Column {item.bin}</span>
                           </div>
                           <div>
                             <strong>Updated:</strong> {safeFormatDate(item.updatedAt)}
