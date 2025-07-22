@@ -21,8 +21,8 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error('Only Excel and CSV files are allowed'), false);
+      }
     }
-  }
 });
 
 // Get all inventory items
@@ -128,12 +128,12 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 // Bulk upload endpoint
 router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
-    }
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
 
     const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
+  const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
@@ -164,8 +164,8 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
 
       if (isNaN(minimumQuantityNum) || minimumQuantityNum < 0) {
         errors.push(`Row ${i + 1}: Invalid minimum quantity`);
-        continue;
-      }
+      continue;
+    }
 
       items.push({
         name: name.toString().trim(),
@@ -178,8 +178,8 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
         minimumQuantity: minimumQuantityNum,
         updatedBy: req.user?.username || 'bulk-upload'
       });
-    }
-
+  }
+  
     if (errors.length > 0) {
       return res.status(400).json({ 
         success: false, 
@@ -197,15 +197,15 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
 
     // Insert items into database
     const savedItems = await Inventory.insertMany(items);
-
+    
     // Emit socket event for real-time updates
     if (req.app.get('io')) {
       req.app.get('io').emit('bulkUploadCompleted', {
         count: savedItems.length,
         items: savedItems
       });
-    }
-
+  }
+  
     res.json({ 
       success: true, 
       message: `Successfully uploaded ${savedItems.length} items`,

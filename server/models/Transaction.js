@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const TransactionSchema = new mongoose.Schema({
   itemName: String,
-  type: String,
+    type: String,
   quantity: Number,
   user: String,
   timestamp: Date

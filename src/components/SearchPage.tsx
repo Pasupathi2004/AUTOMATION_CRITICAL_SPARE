@@ -168,7 +168,7 @@ const SearchPage: React.FC = () => {
       } else {
         setSuccessMessage(data.message || 'Failed to update quantity.');
       }
-      setTimeout(() => setSuccessMessage(null), 3000);
+        setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       setSuccessMessage('Error updating quantity.');
       setTimeout(() => setSuccessMessage(null), 3000);

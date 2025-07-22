@@ -73,21 +73,21 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-[#2E8B57] text-white shadow-lg">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+        <div className="px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-2 sm:py-0">
+            <div className="flex items-center w-full sm:w-auto justify-between">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 rounded-md hover:bg-[#236B45]"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <h1 className="ml-2 text-xl font-bold">Automation Inventory Manager</h1>
+              <h1 className="ml-2 text-lg sm:text-xl font-bold truncate">Automation Inventory Manager</h1>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 mt-2 sm:mt-0">
               {/* Socket.IO Connection Status */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 {isConnected ? (
                   <Wifi size={16} className="text-green-300" />
                 ) : (
@@ -106,14 +106,14 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                 >
                   <Bell size={20} />
                   {notifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full text-xs flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
                       {notifications.length}
                     </span>
                   )}
                 </button>
                 
                 {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50">
+                  <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-white rounded-lg shadow-lg border z-50">
                     <div className="p-4 border-b">
                       <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
                     </div>
@@ -140,10 +140,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                 )}
               </div>
               
-              <span className="text-sm">Welcome, {user?.username}</span>
+              <span className="text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">Welcome, {user?.username}</span>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-1 px-3 py-2 rounded-md hover:bg-[#236B45]"
+                className="flex items-center space-x-1 px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
               >
                 <LogOut size={16} />
                 <span className="hidden sm:inline">Logout</span>
@@ -158,7 +158,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         <aside 
           className={`${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          } fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 mt-16 md:mt-0`}
+          } fixed inset-y-0 left-0 z-30 w-4/5 max-w-xs bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 mt-16 md:mt-0`}
         >
           <nav className="h-full px-4 py-6 overflow-y-auto">
             <ul className="space-y-2">
@@ -196,7 +196,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         )}
 
         {/* Main content */}
-        <main className="flex-1 p-4 md:p-6 md:ml-0">
+        <main className="flex-1 p-2 sm:p-4 md:p-6 md:ml-0">
           {children}
         </main>
       </div>

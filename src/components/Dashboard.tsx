@@ -106,13 +106,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Welcome back, {user?.username}!</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600 text-sm sm:text-base">Welcome back, {user?.username}!</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center">
             <div className="bg-blue-100 rounded-lg p-3">
@@ -163,9 +163,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
@@ -177,8 +177,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                 <div className={`${action.color} rounded-lg p-2 w-fit mb-3`}>
                   <Icon className="text-white" size={20} />
                 </div>
-                <h3 className="font-medium text-gray-900 mb-1">{action.title}</h3>
-                <p className="text-sm text-gray-600">{action.description}</p>
+                <h3 className="font-medium text-gray-900 mb-1 text-base sm:text-lg">{action.title}</h3>
+                <p className="text-xs sm:text-sm text-gray-600">{action.description}</p>
               </button>
             );
           })}
@@ -187,18 +187,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
 
       {/* Recent Activity */}
       {analytics?.recentTransactions && analytics.recentTransactions.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-          <div className="space-y-3">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-4">Recent Activity</h2>
+          <div className="space-y-2 sm:space-y-3">
             {analytics.recentTransactions.slice(0, 5).map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
                 <div>
-                  <p className="font-medium text-gray-900">{transaction.itemName}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-gray-900 text-sm sm:text-base">{transaction.itemName}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">
                     {transaction.type} {transaction.quantity} units by {transaction.user}
                   </p>
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs sm:text-sm text-gray-500">
                   {new Date(transaction.timestamp).toLocaleDateString()}
                 </p>
               </div>

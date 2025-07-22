@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
     let { password, ...rest } = req.body;
     if (!password) {
       return res.status(400).json({ success: false, message: 'Password is required' });
-    }
+  }
     // Store password as plain text
     const user = new User({ ...rest, password });
     await user.save();
@@ -47,7 +47,7 @@ router.delete('/:id', async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
-    }
+  }
     res.json({ success: true, message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete user' });
@@ -57,10 +57,10 @@ router.delete('/:id', async (req, res) => {
 // Update user password
 router.put('/:id', async (req, res) => {
   try {
-    const { password } = req.body;
-    if (!password) {
+  const { password } = req.body;
+  if (!password) {
       return res.status(400).json({ success: false, message: 'Password is required' });
-    }
+  }
     // Store password as plain text
     const user = await User.findByIdAndUpdate(
       req.params.id,
