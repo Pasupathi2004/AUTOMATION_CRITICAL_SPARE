@@ -263,11 +263,11 @@ const SparesList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Spares List</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Spares List</h1>
         <button
           onClick={exportToCSV}
-          className="flex items-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+          className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors mt-2 sm:mt-0"
         >
           <Download size={20} />
           <span>Export CSV</span>
@@ -275,7 +275,7 @@ const SparesList: React.FC = () => {
       </div>
 
       {/* Standalone Search Box */}
-      <div className="w-full flex justify-center">
+      <div className="w-full flex flex-col items-center">
         <div className="relative w-full max-w-xl">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
@@ -305,8 +305,8 @@ const SparesList: React.FC = () => {
 
       {/* Summary/info card comes after search bar */}
       <div className="bg-white rounded-lg shadow-md p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             Total Items: {inventory.length}
             {searchTerm && (
               <span className="text-sm font-normal text-gray-600 ml-2">
@@ -314,7 +314,7 @@ const SparesList: React.FC = () => {
               </span>
             )}
           </h2>
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600">
             Last updated: {getLastUpdated()}
           </div>
         </div>
@@ -327,12 +327,12 @@ const SparesList: React.FC = () => {
       )}
 
       {validFilteredInventory.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {validFilteredInventory.map((item) => {
             const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
             return (
               <div key={item.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -405,7 +405,7 @@ const SparesList: React.FC = () => {
                   </div>
 
                   {/* Last Updated Info */}
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-500 mb-4 gap-2 sm:gap-0">
                     <div className="flex items-center space-x-1">
                       <Calendar size={14} />
                       <span>{safeFormatDate(item.updatedAt)}</span>
@@ -417,10 +417,10 @@ const SparesList: React.FC = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end space-x-2 pt-4 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t border-gray-200">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="flex items-center space-x-1 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Edit Item"
                     >
                       <Edit size={16} />
@@ -429,7 +429,7 @@ const SparesList: React.FC = () => {
                     {user?.role === 'admin' && (
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="flex items-center space-x-1 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Delete Item"
                       >
                         <Trash2 size={16} />
@@ -464,14 +464,14 @@ const SparesList: React.FC = () => {
 
       {/* Edit Modal */}
       {showEditModal && editingItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
-            <div className="p-6 border-b">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-screen overflow-y-auto">
+            <div className="p-4 sm:p-6 border-b">
               <h3 className="text-lg font-medium text-gray-900">Edit Item</h3>
             </div>
             
-            <form onSubmit={handleUpdate} className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleUpdate} className="p-4 sm:p-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
                   <input
@@ -563,17 +563,17 @@ const SparesList: React.FC = () => {
                 />
               </div>
               
-              <div className="mt-6 flex justify-end space-x-3">
+              <div className="mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
+                  className="w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
                 >
                   Update Item
                 </button>

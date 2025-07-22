@@ -246,14 +246,14 @@ const SearchPage: React.FC = () => {
         </div>
       )}
       
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Search Inventory</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Search Inventory</h1>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center space-x-4">
-          <div className="relative flex-1">
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+          <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
@@ -267,7 +267,7 @@ const SearchPage: React.FC = () => {
           {recognition.current && (
             <button
               onClick={isListening ? stopVoiceSearch : startVoiceSearch}
-              className={`p-3 rounded-lg transition-colors ${
+              className={`w-full sm:w-auto p-3 rounded-lg transition-colors mt-2 sm:mt-0 ${
                 isListening 
                   ? 'bg-red-500 text-white hover:bg-red-600' 
                   : 'bg-[#2E8B57] text-white hover:bg-[#236B45]'
@@ -291,8 +291,8 @@ const SearchPage: React.FC = () => {
       {/* Search Results */}
       {searchQuery && (
         <div className="bg-white rounded-lg shadow-md">
-          <div className="p-6 border-b">
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="p-4 sm:p-6 border-b">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
               Search Results ({filteredItems.length})
             </h2>
           </div>
@@ -302,8 +302,8 @@ const SearchPage: React.FC = () => {
               {filteredItems.map((item) => {
                 const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
                 return (
-                  <div key={item.id} className="p-6 hover:bg-gray-50">
-                    <div className="flex items-start justify-between">
+                  <div key={item.id} className="p-4 sm:p-6 hover:bg-gray-50">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3">
                           <Package className="text-[#2E8B57]" size={20} />
@@ -313,7 +313,7 @@ const SearchPage: React.FC = () => {
                           </span>
                         </div>
                         
-                        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-600">
+                        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 text-sm text-gray-600">
                           <div>
                             <strong>Make:</strong> {item.make}
                           </div>
@@ -325,7 +325,7 @@ const SearchPage: React.FC = () => {
                           </div>
                         </div>
                         
-                        <div className="mt-2 flex items-center space-x-4 text-sm text-gray-600">
+                        <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
                             <MapPin size={16} />
                             <span>Location: {item.rack}-{item.bin}</span>
@@ -339,7 +339,7 @@ const SearchPage: React.FC = () => {
                         </div>
                       </div>
                       
-                      <div className="text-right">
+                      <div className="text-right mt-2 sm:mt-0">
                         <div className="mb-2">
                           <div className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
                             {updatingItems.has(item.id) ? (
@@ -356,14 +356,14 @@ const SearchPage: React.FC = () => {
                             max={item.quantity}
                             value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : ''}
                             onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
-                            className="w-24 px-2 py-1 border border-gray-300 rounded text-right"
+                            className="w-full sm:w-24 px-2 py-1 border border-gray-300 rounded text-right"
                             disabled={updatingItems.has(item.id)}
                             placeholder="Qty to take"
                           />
                           <button
                             onClick={() => handleTakeQuantity(item)}
                             disabled={updatingItems.has(item.id) || !quantityInputs[item.id] || isNaN(Number(quantityInputs[item.id])) || Number(quantityInputs[item.id]) < 1 || Number(quantityInputs[item.id]) > item.quantity}
-                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            className="w-full sm:w-auto px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                           >
                             Update
                           </button>
