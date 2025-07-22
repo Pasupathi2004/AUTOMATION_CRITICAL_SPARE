@@ -118,28 +118,58 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                 )}
               </button>
               {showNotifications && (
-                <div className="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-80 bg-white rounded-lg shadow-lg border z-50 max-w-xs sm:max-w-none mx-auto sm:mx-0">
-                  <div className="p-4 border-b">
-                    <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      notifications.map((item, index) => (
-                        <div key={index} className="p-3 border-b last:border-b-0">
-                          <p className="font-medium text-gray-800">{item.name}</p>
-                          <p className="text-sm text-red-600">
-                            Low stock: {item.quantity} remaining
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Location: {item.rack}-{item.bin}
-                          </p>
+                <div className="z-50">
+                  {/* Mobile: fixed, centered overlay */}
+                  <div className="block sm:hidden fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center pt-20" onClick={() => setShowNotifications(false)}></div>
+                  <div className="block sm:hidden fixed top-20 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xs bg-white rounded-lg shadow-lg border z-50 p-4" onClick={e => e.stopPropagation()}>
+                    <div className="border-b pb-2 mb-2">
+                      <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((item, index) => (
+                          <div key={index} className="p-3 border-b last:border-b-0">
+                            <p className="font-medium text-gray-800">{item.name}</p>
+                            <p className="text-sm text-red-600">
+                              Low stock: {item.quantity} remaining
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Location: {item.rack}-{item.bin}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-4 text-center text-gray-500">
+                          No low stock alerts
                         </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-gray-500">
-                        No low stock alerts
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    <button className="mt-4 w-full bg-[#2E8B57] text-white rounded-lg py-2" onClick={() => setShowNotifications(false)}>Close</button>
+                  </div>
+                  {/* Desktop: right-aligned dropdown */}
+                  <div className="hidden sm:block absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-50">
+                    <div className="p-4 border-b">
+                      <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((item, index) => (
+                          <div key={index} className="p-3 border-b last:border-b-0">
+                            <p className="font-medium text-gray-800">{item.name}</p>
+                            <p className="text-sm text-red-600">
+                              Low stock: {item.quantity} remaining
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Location: {item.rack}-{item.bin}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-4 text-center text-gray-500">
+                          No low stock alerts
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

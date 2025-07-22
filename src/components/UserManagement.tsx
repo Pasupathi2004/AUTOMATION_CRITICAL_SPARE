@@ -176,7 +176,7 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+      <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 w-full">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center w-full">User Management</h1>
         <button
           onClick={() => setShowAddModal(true)}
@@ -197,7 +197,7 @@ const UserManagement: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+      <div className="bg-white rounded-lg shadow-md overflow-x-auto mt-4 w-full">
         <div className="p-6 border-b">
           <div className="flex items-center space-x-3">
             <Users className="text-[#2E8B57]" size={24} />
@@ -295,7 +295,7 @@ const UserManagement: React.FC = () => {
       {/* Add User Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-4 sm:p-6 border-b">
               <h3 className="text-lg font-medium text-gray-900">Add New User</h3>
             </div>
@@ -363,7 +363,7 @@ const UserManagement: React.FC = () => {
       {/* Edit Password Modal */}
       {showEditModal && editingUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-4 sm:p-6 border-b">
               <h3 className="text-lg font-medium text-gray-900">
                 Change Password for {editingUser.username}
