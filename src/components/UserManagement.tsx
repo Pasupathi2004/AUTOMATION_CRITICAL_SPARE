@@ -259,21 +259,21 @@ const UserManagement: React.FC = () => {
                       {safeFormatDate(user.createdAt)}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-2">
                         <button
                           onClick={() => openEditModal(user)}
-                          className="text-blue-600 hover:text-blue-900 p-1"
+                          className="text-blue-600 hover:text-blue-900 p-2 rounded-md w-full sm:w-auto text-center"
                           title="Change Password"
                         >
-                          <Edit size={16} />
+                          <Edit size={18} />
                         </button>
                         {user.id !== currentUser?.id && (
                           <button
                             onClick={() => handleDeleteUser(user.id)}
-                            className="text-red-600 hover:text-red-900 p-1"
+                            className="text-red-600 hover:text-red-900 p-2 rounded-md w-full sm:w-auto text-center"
                             title="Delete User"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={18} />
                           </button>
                         )}
                       </div>
