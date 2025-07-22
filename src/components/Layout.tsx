@@ -74,9 +74,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
       {/* Header */}
       <header className="bg-[#2E8B57] text-white shadow-lg w-full">
         <div className="px-2 sm:px-4 lg:px-8 w-full">
-          <div className="flex flex-row justify-between items-center h-16 w-full relative">
-            {/* Mobile menu button and logo/title */}
-            <div className="flex items-center flex-shrink-0">
+          <div className="flex flex-row items-center h-16 w-full relative">
+            {/* Mobile menu button */}
+            <div className="flex items-center flex-shrink-0 z-10">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 rounded-md hover:bg-[#236B45]"
@@ -88,68 +88,70 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
             <div className="flex-1 flex justify-center items-center absolute left-0 right-0 pointer-events-none">
               <h1 className="text-base sm:text-xl font-bold truncate max-w-[70vw] sm:max-w-none pointer-events-auto">Automation Inventory Manager</h1>
             </div>
-            {/* Right side: welcome and logout */}
-            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0 ml-auto">
-              {/* Socket.IO Connection Status */}
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                {isConnected ? (
-                  <Wifi size={16} className="text-green-300" />
-                ) : (
-                  <WifiOff size={16} className="text-red-300" />
-                )}
-                <span className="text-xs text-gray-300 hidden sm:inline">
-                  {isConnected ? 'Live' : 'Offline'}
-                </span>
-              </div>
-              {/* Notifications */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 rounded-md hover:bg-[#236B45]"
-                >
-                  <Bell size={20} />
-                  {notifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
-                      {notifications.length}
-                    </span>
-                  )}
-                </button>
-                {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-white rounded-lg shadow-lg border z-50">
-                    <div className="p-4 border-b">
-                      <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {notifications.length > 0 ? (
-                        notifications.map((item, index) => (
-                          <div key={index} className="p-3 border-b last:border-b-0">
-                            <p className="font-medium text-gray-800">{item.name}</p>
-                            <p className="text-sm text-red-600">
-                              Low stock: {item.quantity} remaining
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Location: {item.rack}-{item.bin}
-                            </p>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-4 text-center text-gray-500">
-                          No low stock alerts
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <span className="text-xs sm:text-sm truncate max-w-[30vw] sm:max-w-none text-center">Welcome, {user?.username}</span>
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center space-x-1 px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
-              >
-                <LogOut size={16} />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
+            {/* Empty right side for spacing on mobile */}
+            <div className="flex-shrink-0 ml-auto hidden sm:block" style={{ width: '200px' }}></div>
+          </div>
+          {/* Notification, welcome, and logout: below title on mobile, right on desktop */}
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-2 sm:mt-0 w-full">
+            {/* Socket.IO Connection Status */}
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              {isConnected ? (
+                <Wifi size={16} className="text-green-300" />
+              ) : (
+                <WifiOff size={16} className="text-red-300" />
+              )}
+              <span className="text-xs text-gray-300 hidden sm:inline">
+                {isConnected ? 'Live' : 'Offline'}
+              </span>
             </div>
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-md hover:bg-[#236B45]"
+              >
+                <Bell size={20} />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
+                    {notifications.length}
+                  </span>
+                )}
+              </button>
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-white rounded-lg shadow-lg border z-50">
+                  <div className="p-4 border-b">
+                    <h3 className="font-semibold text-gray-800">Low Stock Alerts</h3>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.map((item, index) => (
+                        <div key={index} className="p-3 border-b last:border-b-0">
+                          <p className="font-medium text-gray-800">{item.name}</p>
+                          <p className="text-sm text-red-600">
+                            Low stock: {item.quantity} remaining
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Location: {item.rack}-{item.bin}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">
+                        No low stock alerts
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <span className="text-xs sm:text-sm truncate max-w-[60vw] sm:max-w-none text-center">Welcome, {user?.username}</span>
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center space-x-1 px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
           </div>
         </div>
       </header>
