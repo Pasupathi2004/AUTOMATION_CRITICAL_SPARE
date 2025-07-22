@@ -93,31 +93,31 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
           </div>
           {/* Notification, welcome, and logout: below title on mobile, right on desktop */}
           <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-2 sm:mt-0 w-full">
-            {/* Socket.IO Connection Status */}
+              {/* Socket.IO Connection Status */}
             <div className="flex items-center space-x-1 sm:space-x-2">
-              {isConnected ? (
-                <Wifi size={16} className="text-green-300" />
-              ) : (
-                <WifiOff size={16} className="text-red-300" />
-              )}
-              <span className="text-xs text-gray-300 hidden sm:inline">
-                {isConnected ? 'Live' : 'Offline'}
-              </span>
-            </div>
-            {/* Notifications */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 rounded-md hover:bg-[#236B45]"
-              >
-                <Bell size={20} />
-                {notifications.length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
-                    {notifications.length}
-                  </span>
+                {isConnected ? (
+                  <Wifi size={16} className="text-green-300" />
+                ) : (
+                  <WifiOff size={16} className="text-red-300" />
                 )}
-              </button>
-              {showNotifications && (
+                <span className="text-xs text-gray-300 hidden sm:inline">
+                  {isConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
+              {/* Notifications */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 rounded-md hover:bg-[#236B45]"
+                >
+                  <Bell size={20} />
+                  {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
+                      {notifications.length}
+                    </span>
+                  )}
+                </button>
+                {showNotifications && (
                 <div className="z-50">
                   {/* Mobile: fixed, centered overlay */}
                   <div className="block sm:hidden fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center pt-20" onClick={() => setShowNotifications(false)}></div>
@@ -170,18 +170,18 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                         </div>
                       )}
                     </div>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
             <span className="text-xs sm:text-sm truncate max-w-[60vw] sm:max-w-none text-center">Welcome, {user?.username}</span>
-            <button
-              onClick={handleLogout}
+              <button
+                onClick={handleLogout}
               className="flex items-center justify-center space-x-1 px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
-            >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
+              >
+                <LogOut size={16} />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
           </div>
         </div>
       </header>

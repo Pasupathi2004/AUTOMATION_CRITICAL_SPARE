@@ -210,82 +210,82 @@ const UserManagement: React.FC = () => {
           <>
             {/* Desktop Table */}
             <div className="hidden sm:block overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created At
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center">
-                          <div className={`rounded-full p-2 ${
-                            user.role === 'admin' ? 'bg-red-100' : 'bg-blue-100'
-                          }`}>
-                            {user.role === 'admin' ? (
-                              <Shield className={`${user.role === 'admin' ? 'text-red-600' : 'text-blue-600'}`} size={16} />
-                            ) : (
-                              <UserIcon className="text-blue-600" size={16} />
-                            )}
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{user.username}</div>
-                            {user.id === currentUser?.id && (
-                              <div className="text-xs text-gray-500">(You)</div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          user.role === 'admin' 
-                            ? 'bg-red-100 text-red-800' 
-                            : 'bg-blue-100 text-blue-800'
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created At
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {users.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className={`rounded-full p-2 ${
+                          user.role === 'admin' ? 'bg-red-100' : 'bg-blue-100'
                         }`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {safeFormatDate(user.createdAt)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-2">
-                          <button
-                            onClick={() => openEditModal(user)}
-                            className="text-blue-600 hover:text-blue-900 p-2 rounded-md w-full sm:w-auto text-center"
-                            title="Change Password"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          {user.id !== currentUser?.id && (
-                            <button
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="text-red-600 hover:text-red-900 p-2 rounded-md w-full sm:w-auto text-center"
-                              title="Delete User"
-                            >
-                              <Trash2 size={18} />
-                            </button>
+                          {user.role === 'admin' ? (
+                            <Shield className={`${user.role === 'admin' ? 'text-red-600' : 'text-blue-600'}`} size={16} />
+                          ) : (
+                            <UserIcon className="text-blue-600" size={16} />
                           )}
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                          {user.id === currentUser?.id && (
+                            <div className="text-xs text-gray-500">(You)</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        user.role === 'admin' 
+                          ? 'bg-red-100 text-red-800' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {safeFormatDate(user.createdAt)}
+                    </td>
+                    <td className="px-6 py-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-2">
+                        <button
+                          onClick={() => openEditModal(user)}
+                            className="text-blue-600 hover:text-blue-900 p-2 rounded-md w-full sm:w-auto text-center"
+                          title="Change Password"
+                        >
+                            <Edit size={18} />
+                        </button>
+                        {user.id !== currentUser?.id && (
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                              className="text-red-600 hover:text-red-900 p-2 rounded-md w-full sm:w-auto text-center"
+                            title="Delete User"
+                          >
+                              <Trash2 size={18} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
             {/* Mobile Cards */}
             <div className="sm:hidden space-y-4">
               {users.map((user) => (
