@@ -74,18 +74,22 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
       {/* Header */}
       <header className="bg-[#2E8B57] text-white shadow-lg w-full">
         <div className="px-2 sm:px-4 lg:px-8 w-full">
-          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-2 sm:py-0 w-full">
-            <div className="flex items-center w-full sm:w-auto justify-between">
+          <div className="flex flex-row justify-between items-center h-16 w-full relative">
+            {/* Mobile menu button and logo/title */}
+            <div className="flex items-center flex-shrink-0">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 rounded-md hover:bg-[#236B45]"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <h1 className="ml-2 text-base sm:text-xl font-bold truncate max-w-[60vw] sm:max-w-none">Automation Inventory Manager</h1>
             </div>
-            
-            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 space-x-0 sm:space-x-4 mt-2 sm:mt-0 w-full sm:w-auto">
+            {/* Centered title */}
+            <div className="flex-1 flex justify-center items-center absolute left-0 right-0 pointer-events-none">
+              <h1 className="text-base sm:text-xl font-bold truncate max-w-[70vw] sm:max-w-none pointer-events-auto">Automation Inventory Manager</h1>
+            </div>
+            {/* Right side: welcome and logout */}
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0 ml-auto">
               {/* Socket.IO Connection Status */}
               <div className="flex items-center space-x-1 sm:space-x-2">
                 {isConnected ? (
@@ -97,7 +101,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                   {isConnected ? 'Live' : 'Offline'}
                 </span>
               </div>
-
               {/* Notifications */}
               <div className="relative">
                 <button
@@ -111,7 +114,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                     </span>
                   )}
                 </button>
-                
                 {showNotifications && (
                   <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-white rounded-lg shadow-lg border z-50">
                     <div className="p-4 border-b">
@@ -139,11 +141,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                   </div>
                 )}
               </div>
-              
-              <span className="text-xs sm:text-sm truncate max-w-[80vw] sm:max-w-none text-center w-full sm:w-auto">Welcome, {user?.username}</span>
+              <span className="text-xs sm:text-sm truncate max-w-[30vw] sm:max-w-none text-center">Welcome, {user?.username}</span>
               <button
                 onClick={handleLogout}
-                className="flex items-center justify-center space-x-1 w-full sm:w-auto px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
+                className="flex items-center justify-center space-x-1 px-2 py-2 sm:px-3 rounded-md hover:bg-[#236B45]"
               >
                 <LogOut size={16} />
                 <span className="hidden sm:inline">Logout</span>
