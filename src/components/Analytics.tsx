@@ -173,7 +173,7 @@ const Analytics: React.FC = () => {
     // Transactions Sheet (no Transaction ID)
     if (filteredTransactions.length > 0) {
       const transactionsData = [
-        ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+        ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
       ];
       filteredTransactions.forEach(transaction => {
         const action = transaction.type === 'added' ? 'Stock Added' : 
@@ -187,7 +187,8 @@ const Analytics: React.FC = () => {
           transaction.quantity?.toString() ?? '',
           transaction.user ?? '',
           transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-          action
+          action,
+          transaction.remarks || ''
         ]);
       });
       const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
@@ -229,7 +230,7 @@ const Analytics: React.FC = () => {
       // Recent Transactions Sheet (with item details, no Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionsData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
@@ -245,7 +246,8 @@ const Analytics: React.FC = () => {
               (transaction.quantity || 0).toString(),
               transaction.user || '',
               transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-              action
+              action,
+              transaction.remarks || ''
             ]);
           }
         });
@@ -259,7 +261,7 @@ const Analytics: React.FC = () => {
       // Transaction History Sheet (without Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionHistoryData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
@@ -275,7 +277,8 @@ const Analytics: React.FC = () => {
               (transaction.quantity || 0).toString(),
               transaction.user || '',
               transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-              action
+              action,
+              transaction.remarks || ''
             ]);
           }
         });

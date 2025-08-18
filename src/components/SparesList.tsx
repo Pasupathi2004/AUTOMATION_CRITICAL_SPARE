@@ -38,6 +38,7 @@ const SparesList: React.FC = () => {
     quantity: '',
     minimumQuantity: ''
   });
+  const [remarks, setRemarks] = useState<string>('');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -140,6 +141,7 @@ const SparesList: React.FC = () => {
       minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : ''
     });
     setShowEditModal(true);
+    setRemarks('');
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -159,7 +161,8 @@ const SparesList: React.FC = () => {
         body: JSON.stringify({
           ...formData,
           quantity: parseInt(formData.quantity),
-          updatedBy: user?.username
+          updatedBy: user?.username,
+          remarks
         }),
       });
       const data = await response.json();
@@ -604,6 +607,18 @@ const SparesList: React.FC = () => {
                 />
               </div>
               
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                <textarea
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+                  rows={3}
+                  placeholder="Enter remarks for this change (required)"
+                  required
+                />
+              </div>
+
               <div className="mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   type="button"
@@ -614,7 +629,8 @@ const SparesList: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45]"
+                  disabled={!remarks.trim()}
+                  className={`w-full sm:w-auto px-4 py-2 rounded-lg ${remarks.trim() ? 'bg-[#2E8B57] text-white hover:bg-[#236B45]' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
                 >
                   Update Item
                 </button>

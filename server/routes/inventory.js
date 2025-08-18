@@ -84,7 +84,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       type: transactionType,
       quantity: Math.abs(change),
       user: req.user?.username || 'system',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      remarks: typeof req.body.remarks === 'string' ? req.body.remarks : ''
     });
     await transaction.save();
     // Emit socket event for real-time updates

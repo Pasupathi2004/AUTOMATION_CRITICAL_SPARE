@@ -35,6 +35,7 @@ export interface Transaction {
   specification?: string;
   rack?: string;
   bin?: string;
+  remarks?: string;
 }
 
 export interface Analytics {
