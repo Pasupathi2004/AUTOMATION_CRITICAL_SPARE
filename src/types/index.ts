@@ -23,12 +23,18 @@ export interface InventoryItem {
 
 export interface Transaction {
   id: string;
-  itemId: string;
+  itemId?: string;
   itemName: string;
   type: 'added' | 'taken' | 'deleted';
   quantity: number;
   user: string;
   timestamp: string;
+  // Optional enriched fields from inventory for UI/export convenience
+  make?: string;
+  model?: string;
+  specification?: string;
+  rack?: string;
+  bin?: string;
 }
 
 export interface Analytics {

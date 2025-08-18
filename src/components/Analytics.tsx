@@ -224,10 +224,10 @@ const Analytics: React.FC = () => {
       const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
       XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
 
-      // Recent Transactions Sheet
+      // Recent Transactions Sheet (with item details)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionsData = [
-          ['Transaction ID', 'Item Name', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+          ['Transaction ID', 'Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
@@ -235,8 +235,11 @@ const Analytics: React.FC = () => {
             const action = transaction.type === 'added' ? 'Stock Added' : 
                           transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
             transactionsData.push([
-              transaction.id.toString() || '',
+              transaction.id?.toString() || '',
               transaction.itemName || '',
+              transaction.specification || '',
+              transaction.make || '',
+              transaction.model || '',
               (transaction.type || '').toUpperCase(),
               (transaction.quantity || 0).toString(),
               transaction.user || '',
@@ -252,30 +255,26 @@ const Analytics: React.FC = () => {
         }
       }
 
-      // Transaction History Sheet (Detailed)
+      // Transaction History Sheet (without Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionHistoryData = [
-          ['Transaction ID', 'Item ID', 'Item Name', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Previous Quantity', 'New Quantity']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
-          if (transaction && transaction.id) {
+          if (transaction) {
             const action = transaction.type === 'added' ? 'Stock Added' : 
                           transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
-            
-            // For transaction history, we'll show the item ID and basic transaction info
-            // Detailed item info (make, model, spec) would need to be fetched separately
             transactionHistoryData.push([
-              transaction.id.toString() || '',
-              transaction.itemId || '',
               transaction.itemName || '',
+              transaction.specification || '',
+              transaction.make || '',
+              transaction.model || '',
               (transaction.type || '').toUpperCase(),
               (transaction.quantity || 0).toString(),
               transaction.user || '',
               transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-              action,
-              'N/A', // Previous quantity not available in current Transaction type
-              'N/A'  // New quantity not available in current Transaction type
+              action
             ]);
           }
         });
@@ -575,6 +574,9 @@ const Analytics: React.FC = () => {
                       }`}>
                         {transaction.type}
                       </span>
+                    </div>
+                    <div className="mt-1 text-sm text-gray-700">
+                      <div className="text-gray-600">{transaction.make} {transaction.model} · {transaction.specification}</div>
                     </div>
                     <div className="mt-2 flex items-center space-x-4 text-sm text-gray-600">
                       <div>Quantity: {transaction.quantity}</div>

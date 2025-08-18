@@ -21,6 +21,30 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   });
 
+  // Build fast lookup for inventory by name
+  const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
+
+  // Enrich recent transactions with item details
+  const enrichedRecentTransactions = transactions
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 10)
+    .map((t) => {
+      const item = inventoryByName.get(t.itemName);
+      return {
+        id: t._id?.toString?.() || undefined,
+        itemName: t.itemName,
+        type: t.type,
+        quantity: t.quantity,
+        user: t.user,
+        timestamp: t.timestamp,
+        make: item?.make || '',
+        model: item?.model || '',
+        specification: item?.specification || '',
+        rack: item?.rack || '',
+        bin: item?.bin || ''
+      };
+    });
+
   const analytics = {
     totalItems: inventory.length,
     lowStockItems: inventory.filter(i => i.quantity <= i.minimumQuantity).length,
@@ -32,9 +56,7 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
       .filter(t => t.type === 'added')
       .reduce((sum, t) => sum + t.quantity, 0),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
-    recentTransactions: transactions
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 10),
+    recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity)
   };
 
@@ -57,6 +79,30 @@ router.get('/dashboard', async (req, res) => {
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   });
 
+  // Build fast lookup for inventory by name
+  const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
+
+  // Enrich recent transactions with item details
+  const enrichedRecentTransactions = transactions
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 10)
+    .map((t) => {
+      const item = inventoryByName.get(t.itemName);
+      return {
+        id: t._id?.toString?.() || undefined,
+        itemName: t.itemName,
+        type: t.type,
+        quantity: t.quantity,
+        user: t.user,
+        timestamp: t.timestamp,
+        make: item?.make || '',
+        model: item?.model || '',
+        specification: item?.specification || '',
+        rack: item?.rack || '',
+        bin: item?.bin || ''
+      };
+    });
+
   const analytics = {
     totalItems: inventory.length,
     lowStockItems: inventory.filter(i => i.quantity <= i.minimumQuantity).length,
@@ -64,7 +110,7 @@ router.get('/dashboard', async (req, res) => {
     itemsConsumed: monthlyTransactions.filter(t => t.type === 'taken').reduce((sum, t) => sum + t.quantity, 0),
     itemsAdded: monthlyTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + t.quantity, 0),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
-    recentTransactions: transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10),
+    recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity)
   };
 
