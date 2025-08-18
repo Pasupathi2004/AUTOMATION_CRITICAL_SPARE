@@ -567,6 +567,11 @@ const Analytics: React.FC = () => {
                         <span>{safeFormatDate(transaction.timestamp, 'MMM dd, yyyy HH:mm')}</span>
                       </div>
                     </div>
+                    {transaction.remarks && (
+                      <div className="mt-1 text-sm text-gray-600">
+                        <span className="font-medium">Remarks:</span> {transaction.remarks}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
