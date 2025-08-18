@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { format } from 'date-fns';
 import { API_ENDPOINTS } from '../config/api';
+import * as XLSX from 'xlsx';
 
 // Helper function for safe date formatting
 const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
@@ -41,7 +42,10 @@ const SparesList: React.FC = () => {
 
   useEffect(() => {
     fetchInventory();
-  }, []);
+    // Debug user role
+    console.log('Current user:', user);
+    console.log('User role:', user?.role);
+  }, [user]);
 
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -231,6 +235,40 @@ const SparesList: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const exportToExcel = () => {
+    try {
+      const headers = [
+        'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
+        'Quantity', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+      ];
+      
+      const excelData = inventory.map(item => [
+        item.id,
+        item.name,
+        item.make,
+        item.model,
+        item.specification,
+        item.rack,
+        item.bin,
+        item.quantity,
+        getStockStatus(item.quantity, item.minimumQuantity).status,
+        safeFormatDate(item.createdAt),
+        safeFormatDate(item.updatedAt),
+        item.updatedBy
+      ]);
+
+      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...excelData]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventory');
+      
+      XLSX.writeFile(workbook, `inventory_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      // Fallback to CSV if Excel export fails
+      exportToCSV();
+    }
+  };
+
   const getStockStatus = (quantity: number, minimumQuantity: number = 5) => {
     if (quantity === 0) return { status: 'Out of Stock', color: 'text-red-600 bg-red-100' };
     if (quantity <= minimumQuantity) return { status: 'Low Stock', color: 'text-orange-600 bg-orange-100' };
@@ -267,11 +305,11 @@ const SparesList: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Spares List</h1>
         <button
-          onClick={exportToCSV}
+          onClick={exportToExcel}
           className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors mt-2 sm:mt-0"
         >
           <Download size={20} />
-          <span>Export CSV</span>
+          <span>Export Excel</span>
         </button>
       </div>
 
@@ -419,14 +457,16 @@ const SparesList: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t border-gray-200">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit Item"
-                    >
-                      <Edit size={16} />
-                      <span className="text-sm">Edit</span>
-                    </button>
+                    {user?.role === 'admin' && (
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edit Item"
+                      >
+                        <Edit size={16} />
+                        <span className="text-sm">Edit</span>
+                      </button>
+                    )}
                     {user?.role === 'admin' && (
                       <button
                         onClick={() => handleDelete(item.id)}

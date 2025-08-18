@@ -248,7 +248,41 @@ const Analytics: React.FC = () => {
 
         if (transactionsData.length > 1) { // Only add sheet if there's data
           const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
-          XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Transactions');
+          XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Recent Transactions');
+        }
+      }
+
+      // Transaction History Sheet (Detailed)
+      if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
+        const transactionHistoryData = [
+          ['Transaction ID', 'Item ID', 'Item Name', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Previous Quantity', 'New Quantity']
+        ];
+
+        analytics.recentTransactions.forEach(transaction => {
+          if (transaction && transaction.id) {
+            const action = transaction.type === 'added' ? 'Stock Added' : 
+                          transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
+            
+            // For transaction history, we'll show the item ID and basic transaction info
+            // Detailed item info (make, model, spec) would need to be fetched separately
+            transactionHistoryData.push([
+              transaction.id.toString() || '',
+              transaction.itemId || '',
+              transaction.itemName || '',
+              (transaction.type || '').toUpperCase(),
+              (transaction.quantity || 0).toString(),
+              transaction.user || '',
+              transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+              action,
+              'N/A', // Previous quantity not available in current Transaction type
+              'N/A'  // New quantity not available in current Transaction type
+            ]);
+          }
+        });
+
+        if (transactionHistoryData.length > 1) { // Only add sheet if there's data
+          const transactionHistorySheet = XLSX.utils.aoa_to_sheet(transactionHistoryData);
+          XLSX.utils.book_append_sheet(workbook, transactionHistorySheet, 'Transaction History');
         }
       }
 
@@ -280,6 +314,34 @@ const Analytics: React.FC = () => {
           const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData);
           XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Low Stock Alerts');
         }
+      }
+
+      // Comprehensive Inventory Details Sheet
+      if (analytics.totalItems && analytics.totalItems > 0) {
+        const inventoryDetailsData = [
+          ['Item ID', 'Item Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 'Current Quantity', 'Minimum Quantity', 'Stock Status', 'Last Updated', 'Updated By', 'Created At']
+        ];
+
+        // We need to get the full inventory data for this sheet
+        // For now, we'll create a placeholder. In a real implementation, you'd fetch the full inventory
+        inventoryDetailsData.push([
+          'Note: Full inventory details require additional API call',
+          'To get complete inventory with all details,',
+          'implement a separate inventory fetch endpoint',
+          'and include it in the analytics response',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          ''
+        ]);
+
+        const inventoryDetailsSheet = XLSX.utils.aoa_to_sheet(inventoryDetailsData);
+        XLSX.utils.book_append_sheet(workbook, inventoryDetailsSheet, 'Inventory Details');
       }
 
       // Export the workbook
