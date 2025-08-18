@@ -18,6 +18,7 @@ const SearchPage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const recognition = useRef<any>(null);
   const [quantityInputs, setQuantityInputs] = useState<{ [key: string]: string }>({});
+  const [remarksInputs, setRemarksInputs] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     fetchInventory();
@@ -158,7 +159,8 @@ const SearchPage: React.FC = () => {
         body: JSON.stringify({
           quantity: newQuantity,
           minimumQuantity: item ? item.minimumQuantity : 0,
-          updatedBy: user?.username
+          updatedBy: user?.username,
+          remarks: remarksInputs[itemId] || ''
         }),
       });
       const data = await response.json();
@@ -203,6 +205,11 @@ const SearchPage: React.FC = () => {
       setTimeout(() => setSuccessMessage(null), 3000);
       return;
     }
+    if (!remarksInputs[item.id] || !remarksInputs[item.id].trim()) {
+      setSuccessMessage('Please enter remarks for this update.');
+      setTimeout(() => setSuccessMessage(null), 3000);
+      return;
+    }
     handleQuantityUpdate(item.id, newQuantity);
   };
 
@@ -211,6 +218,10 @@ const SearchPage: React.FC = () => {
     const takeQty = parseInt(inputValue, 10);
     if (isNaN(takeQty) || takeQty < 1 || takeQty > item.quantity) {
       alert('Please enter a valid quantity to take.');
+      return;
+    }
+    if (!remarksInputs[item.id] || !remarksInputs[item.id].trim()) {
+      alert('Please enter remarks before updating.');
       return;
     }
     handleQuantityUpdate(item.id, item.quantity - takeQty);
@@ -361,9 +372,16 @@ const SearchPage: React.FC = () => {
                             disabled={updatingItems.has(item.id)}
                             placeholder="Qty to take"
                           />
+                          <textarea
+                            value={remarksInputs[item.id] || ''}
+                            onChange={(e) => setRemarksInputs(prev => ({ ...prev, [item.id]: e.target.value }))}
+                            className="w-full sm:w-48 px-2 py-1 border border-gray-300 rounded text-left"
+                            placeholder="Remarks (required)"
+                            rows={2}
+                          />
                           <button
                             onClick={() => handleTakeQuantity(item)}
-                            disabled={updatingItems.has(item.id) || !quantityInputs[item.id] || isNaN(Number(quantityInputs[item.id])) || Number(quantityInputs[item.id]) < 1 || Number(quantityInputs[item.id]) > item.quantity}
+                            disabled={updatingItems.has(item.id) || !quantityInputs[item.id] || isNaN(Number(quantityInputs[item.id])) || Number(quantityInputs[item.id]) < 1 || Number(quantityInputs[item.id]) > item.quantity || !remarksInputs[item.id] || !remarksInputs[item.id].trim()}
                             className="w-full sm:w-auto px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                           >
                             Update
