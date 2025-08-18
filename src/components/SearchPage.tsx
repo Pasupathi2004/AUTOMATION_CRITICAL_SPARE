@@ -167,6 +167,9 @@ const SearchPage: React.FC = () => {
       if (response.ok && data.success) {
         setSuccessMessage('Quantity updated successfully!');
         fetchInventory();
+        // Clear per-item inputs after successful update
+        setQuantityInputs(prev => ({ ...prev, [itemId]: '' }));
+        setRemarksInputs(prev => ({ ...prev, [itemId]: '' }));
       } else {
         setSuccessMessage(data.message || 'Failed to update quantity.');
       }
