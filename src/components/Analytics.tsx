@@ -170,17 +170,19 @@ const Analytics: React.FC = () => {
     ];
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
     XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-    // Transactions Sheet
+    // Transactions Sheet (no Transaction ID)
     if (filteredTransactions.length > 0) {
       const transactionsData = [
-        ['Transaction ID', 'Item Name', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+        ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
       ];
       filteredTransactions.forEach(transaction => {
         const action = transaction.type === 'added' ? 'Stock Added' : 
                       transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
         transactionsData.push([
-          transaction.id?.toString() ?? '',
           transaction.itemName ?? '',
+          transaction.specification ?? '',
+          transaction.make ?? '',
+          transaction.model ?? '',
           (transaction.type ?? '').toUpperCase(),
           transaction.quantity?.toString() ?? '',
           transaction.user ?? '',
@@ -224,18 +226,17 @@ const Analytics: React.FC = () => {
       const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
       XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
 
-      // Recent Transactions Sheet (with item details)
+      // Recent Transactions Sheet (with item details, no Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionsData = [
-          ['Transaction ID', 'Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
-          if (transaction && transaction.id) {
+          if (transaction) {
             const action = transaction.type === 'added' ? 'Stock Added' : 
                           transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
             transactionsData.push([
-              transaction.id?.toString() || '',
               transaction.itemName || '',
               transaction.specification || '',
               transaction.make || '',
@@ -315,33 +316,7 @@ const Analytics: React.FC = () => {
         }
       }
 
-      // Comprehensive Inventory Details Sheet
-      if (analytics.totalItems && analytics.totalItems > 0) {
-        const inventoryDetailsData = [
-          ['Item ID', 'Item Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 'Current Quantity', 'Minimum Quantity', 'Stock Status', 'Last Updated', 'Updated By', 'Created At']
-        ];
-
-        // We need to get the full inventory data for this sheet
-        // For now, we'll create a placeholder. In a real implementation, you'd fetch the full inventory
-        inventoryDetailsData.push([
-          'Note: Full inventory details require additional API call',
-          'To get complete inventory with all details,',
-          'implement a separate inventory fetch endpoint',
-          'and include it in the analytics response',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          ''
-        ]);
-
-        const inventoryDetailsSheet = XLSX.utils.aoa_to_sheet(inventoryDetailsData);
-        XLSX.utils.book_append_sheet(workbook, inventoryDetailsSheet, 'Inventory Details');
-      }
+      // Removed Inventory Details sheet per requirement
 
       // Export the workbook
       XLSX.writeFile(workbook, `inventory_report_${timestamp}.xlsx`);
