@@ -21,6 +21,7 @@ const isValidObjectId = (id: string) => /^[a-fA-F0-9]{24}$/.test(id);
 
 const SparesList: React.FC = () => {
   const { user, token } = useAuth();
+  const isAdmin = (user?.role || '').toString().trim().toLowerCase() === 'admin';
   const { socket, isConnected } = useSocket();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>([]);
@@ -460,7 +461,7 @@ const SparesList: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t border-gray-200">
-                    {user?.role === 'admin' && (
+                    {isAdmin && (
                       <button
                         onClick={() => handleEdit(item)}
                         className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -470,7 +471,7 @@ const SparesList: React.FC = () => {
                         <span className="text-sm">Edit</span>
                       </button>
                     )}
-                    {user?.role === 'admin' && (
+                    {isAdmin && (
                       <button
                         onClick={() => handleDelete(item.id)}
                         className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
