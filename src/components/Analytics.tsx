@@ -197,84 +197,102 @@ const Analytics: React.FC = () => {
   };
 
   const generateExcelReport = () => {
-    if (!analytics) return;
-
-    const workbook = XLSX.utils.book_new();
-    const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm');
-
-    // Summary Sheet
-    const summaryData = [
-      ['Inventory Management System - Analytics Report'],
-      ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
-      [''],
-      ['Metric', 'Value'],
-      ['Total Items', analytics.totalItems.toString()],
-      ['Low Stock Items', analytics.lowStockItems.toString()],
-      ['Total Transactions', analytics.totalTransactions.toString()],
-      ['Items Consumed', analytics.itemsConsumed.toString()],
-      ['Items Added', analytics.itemsAdded.toString()],
-      ['Active Users', analytics.activeUsers.toString()]
-    ];
-
-    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-
-    // Recent Transactions Sheet with only the requested columns
-    if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
-      const transactionsData = [
-        ['Transaction ID', 'Item Name', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
-      ];
-
-      analytics.recentTransactions.forEach(transaction => {
-        const action = transaction.type === 'added' ? 'Stock Added' : 
-                      transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
-        transactionsData.push([
-          transaction.id?.toString() ?? '',
-          transaction.itemName ?? '',
-          (transaction.type ?? '').toUpperCase(),
-          transaction.quantity?.toString() ?? '',
-          transaction.user ?? '',
-          transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-          action
-        ]);
-      });
-
-      const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
-      XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Transactions');
+    if (!analytics) {
+      setSuccessMessage('No analytics data available. Please try again.');
+      setTimeout(() => setSuccessMessage(null), 3000);
+      return;
     }
 
-    // Low Stock Alerts Sheet
-    if (analytics.lowStockAlerts && analytics.lowStockAlerts.length > 0) {
-      const lowStockData = [
-        ['Item ID', 'Item Name', 'Make', 'Model', 'Specification', 'Current Quantity', 'Location', 'Last Updated', 'Updated By', 'Status']
+    try {
+      const workbook = XLSX.utils.book_new();
+      const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm');
+
+      // Summary Sheet
+      const summaryData = [
+        ['Inventory Management System - Analytics Report'],
+        ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+        [''],
+        ['Metric', 'Value'],
+        ['Total Items', (analytics.totalItems || 0).toString()],
+        ['Low Stock Items', (analytics.lowStockItems || 0).toString()],
+        ['Total Transactions', (analytics.totalTransactions || 0).toString()],
+        ['Items Consumed', (analytics.itemsConsumed || 0).toString()],
+        ['Items Added', (analytics.itemsAdded || 0).toString()],
+        ['Active Users', (analytics.activeUsers || 0).toString()]
       ];
 
-      analytics.lowStockAlerts.forEach(item => {
-        const status = item.quantity === 0 ? 'Out of Stock' : 'Low Stock';
-        lowStockData.push([
-          item.id.toString(),
-          item.name,
-          item.make,
-          item.model,
-          item.specification,
-          item.quantity.toString(),
-          `Row ${item.rack} - Column ${item.bin}`,
-          new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-          item.updatedBy,
-          status
-        ]);
-      });
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
 
-      const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData);
-      XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Low Stock Alerts');
+      // Recent Transactions Sheet
+      if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
+        const transactionsData = [
+          ['Transaction ID', 'Item Name', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action']
+        ];
+
+        analytics.recentTransactions.forEach(transaction => {
+          if (transaction && transaction.id) {
+            const action = transaction.type === 'added' ? 'Stock Added' : 
+                          transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
+            transactionsData.push([
+              transaction.id.toString() || '',
+              transaction.itemName || '',
+              (transaction.type || '').toUpperCase(),
+              (transaction.quantity || 0).toString(),
+              transaction.user || '',
+              transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+              action
+            ]);
+          }
+        });
+
+        if (transactionsData.length > 1) { // Only add sheet if there's data
+          const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
+          XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Transactions');
+        }
+      }
+
+      // Low Stock Alerts Sheet
+      if (analytics.lowStockAlerts && analytics.lowStockAlerts.length > 0) {
+        const lowStockData = [
+          ['Item ID', 'Item Name', 'Make', 'Model', 'Specification', 'Current Quantity', 'Location', 'Last Updated', 'Updated By', 'Status']
+        ];
+
+        analytics.lowStockAlerts.forEach(item => {
+          if (item && item.id) {
+            const status = item.quantity === 0 ? 'Out of Stock' : 'Low Stock';
+            lowStockData.push([
+              item.id.toString() || '',
+              item.name || '',
+              item.make || '',
+              item.model || '',
+              item.specification || '',
+              (item.quantity || 0).toString(),
+              `Row ${item.rack || ''} - Column ${item.bin || ''}`,
+              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+              item.updatedBy || '',
+              status
+            ]);
+          }
+        });
+
+        if (lowStockData.length > 1) { // Only add sheet if there's data
+          const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData);
+          XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Low Stock Alerts');
+        }
+      }
+
+      // Export the workbook
+      XLSX.writeFile(workbook, `inventory_report_${timestamp}.xlsx`);
+      
+      // Show success message
+      setSuccessMessage('Excel report generated successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (error) {
+      console.error('Error generating Excel report:', error);
+      setSuccessMessage('Error generating Excel report. Please try again.');
+      setTimeout(() => setSuccessMessage(null), 3000);
     }
-
-    // Export the workbook
-    XLSX.writeFile(workbook, `inventory_report_${timestamp}.xlsx`);
-    
-    // Show success message
-    setSuccessMessage('Excel report generated successfully!');
-    setTimeout(() => setSuccessMessage(null), 3000);
   };
 
   // Add data integrity check
