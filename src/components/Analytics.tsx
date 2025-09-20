@@ -551,7 +551,7 @@ const Analytics: React.FC = () => {
           Math.max(0, (analytics?.totalItems || 0) - (analytics?.lowStockItems || 0) - Math.floor((analytics?.totalItems || 0) * 0.6)),
           Math.floor((analytics?.totalItems || 0) * 0.6)
         ],
-        backgroundColor: ['#EF4444', '#F97316', '#F59E0B', '#10B981'],
+        backgroundColor: ['#DC2626', '#EA580C', '#D97706', '#059669'],
         borderWidth: 0,
       },
     ],
@@ -563,7 +563,7 @@ const Analytics: React.FC = () => {
       {
         label: 'Quantity',
         data: [analytics?.itemsAdded || 0, analytics?.itemsConsumed || 0],
-        backgroundColor: ['#10B981', '#3B82F6'],
+        backgroundColor: ['#059669', '#DC2626'],
         borderRadius: 6,
       },
     ],
@@ -634,10 +634,10 @@ const Analytics: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <div className="bg-blue-100 rounded-lg p-3">
-              <Package className="text-blue-600" size={24} />
+            <div className="bg-slate-100 rounded-lg p-3">
+              <Package className="text-slate-600" size={24} />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Items</p>
@@ -646,10 +646,10 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <div className="bg-red-100 rounded-lg p-3">
-              <TrendingUp className="text-red-600" size={24} />
+            <div className="bg-orange-100 rounded-lg p-3">
+              <TrendingUp className="text-orange-600" size={24} />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
@@ -658,10 +658,10 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <div className="bg-green-100 rounded-lg p-3">
-              <Activity className="text-green-600" size={24} />
+            <div className="bg-emerald-100 rounded-lg p-3">
+              <Activity className="text-emerald-600" size={24} />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Monthly Transactions</p>
@@ -675,8 +675,8 @@ const Analytics: React.FC = () => {
           onClick={() => setShowActiveUsersModal(true)}
         >
           <div className="flex items-center">
-            <div className="bg-purple-100 rounded-lg p-3">
-              <Users className="text-purple-600" size={24} />
+            <div className="bg-indigo-100 rounded-lg p-3">
+              <Users className="text-indigo-600" size={24} />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active Users</p>
@@ -736,9 +736,9 @@ const Analytics: React.FC = () => {
                   {/* Status Indicator */}
                   <div className="flex-shrink-0">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
-                      transaction.type === 'added' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                      transaction.type === 'taken' ? 'bg-gradient-to-br from-blue-400 to-blue-600' : 
-                      'bg-gradient-to-br from-red-400 to-red-600'
+                      transaction.type === 'added' ? 'bg-gradient-to-br from-emerald-500 to-emerald-700' :
+                      transaction.type === 'taken' ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 
+                      'bg-gradient-to-br from-orange-500 to-orange-700'
                     }`}>
                       <span className="text-white font-bold text-lg">
                         {transaction.type === 'added' ? '+' : transaction.type === 'taken' ? '-' : '↻'}
@@ -755,9 +755,9 @@ const Analytics: React.FC = () => {
                             {transaction.itemName}
                           </h4>
                           <span className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
-                            transaction.type === 'added' ? 'bg-green-100 text-green-800 border border-green-200' :
-                            transaction.type === 'taken' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 
-                            'bg-red-100 text-red-800 border border-red-200'
+                            transaction.type === 'added' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                            transaction.type === 'taken' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 
+                            'bg-orange-100 text-orange-800 border border-orange-200'
                           }`}>
                             {transaction.type.toUpperCase()}
                           </span>
@@ -829,21 +829,101 @@ const Analytics: React.FC = () => {
       {/* Low Stock Alerts */}
       {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
         <div className="bg-white rounded-lg shadow-md">
-          <div className="p-4 sm:p-6 border-b">
-            <h3 className="text-lg font-semibold text-gray-900 text-red-600">Low Stock Alerts</h3>
+          <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-red-50 to-orange-50">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Low Stock Alerts</h3>
+                <p className="text-sm text-gray-600">
+                  {analytics.lowStockAlerts.length} item{analytics.lowStockAlerts.length !== 1 ? 's' : ''} need attention
+                </p>
+              </div>
+            </div>
           </div>
           <div className="divide-y divide-gray-200">
             {analytics.lowStockAlerts.map((item) => (
-              <div key={item.id} className="p-4 sm:p-6 hover:bg-red-50">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-gray-900">{item.name}</h4>
-                    <p className="text-sm text-gray-600">{item.make} - {item.model}</p>
-                    <p className="text-sm text-gray-500">Location: Row {item.rack} - Column {item.bin}</p>
+              <div key={item.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all duration-200 group">
+                <div className="flex items-start space-x-4">
+                  {/* Status Indicator */}
+                  <div className="flex-shrink-0">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
+                      item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
+                      item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
+                      'bg-gradient-to-br from-amber-500 to-amber-700'
+                    }`}>
+                      <span className="text-white font-bold text-lg">
+                        {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Item Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h4 className="font-semibold text-gray-900 group-hover:text-red-900 transition-colors">
+                            {item.name}
+                          </h4>
+                          <span className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
+                            item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
+                            item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                            'bg-amber-100 text-amber-800 border border-amber-200'
+                          }`}>
+                            {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
+                          </span>
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 mb-3">
+                          <div className="font-medium">{item.make} {item.model}</div>
+                          <div className="text-gray-500">{item.specification}</div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <span className="font-medium">Qty: {item.quantity}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Package size={16} className="text-gray-400" />
+                            <span>Row {item.rack} - Column {item.bin}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Calendar size={16} className="text-gray-400" />
+                            <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
+                          </div>
+                        </div>
+
+                        {item.updatedBy && (
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border-l-4 border-red-200">
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium text-gray-900">Last Updated by:</span> {item.updatedBy}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quantity Display */}
                   <div className="text-right">
-                    <div className="text-lg font-bold text-red-600">{item.quantity}</div>
+                    <div className={`text-2xl font-bold ${
+                      item.quantity === 0 ? 'text-red-600' :
+                      item.quantity <= 2 ? 'text-orange-600' :
+                      'text-amber-600'
+                    }`}>
+                      {item.quantity}
+                    </div>
                     <div className="text-sm text-gray-600">remaining</div>
+                    <div className={`text-xs font-medium mt-1 ${
+                      item.quantity === 0 ? 'text-red-600' :
+                      item.quantity <= 2 ? 'text-orange-600' :
+                      'text-amber-600'
+                    }`}>
+                      {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
+                    </div>
                   </div>
                 </div>
               </div>
