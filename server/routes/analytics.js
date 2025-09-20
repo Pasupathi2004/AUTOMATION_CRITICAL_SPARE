@@ -24,10 +24,9 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   // Build fast lookup for inventory by name
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
 
-  // Enrich recent transactions with item details
-  const enrichedRecentTransactions = transactions
+  // Enrich all monthly transactions with item details
+  const enrichedRecentTransactions = monthlyTransactions
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .slice(0, 10)
     .map((t) => {
       const item = inventoryByName.get(t.itemName);
       return {
@@ -83,10 +82,9 @@ router.get('/dashboard', async (req, res) => {
   // Build fast lookup for inventory by name
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
 
-  // Enrich recent transactions with item details
-  const enrichedRecentTransactions = transactions
+  // Enrich all monthly transactions with item details
+  const enrichedRecentTransactions = monthlyTransactions
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .slice(0, 10)
     .map((t) => {
       const item = inventoryByName.get(t.itemName);
       return {

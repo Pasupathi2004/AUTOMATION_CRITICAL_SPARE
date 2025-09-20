@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet } from 'lucide-react';
+import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp } from 'lucide-react';
 import { Analytics as AnalyticsType } from '../types';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +32,7 @@ const Analytics: React.FC = () => {
   const [storageMB, setStorageMB] = useState<number | null>(null);
   const [integrity, setIntegrity] = useState<any>(null);
   const [storage, setStorage] = useState<any>(null);
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -39,7 +40,34 @@ const Analytics: React.FC = () => {
     fetchStorageMB();
     checkDataIntegrity();
     checkStorage();
+    
+    // Check if we need to reset monthly data
+    checkMonthlyReset();
   }, []);
+
+  const checkMonthlyReset = () => {
+    const now = new Date();
+    const lastReset = localStorage.getItem('lastMonthlyReset');
+    
+    if (lastReset) {
+      const lastResetDate = new Date(lastReset);
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const lastResetMonth = lastResetDate.getMonth();
+      const lastResetYear = lastResetDate.getFullYear();
+      
+      // If we're in a new month, reset the data
+      if (currentMonth !== lastResetMonth || currentYear !== lastResetYear) {
+        localStorage.setItem('lastMonthlyReset', now.toISOString());
+        setSuccessMessage('New month detected! Analytics have been reset for the current month.');
+        setTimeout(() => setSuccessMessage(null), 5000);
+        fetchAnalytics(); // Refresh analytics for new month
+      }
+    } else {
+      // First time, set the reset date
+      localStorage.setItem('lastMonthlyReset', now.toISOString());
+    }
+  };
 
   // Socket.IO event listeners for real-time updates
   useEffect(() => {
@@ -155,9 +183,11 @@ const Analytics: React.FC = () => {
     });
     const workbook = XLSX.utils.book_new();
     const timestamp = `${year}-${String(month+1).padStart(2,'0')}`;
+    const monthName = new Date(year, month).toLocaleString('default', { month: 'long' });
+    
     // Summary Sheet
     const summaryData = [
-      [`Inventory Management System - Analytics Report (${timestamp})`],
+      [`Inventory Management System - ${monthName} ${year} Report`],
       ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
       [''],
       ['Metric', 'Value'],
@@ -170,7 +200,8 @@ const Analytics: React.FC = () => {
     ];
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
     XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-    // Transactions Sheet (no Transaction ID)
+    
+    // Monthly Transactions Sheet
     if (filteredTransactions.length > 0) {
       const transactionsData = [
         ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
@@ -192,11 +223,124 @@ const Analytics: React.FC = () => {
         ]);
       });
       const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
-      XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Transactions');
+      XLSX.utils.book_append_sheet(workbook, transactionsSheet, `${monthName} Transactions`);
     }
-    XLSX.writeFile(workbook, `inventory_report_${timestamp}.xlsx`);
-    setSuccessMessage('Monthly Excel report generated successfully!');
+    
+    XLSX.writeFile(workbook, `inventory_report_${monthName}_${year}.xlsx`);
+    setSuccessMessage(`${monthName} ${year} Excel report generated successfully!`);
     setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
+  const generateComprehensiveExcelReport = async () => {
+    if (!analytics) {
+      setSuccessMessage('No analytics data available. Please try again.');
+      setTimeout(() => setSuccessMessage(null), 3000);
+      return;
+    }
+
+    try {
+      const workbook = XLSX.utils.book_new();
+      const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm');
+      const currentYear = new Date().getFullYear();
+
+      // Summary Sheet
+      const summaryData = [
+        ['Inventory Management System - Comprehensive Report'],
+        ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+        [''],
+        ['Metric', 'Value'],
+        ['Total Items', (analytics.totalItems || 0).toString()],
+        ['Low Stock Items', (analytics.lowStockItems || 0).toString()],
+        ['Total Transactions', (analytics.totalTransactions || 0).toString()],
+        ['Items Consumed', (analytics.itemsConsumed || 0).toString()],
+        ['Items Added', (analytics.itemsAdded || 0).toString()],
+        ['Active Users', (analytics.activeUsers || 0).toString()]
+      ];
+
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+
+      // Generate monthly sheets for the current year
+      for (let month = 0; month < 12; month++) {
+        const monthName = new Date(currentYear, month).toLocaleString('default', { month: 'long' });
+        const monthTransactions = analytics.recentTransactions.filter(t => {
+          const d = new Date(t.timestamp);
+          return d.getMonth() === month && d.getFullYear() === currentYear;
+        });
+
+        if (monthTransactions.length > 0) {
+          const monthlyData = [
+            [`${monthName} ${currentYear} Transactions`],
+            ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+            [''],
+            ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
+          ];
+
+          monthTransactions.forEach(transaction => {
+            if (transaction) {
+              const action = transaction.type === 'added' ? 'Stock Added' : 
+                            transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
+              monthlyData.push([
+                transaction.itemName || '',
+                transaction.specification || '',
+                transaction.make || '',
+                transaction.model || '',
+                (transaction.type || '').toUpperCase(),
+                (transaction.quantity || 0).toString(),
+                transaction.user || '',
+                transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+                action,
+                transaction.remarks || ''
+              ]);
+            }
+          });
+
+          const monthlySheet = XLSX.utils.aoa_to_sheet(monthlyData);
+          XLSX.utils.book_append_sheet(workbook, monthlySheet, `${monthName} ${currentYear}`);
+        }
+      }
+
+      // Low Stock Alerts Sheet
+      if (analytics.lowStockAlerts && analytics.lowStockAlerts.length > 0) {
+        const lowStockData = [
+          ['Item ID', 'Item Name', 'Make', 'Model', 'Specification', 'Current Quantity', 'Location', 'Last Updated', 'Updated By', 'Status']
+        ];
+
+        analytics.lowStockAlerts.forEach(item => {
+          if (item && item.id) {
+            const status = item.quantity === 0 ? 'Out of Stock' : 'Low Stock';
+            lowStockData.push([
+              item.id.toString() || '',
+              item.name || '',
+              item.make || '',
+              item.model || '',
+              item.specification || '',
+              (item.quantity || 0).toString(),
+              `Row ${item.rack || ''} - Column ${item.bin || ''}`,
+              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+              item.updatedBy || '',
+              status
+            ]);
+          }
+        });
+
+        if (lowStockData.length > 1) {
+          const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData);
+          XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Low Stock Alerts');
+        }
+      }
+
+      // Export the workbook
+      XLSX.writeFile(workbook, `inventory_comprehensive_report_${timestamp}.xlsx`);
+      
+      // Show success message
+      setSuccessMessage('Comprehensive Excel report with monthly sheets generated successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (error) {
+      console.error('Error generating Excel report:', error);
+      setSuccessMessage('Error generating Excel report. Please try again.');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
   };
 
   const generateExcelReport = () => {
@@ -258,37 +402,6 @@ const Analytics: React.FC = () => {
         }
       }
 
-      // Transaction History Sheet (without Transaction ID)
-      if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
-        const transactionHistoryData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
-        ];
-
-        analytics.recentTransactions.forEach(transaction => {
-          if (transaction) {
-            const action = transaction.type === 'added' ? 'Stock Added' : 
-                          transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
-            transactionHistoryData.push([
-              transaction.itemName || '',
-              transaction.specification || '',
-              transaction.make || '',
-              transaction.model || '',
-              (transaction.type || '').toUpperCase(),
-              (transaction.quantity || 0).toString(),
-              transaction.user || '',
-              transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-              action,
-              transaction.remarks || ''
-            ]);
-          }
-        });
-
-        if (transactionHistoryData.length > 1) { // Only add sheet if there's data
-          const transactionHistorySheet = XLSX.utils.aoa_to_sheet(transactionHistoryData);
-          XLSX.utils.book_append_sheet(workbook, transactionHistorySheet, 'Transaction History');
-        }
-      }
-
       // Low Stock Alerts Sheet
       if (analytics.lowStockAlerts && analytics.lowStockAlerts.length > 0) {
         const lowStockData = [
@@ -318,8 +431,6 @@ const Analytics: React.FC = () => {
           XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Low Stock Alerts');
         }
       }
-
-      // Removed Inventory Details sheet per requirement
 
       // Export the workbook
       XLSX.writeFile(workbook, `inventory_report_${timestamp}.xlsx`);
@@ -450,6 +561,13 @@ const Analytics: React.FC = () => {
             <FileSpreadsheet size={20} />
             <span>Generate Excel Report</span>
           </button>
+          <button
+            onClick={generateComprehensiveExcelReport}
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
+          >
+            <FileSpreadsheet size={20} />
+            <span>Generate Monthly Report</span>
+          </button>
         </div>
       </div>
 
@@ -531,11 +649,20 @@ const Analytics: React.FC = () => {
       {/* Recent Transactions */}
       <div className="bg-white rounded-lg shadow-md">
         <div className="p-4 sm:p-6 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">Monthly Transactions</h3>
+            <button
+              onClick={() => setShowAllTransactions(!showAllTransactions)}
+              className="flex items-center space-x-2 px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <span>{showAllTransactions ? 'Show Less' : 'Show All'}</span>
+              {showAllTransactions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
         </div>
         <div className="divide-y divide-gray-200">
           {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
-            analytics.recentTransactions.map((transaction) => (
+            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 10)).map((transaction) => (
               <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gray-50">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -581,6 +708,19 @@ const Analytics: React.FC = () => {
               <Activity className="mx-auto text-gray-400 mb-4" size={48} />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No recent transactions</h3>
               <p className="text-gray-600">Transaction history will appear here as activity occurs.</p>
+            </div>
+          )}
+          {analytics?.recentTransactions && analytics.recentTransactions.length > 10 && !showAllTransactions && (
+            <div className="p-4 text-center bg-gray-50">
+              <p className="text-sm text-gray-600">
+                Showing 10 of {analytics.recentTransactions.length} transactions. 
+                <button 
+                  onClick={() => setShowAllTransactions(true)}
+                  className="ml-1 text-blue-600 hover:text-blue-800 underline"
+                >
+                  Click to show all
+                </button>
+              </p>
             </div>
           )}
         </div>
