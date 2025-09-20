@@ -279,8 +279,51 @@ const Analytics: React.FC = () => {
           });
 
           if (monthTransactions.length > 0) {
+            // Monthly Summary Sheet
+            const monthlySummaryData = [
+              [`${monthName} ${year} - Monthly Summary`],
+              ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+              [''],
+              ['Metric', 'Value'],
+              ['Total Transactions', monthTransactions.length.toString()],
+              ['Items Added', monthTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
+              ['Items Taken', monthTransactions.filter(t => t.type === 'taken').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
+              ['Items Updated', monthTransactions.filter(t => t.type === 'updated').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
+              ['Active Users', [...new Set(monthTransactions.map(t => t.user).filter(Boolean))].length.toString()],
+              [''],
+              ['User Activity Breakdown:'],
+              ['User', 'Transactions', 'Items Added', 'Items Taken', 'Items Updated']
+            ];
+
+            // Add user activity breakdown
+            const userActivity = new Map();
+            monthTransactions.forEach(transaction => {
+              if (!userActivity.has(transaction.user)) {
+                userActivity.set(transaction.user, { total: 0, added: 0, taken: 0, updated: 0 });
+              }
+              const user = userActivity.get(transaction.user);
+              user.total++;
+              if (transaction.type === 'added') user.added += transaction.quantity || 0;
+              else if (transaction.type === 'taken') user.taken += transaction.quantity || 0;
+              else if (transaction.type === 'updated') user.updated += transaction.quantity || 0;
+            });
+
+            userActivity.forEach((activity, user) => {
+              monthlySummaryData.push([
+                user,
+                activity.total.toString(),
+                activity.added.toString(),
+                activity.taken.toString(),
+                activity.updated.toString()
+              ]);
+            });
+
+            const monthlySummarySheet = XLSX.utils.aoa_to_sheet(monthlySummaryData);
+            XLSX.utils.book_append_sheet(workbook, monthlySummarySheet, `${monthName} ${year} Summary`);
+
+            // Monthly Transactions Detail Sheet
             const monthlyData = [
-              [`${monthName} ${year} Transactions`],
+              [`${monthName} ${year} - Transaction Details`],
               ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
               [''],
               ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
@@ -306,7 +349,7 @@ const Analytics: React.FC = () => {
             });
 
             const monthlySheet = XLSX.utils.aoa_to_sheet(monthlyData);
-            XLSX.utils.book_append_sheet(workbook, monthlySheet, `${monthName} ${year}`);
+            XLSX.utils.book_append_sheet(workbook, monthlySheet, `${monthName} ${year} Details`);
           }
         }
       }
@@ -663,12 +706,22 @@ const Analytics: React.FC = () => {
 
       {/* Recent Transactions */}
       <div className="bg-white rounded-lg shadow-md">
-        <div className="p-4 sm:p-6 border-b">
+        <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-gray-50 to-gray-100">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Monthly Transactions</h3>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <Activity className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Monthly Transactions</h3>
+                <p className="text-sm text-gray-600">
+                  {analytics?.recentTransactions?.length || 0} total transactions this month
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => setShowAllTransactions(!showAllTransactions)}
-              className="flex items-center space-x-2 px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               <span>{showAllTransactions ? 'Show Less' : 'Show All'}</span>
               {showAllTransactions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -677,43 +730,68 @@ const Analytics: React.FC = () => {
         </div>
         <div className="divide-y divide-gray-200">
           {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
-            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 10)).map((transaction) => (
-              <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        transaction.type === 'added' ? 'bg-green-500' :
-                        transaction.type === 'taken' ? 'bg-blue-500' : 'bg-red-500'
-                      }`}></div>
-                      <h4 className="font-medium text-gray-900">{transaction.itemName}</h4>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        transaction.type === 'added' ? 'bg-green-100 text-green-800' :
-                        transaction.type === 'taken' ? 'bg-blue-100 text-blue-800' : 
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {transaction.type}
+            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 10)).map((transaction, index) => (
+              <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group">
+                <div className="flex items-start space-x-4">
+                  {/* Status Indicator */}
+                  <div className="flex-shrink-0">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
+                      transaction.type === 'added' ? 'bg-gradient-to-br from-green-400 to-green-600' :
+                      transaction.type === 'taken' ? 'bg-gradient-to-br from-blue-400 to-blue-600' : 
+                      'bg-gradient-to-br from-red-400 to-red-600'
+                    }`}>
+                      <span className="text-white font-bold text-lg">
+                        {transaction.type === 'added' ? '+' : transaction.type === 'taken' ? '-' : '↻'}
                       </span>
                     </div>
-                    <div className="mt-1 text-sm text-gray-700">
-                      <div className="text-gray-600">{transaction.make} {transaction.model} · {transaction.specification}</div>
+                  </div>
+
+                  {/* Transaction Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h4 className="font-semibold text-gray-900 group-hover:text-blue-900 transition-colors">
+                            {transaction.itemName}
+                          </h4>
+                          <span className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
+                            transaction.type === 'added' ? 'bg-green-100 text-green-800 border border-green-200' :
+                            transaction.type === 'taken' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 
+                            'bg-red-100 text-red-800 border border-red-200'
+                          }`}>
+                            {transaction.type.toUpperCase()}
+                          </span>
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 mb-3">
+                          <div className="font-medium">{transaction.make} {transaction.model}</div>
+                          <div className="text-gray-500">{transaction.specification}</div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <span className="font-medium">Qty: {transaction.quantity}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <User size={16} className="text-gray-400" />
+                            <span>{transaction.user}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Calendar size={16} className="text-gray-400" />
+                            <span>{safeFormatDate(transaction.timestamp, 'MMM dd, yyyy HH:mm')}</span>
+                          </div>
+                        </div>
+
+                        {transaction.remarks && (
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border-l-4 border-blue-200">
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium text-gray-900">Remarks:</span> {transaction.remarks}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-gray-600">
-                      <div>Quantity: {transaction.quantity}</div>
-                      <div className="flex items-center space-x-1">
-                        <User size={14} />
-                        <span>{transaction.user}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar size={14} />
-                        <span>{safeFormatDate(transaction.timestamp, 'MMM dd, yyyy HH:mm')}</span>
-                      </div>
-                    </div>
-                    {transaction.remarks && (
-                      <div className="mt-1 text-sm text-gray-600">
-                        <span className="font-medium">Remarks:</span> {transaction.remarks}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -726,16 +804,23 @@ const Analytics: React.FC = () => {
             </div>
           )}
           {analytics?.recentTransactions && analytics.recentTransactions.length > 10 && !showAllTransactions && (
-            <div className="p-4 text-center bg-gray-50">
-              <p className="text-sm text-gray-600">
-                Showing 10 of {analytics.recentTransactions.length} transactions. 
-                <button 
-                  onClick={() => setShowAllTransactions(true)}
-                  className="ml-1 text-blue-600 hover:text-blue-800 underline"
-                >
-                  Click to show all
-                </button>
-              </p>
+            <div className="p-6 text-center bg-gradient-to-r from-blue-50 to-purple-50 border-t">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <ChevronDown className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">
+                    Showing 10 of {analytics.recentTransactions.length} transactions
+                  </p>
+                  <button 
+                    onClick={() => setShowAllTransactions(true)}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                  >
+                    View all {analytics.recentTransactions.length} transactions →
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -831,51 +916,91 @@ const Analytics: React.FC = () => {
       {/* Active Users Modal */}
       {showActiveUsersModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-hidden">
-            <div className="p-6 border-b">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-300">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-purple-700 p-6 text-white">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Active Users</h3>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Active Users</h3>
+                    <p className="text-purple-100 text-sm">This month's activity</p>
+                  </div>
+                </div>
                 <button
                   onClick={() => setShowActiveUsersModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all duration-200"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             </div>
-            <div className="p-6">
+
+            {/* Content */}
+            <div className="p-6 max-h-96 overflow-y-auto">
               {activeUserNames.length > 0 ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600 mb-4">
-                    Users who have performed transactions this month:
-                  </p>
-                  <div className="space-y-2">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm text-gray-600">
+                      {activeUserNames.length} user{activeUserNames.length !== 1 ? 's' : ''} active this month
+                    </p>
+                    <div className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                      {analytics?.activeUsers || 0} Total
+                    </div>
+                  </div>
+                  
+                  <div className="grid gap-3">
                     {activeUserNames.map((userName, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                          <span className="text-purple-600 font-medium text-sm">
-                            {userName.charAt(0).toUpperCase()}
-                          </span>
+                      <div key={index} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:from-purple-50 hover:to-purple-100 transition-all duration-200 group">
+                        <div className="relative">
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                            <span className="text-white font-bold text-lg">
+                              {userName.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
                         </div>
-                        <span className="text-gray-900 font-medium">{userName}</span>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 group-hover:text-purple-900 transition-colors">
+                            {userName}
+                          </h4>
+                          <p className="text-sm text-gray-500 group-hover:text-purple-600 transition-colors">
+                            Active user
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Users className="mx-auto text-gray-400 mb-4" size={48} />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Users</h3>
-                  <p className="text-gray-600">No users have performed transactions this month.</p>
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Active Users</h3>
+                  <p className="text-gray-600 mb-4">No users have performed transactions this month.</p>
+                  <div className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                    Waiting for activity
+                  </div>
                 </div>
               )}
             </div>
+
+            {/* Footer */}
             <div className="p-6 border-t bg-gray-50">
               <button
                 onClick={() => setShowActiveUsersModal(false)}
-                className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 Close
               </button>
