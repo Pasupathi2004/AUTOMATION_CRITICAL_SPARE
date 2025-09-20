@@ -33,6 +33,8 @@ const Analytics: React.FC = () => {
   const [integrity, setIntegrity] = useState<any>(null);
   const [storage, setStorage] = useState<any>(null);
   const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const [showActiveUsersModal, setShowActiveUsersModal] = useState(false);
+  const [activeUserNames, setActiveUserNames] = useState<string[]>([]);
 
   useEffect(() => {
     fetchAnalytics();
@@ -105,6 +107,11 @@ const Analytics: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         setAnalytics(data.analytics);
+        // Extract unique user names from transactions
+        if (data.analytics.recentTransactions) {
+          const uniqueUsers = [...new Set(data.analytics.recentTransactions.map(t => t.user).filter(Boolean))];
+          setActiveUserNames(uniqueUsers);
+        }
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -260,43 +267,47 @@ const Analytics: React.FC = () => {
       const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
       XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
 
-      // Generate monthly sheets for the current year
-      for (let month = 0; month < 12; month++) {
-        const monthName = new Date(currentYear, month).toLocaleString('default', { month: 'long' });
-        const monthTransactions = analytics.recentTransactions.filter(t => {
-          const d = new Date(t.timestamp);
-          return d.getMonth() === month && d.getFullYear() === currentYear;
-        });
-
-        if (monthTransactions.length > 0) {
-          const monthlyData = [
-            [`${monthName} ${currentYear} Transactions`],
-            ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
-            [''],
-            ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
-          ];
-
-          monthTransactions.forEach(transaction => {
-            if (transaction) {
-              const action = transaction.type === 'added' ? 'Stock Added' : 
-                            transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
-              monthlyData.push([
-                transaction.itemName || '',
-                transaction.specification || '',
-                transaction.make || '',
-                transaction.model || '',
-                (transaction.type || '').toUpperCase(),
-                (transaction.quantity || 0).toString(),
-                transaction.user || '',
-                transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-                action,
-                transaction.remarks || ''
-              ]);
-            }
+      // Generate monthly sheets for the current year and previous/next year
+      const yearsToProcess = [currentYear - 1, currentYear, currentYear + 1];
+      
+      for (const year of yearsToProcess) {
+        for (let month = 0; month < 12; month++) {
+          const monthName = new Date(year, month).toLocaleString('default', { month: 'long' });
+          const monthTransactions = analytics.recentTransactions.filter(t => {
+            const d = new Date(t.timestamp);
+            return d.getMonth() === month && d.getFullYear() === year;
           });
 
-          const monthlySheet = XLSX.utils.aoa_to_sheet(monthlyData);
-          XLSX.utils.book_append_sheet(workbook, monthlySheet, `${monthName} ${currentYear}`);
+          if (monthTransactions.length > 0) {
+            const monthlyData = [
+              [`${monthName} ${year} Transactions`],
+              ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+              [''],
+              ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
+            ];
+
+            monthTransactions.forEach(transaction => {
+              if (transaction) {
+                const action = transaction.type === 'added' ? 'Stock Added' : 
+                              transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
+                monthlyData.push([
+                  transaction.itemName || '',
+                  transaction.specification || '',
+                  transaction.make || '',
+                  transaction.model || '',
+                  (transaction.type || '').toUpperCase(),
+                  (transaction.quantity || 0).toString(),
+                  transaction.user || '',
+                  transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+                  action,
+                  transaction.remarks || ''
+                ]);
+              }
+            });
+
+            const monthlySheet = XLSX.utils.aoa_to_sheet(monthlyData);
+            XLSX.utils.book_append_sheet(workbook, monthlySheet, `${monthName} ${year}`);
+          }
         }
       }
 
@@ -616,7 +627,10 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div 
+          className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => setShowActiveUsersModal(true)}
+        >
           <div className="flex items-center">
             <div className="bg-purple-100 rounded-lg p-3">
               <Users className="text-purple-600" size={24} />
@@ -624,6 +638,7 @@ const Analytics: React.FC = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active Users</p>
               <p className="text-2xl font-bold text-gray-900">{analytics?.activeUsers || 0}</p>
+              <p className="text-xs text-gray-500 mt-1">Click to view names</p>
             </div>
           </div>
         </div>
@@ -812,6 +827,62 @@ const Analytics: React.FC = () => {
           <p className="text-gray-500">Loading storage data...</p>
         )}
       </div>
+
+      {/* Active Users Modal */}
+      {showActiveUsersModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-hidden">
+            <div className="p-6 border-b">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Active Users</h3>
+                <button
+                  onClick={() => setShowActiveUsersModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              {activeUserNames.length > 0 ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600 mb-4">
+                    Users who have performed transactions this month:
+                  </p>
+                  <div className="space-y-2">
+                    {activeUserNames.map((userName, index) => (
+                      <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <span className="text-purple-600 font-medium text-sm">
+                            {userName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="text-gray-900 font-medium">{userName}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="mx-auto text-gray-400 mb-4" size={48} />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Users</h3>
+                  <p className="text-gray-600">No users have performed transactions this month.</p>
+                </div>
+              )}
+            </div>
+            <div className="p-6 border-t bg-gray-50">
+              <button
+                onClick={() => setShowActiveUsersModal(false)}
+                className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
