@@ -33,6 +33,7 @@ const Analytics: React.FC = () => {
   const [integrity, setIntegrity] = useState<any>(null);
   const [storage, setStorage] = useState<any>(null);
   const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const [showAllLowStock, setShowAllLowStock] = useState(false);
   const [showActiveUsersModal, setShowActiveUsersModal] = useState(false);
   const [activeUserNames, setActiveUserNames] = useState<string[]>([]);
 
@@ -730,7 +731,7 @@ const Analytics: React.FC = () => {
         </div>
         <div className="divide-y divide-gray-200">
           {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
-            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 10)).map((transaction, index) => (
+            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 5)).map((transaction, index) => (
               <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group">
                 <div className="flex items-start space-x-4">
                   {/* Status Indicator */}
@@ -803,7 +804,7 @@ const Analytics: React.FC = () => {
               <p className="text-gray-600">Transaction history will appear here as activity occurs.</p>
             </div>
           )}
-          {analytics?.recentTransactions && analytics.recentTransactions.length > 10 && !showAllTransactions && (
+          {analytics?.recentTransactions && analytics.recentTransactions.length > 5 && !showAllTransactions && (
             <div className="p-6 text-center bg-gradient-to-r from-blue-50 to-purple-50 border-t">
               <div className="flex items-center justify-center space-x-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -811,7 +812,7 @@ const Analytics: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">
-                    Showing 10 of {analytics.recentTransactions.length} transactions
+                    Showing 5 of {analytics.recentTransactions.length} transactions
                   </p>
                   <button 
                     onClick={() => setShowAllTransactions(true)}
@@ -830,20 +831,31 @@ const Analytics: React.FC = () => {
       {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
         <div className="bg-white rounded-lg shadow-md">
           <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-red-50 to-orange-50">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-red-600" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Low Stock Alerts</h3>
+                  <p className="text-sm text-gray-600">
+                    {analytics.lowStockAlerts.length} item{analytics.lowStockAlerts.length !== 1 ? 's' : ''} need attention
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Low Stock Alerts</h3>
-                <p className="text-sm text-gray-600">
-                  {analytics.lowStockAlerts.length} item{analytics.lowStockAlerts.length !== 1 ? 's' : ''} need attention
-                </p>
-              </div>
+              {analytics.lowStockAlerts.length > 5 && (
+                <button
+                  onClick={() => setShowAllLowStock(!showAllLowStock)}
+                  className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  <span>{showAllLowStock ? 'Show Less' : 'Show All'}</span>
+                  {showAllLowStock ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
+              )}
             </div>
           </div>
           <div className="divide-y divide-gray-200">
-            {analytics.lowStockAlerts.map((item) => (
+            {(showAllLowStock ? analytics.lowStockAlerts : analytics.lowStockAlerts.slice(0, 5)).map((item) => (
               <div key={item.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all duration-200 group">
                 <div className="flex items-start space-x-4">
                   {/* Status Indicator */}
@@ -928,6 +940,26 @@ const Analytics: React.FC = () => {
                 </div>
               </div>
             ))}
+            {analytics.lowStockAlerts.length > 5 && !showAllLowStock && (
+              <div className="p-6 text-center bg-gradient-to-r from-red-50 to-orange-50 border-t">
+                <div className="flex items-center justify-center space-x-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                    <ChevronDown className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">
+                      Showing 5 of {analytics.lowStockAlerts.length} low stock items
+                    </p>
+                    <button 
+                      onClick={() => setShowAllLowStock(true)}
+                      className="text-sm text-red-600 hover:text-red-800 font-medium hover:underline transition-colors"
+                    >
+                      View all {analytics.lowStockAlerts.length} items →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
