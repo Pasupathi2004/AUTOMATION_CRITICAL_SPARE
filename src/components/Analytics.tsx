@@ -775,8 +775,8 @@ const Analytics: React.FC = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <div className="bg-slate-100 rounded-lg p-3">
               <Package className="text-slate-600" size={24} />
@@ -788,7 +788,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <div className="bg-orange-100 rounded-lg p-3">
               <TrendingUp className="text-orange-600" size={24} />
@@ -800,7 +800,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <div className="bg-emerald-100 rounded-lg p-3">
               <Activity className="text-emerald-600" size={24} />
@@ -813,7 +813,7 @@ const Analytics: React.FC = () => {
         </div>
 
         <div 
-          className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow"
+          className="bg-white rounded-lg shadow-md p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-shadow"
           onClick={() => setShowActiveUsersModal(true)}
         >
           <div className="flex items-center">
@@ -830,17 +830,17 @@ const Analytics: React.FC = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Status Distribution</h3>
-          <div className="h-48 sm:h-64">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Stock Status Distribution</h3>
+          <div className="h-40 sm:h-64">
             <Doughnut data={stockStatusData} options={chartOptions} />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Activity</h3>
-          <div className="h-48 sm:h-64">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Monthly Activity</h3>
+          <div className="h-40 sm:h-64">
             <Bar data={activityData} options={chartOptions} />
           </div>
         </div>
