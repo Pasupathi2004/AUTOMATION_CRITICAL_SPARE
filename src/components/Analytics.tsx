@@ -542,8 +542,30 @@ const Analytics: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E8B57]"></div>
+      <div className="space-y-4">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-white to-gray-50/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="h-6 w-48 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow p-6">
+              <div className="h-5 w-24 bg-gray-200 rounded mb-3 animate-pulse"></div>
+              <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="h-6 w-40 bg-gray-200 rounded mb-4 animate-pulse"></div>
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -587,6 +609,37 @@ const Analytics: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Sticky Toolbar */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-white to-gray-50/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-gray-500">Viewing</div>
+            <div className="text-sm font-semibold text-gray-900">
+              {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Months Chips (compact) */}
+            <div className="hidden md:flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm">
+              {Array.from({ length: 12 }, (_, m) => {
+                const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
+                const isActive = selectedMonth === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => setSelectedMonth(m)}
+                    className={`px-2.5 py-1.5 text-xs rounded-md transition-colors ${
+                      isActive ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Success Message */}
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
