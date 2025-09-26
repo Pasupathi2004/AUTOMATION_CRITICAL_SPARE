@@ -140,7 +140,8 @@ const Analytics: React.FC = () => {
         },
         body: JSON.stringify({
           timestamp: editTx.timestamp,
-          remarks: editTx.remarks
+          remarks: editTx.remarks,
+          quantity: editTx.quantity
         })
       });
       const data = await response.json();
@@ -890,7 +891,10 @@ const Analytics: React.FC = () => {
                               onClick={() => setEditTx({
                                 id: transaction.id,
                                 timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
-                                remarks: transaction.remarks || ''
+                                remarks: transaction.remarks || '',
+                                quantity: transaction.quantity || 0,
+                                editedBy: transaction.editedBy || '',
+                                editedAt: transaction.editedAt || null
                               })}
                               className="ml-2 text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
                             >
@@ -917,6 +921,12 @@ const Analytics: React.FC = () => {
                             <Calendar size={16} className="text-gray-400" />
                             <span>{safeFormatDate(transaction.timestamp, 'MMM dd, yyyy HH:mm')}</span>
                           </div>
+                          {(transaction.editedBy || transaction.editedAt) && (
+                            <div className="text-xs text-gray-500">
+                              Last edited {transaction.editedAt ? `on ${safeFormatDate(transaction.editedAt)}` : ''}
+                              {transaction.editedBy ? ` by ${transaction.editedBy}` : ''}
+                            </div>
+                          )}
                         </div>
 
                         {transaction.remarks && (
@@ -1274,6 +1284,16 @@ const Analytics: React.FC = () => {
                 />
               </div>
               <div>
+                <label className="block text-sm text-gray-600 mb-1">Quantity</label>
+                <input
+                  type="number"
+                  value={editTx.quantity}
+                  onChange={(e) => setEditTx({ ...editTx, quantity: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  min={0}
+                />
+              </div>
+              <div>
                 <label className="block text-sm text-gray-600 mb-1">Remarks</label>
                 <textarea
                   value={editTx.remarks}
@@ -1282,6 +1302,12 @@ const Analytics: React.FC = () => {
                   rows={3}
                 />
               </div>
+              {(editTx.editedBy || editTx.editedAt) && (
+                <div className="text-xs text-gray-500">
+                  Last edited {editTx.editedAt ? `on ${safeFormatDate(editTx.editedAt)}` : ''}
+                  {editTx.editedBy ? ` by ${editTx.editedBy}` : ''}
+                </div>
+              )}
             </div>
             <div className="p-4 border-t flex justify-end gap-2">
               <button onClick={() => setEditTx(null)} className="px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
