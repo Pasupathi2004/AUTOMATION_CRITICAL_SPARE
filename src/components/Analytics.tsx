@@ -618,7 +618,7 @@ const Analytics: React.FC = () => {
               {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Months Chips (compact) */}
             <div className="hidden md:flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm">
               {Array.from({ length: 12 }, (_, m) => {
@@ -637,49 +637,7 @@ const Analytics: React.FC = () => {
                 );
               })}
             </div>
-          </div>
-        </div>
-      </div>
-      {/* Success Message */}
-      {successMessage && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
-          <span>{successMessage}</span>
-          <button
-            onClick={() => setSuccessMessage(null)}
-            className="text-green-500 hover:text-green-700"
-          >
-            ×
-          </button>
-        </div>
-      )}
-      
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-          {/* Month/Year Selector - Enhanced UI */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            {/* Months as chips */}
-            <div className="flex gap-1 overflow-x-auto sm:max-w-[520px] p-1 bg-white rounded-lg border border-gray-200">
-              {Array.from({ length: 12 }, (_, m) => {
-                const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
-                const isActive = selectedMonth === m;
-                return (
-                  <button
-                    key={m}
-                    onClick={() => setSelectedMonth(m)}
-                    className={`px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors ${
-                      isActive
-                        ? 'bg-blue-600 text-white shadow'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                    aria-pressed={isActive}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-            {/* Year with prev/next */}
+            {/* Year Controls */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSelectedYear(selectedYear - 1)}
@@ -712,6 +670,24 @@ const Analytics: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
+          <span>{successMessage}</span>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="text-green-500 hover:text-green-700"
+          >
+            ×
+          </button>
+        </div>
+      )}
+      
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
           <button
             onClick={handleDeleteHistory}
             className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
