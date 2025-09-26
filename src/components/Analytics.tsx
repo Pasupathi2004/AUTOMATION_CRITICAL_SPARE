@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp } from 'lucide-react';
+import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Analytics as AnalyticsType } from '../types';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
@@ -603,35 +603,61 @@ const Analytics: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-          {/* Month/Year Selectors */}
-          <div className="flex items-center gap-2">
-            <select
-              value={selectedMonth}
-              onChange={handleMonthChange}
-              className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
-              aria-label="Select month"
-            >
-              {Array.from({ length: 12 }, (_, m) => (
-                <option key={m} value={m}>
-                  {new Date(2000, m).toLocaleString('default', { month: 'long' })}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedYear}
-              onChange={handleYearChange}
-              className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
-              aria-label="Select year"
-            >
-              {(() => {
-                const current = new Date().getFullYear();
-                const years = [] as number[];
-                for (let y = current - 3; y <= current + 1; y++) years.push(y);
-                return years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ));
-              })()}
-            </select>
+          {/* Month/Year Selector - Enhanced UI */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            {/* Months as chips */}
+            <div className="flex gap-1 overflow-x-auto sm:max-w-[520px] p-1 bg-white rounded-lg border border-gray-200">
+              {Array.from({ length: 12 }, (_, m) => {
+                const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
+                const isActive = selectedMonth === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => setSelectedMonth(m)}
+                    className={`px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors ${
+                      isActive
+                        ? 'bg-blue-600 text-white shadow'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    aria-pressed={isActive}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Year with prev/next */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedYear(selectedYear - 1)}
+                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                aria-label="Previous year"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <select
+                value={selectedYear}
+                onChange={handleYearChange}
+                className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                aria-label="Select year"
+              >
+                {(() => {
+                  const current = new Date().getFullYear();
+                  const years = [] as number[];
+                  for (let y = current - 5; y <= current + 2; y++) years.push(y);
+                  return years.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ));
+                })()}
+              </select>
+              <button
+                onClick={() => setSelectedYear(selectedYear + 1)}
+                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                aria-label="Next year"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
           <button
             onClick={handleDeleteHistory}
@@ -750,9 +776,9 @@ const Analytics: React.FC = () => {
                 <Activity className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Monthly Transactions</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Transactions - {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
                 <p className="text-sm text-gray-600">
-                  {analytics?.recentTransactions?.length || 0} total transactions this month
+                  {analytics?.totalTransactions || 0} total transactions in {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long' })}
                 </p>
               </div>
             </div>
