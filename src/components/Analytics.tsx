@@ -652,8 +652,23 @@ const Analytics: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Months Chips visible on mobile with horizontal scroll */}
-            <div className="flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto w-full sm:w-auto">
+            {/* Mobile: Month dropdown for better fit */}
+            <div className="sm:hidden">
+              <select
+                value={selectedMonth}
+                onChange={handleMonthChange}
+                className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                aria-label="Select month"
+              >
+                {Array.from({ length: 12 }, (_, m) => (
+                  <option key={m} value={m}>
+                    {new Date(2000, m).toLocaleString('default', { month: 'long' })}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Desktop: Month chips with horizontal scroll if needed */}
+            <div className="hidden sm:flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto w-full sm:w-auto">
               {Array.from({ length: 12 }, (_, m) => {
                 const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
                 const isActive = selectedMonth === m;
@@ -720,33 +735,35 @@ const Analytics: React.FC = () => {
       
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 px-3 sm:px-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-          <button
-            onClick={handleDeleteHistory}
-            className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Delete History
-          </button>
-          <button
-            onClick={() => setShowSettings(s => !s)}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            Settings
-          </button>
-          <button
-            onClick={generateExcelReport}
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
-          >
-            <FileSpreadsheet size={20} />
-            <span>Generate Excel Report</span>
-          </button>
-          <button
-            onClick={generateComprehensiveExcelReport}
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
-          >
-            <FileSpreadsheet size={20} />
-            <span>Generate Monthly Report</span>
-          </button>
+        <div className="w-full sm:w-auto mt-2 sm:mt-0">
+          <div className="flex flex-row sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 overflow-x-auto sm:overflow-visible -mx-3 sm:mx-0 px-3 sm:px-0 whitespace-nowrap">
+            <button
+              onClick={handleDeleteHistory}
+              className="flex-shrink-0 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Delete History
+            </button>
+            <button
+              onClick={() => setShowSettings(s => !s)}
+              className="flex-shrink-0 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Settings
+            </button>
+            <button
+              onClick={generateExcelReport}
+              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+            >
+              <FileSpreadsheet size={20} />
+              <span>Generate Excel Report</span>
+            </button>
+            <button
+              onClick={generateComprehensiveExcelReport}
+              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-4 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
+            >
+              <FileSpreadsheet size={20} />
+              <span>Generate Monthly Report</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -816,14 +833,14 @@ const Analytics: React.FC = () => {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Status Distribution</h3>
-          <div className="h-64">
+          <div className="h-56 sm:h-64">
             <Doughnut data={stockStatusData} options={chartOptions} />
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Activity</h3>
-          <div className="h-64">
+          <div className="h-56 sm:h-64">
             <Bar data={activityData} options={chartOptions} />
           </div>
         </div>
