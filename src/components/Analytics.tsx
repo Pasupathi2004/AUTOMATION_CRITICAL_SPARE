@@ -644,20 +644,20 @@ const Analytics: React.FC = () => {
     <div className="space-y-6">
       {/* Sticky Toolbar */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-500">Viewing</div>
-            <div className="text-sm font-semibold text-gray-900">
+            <div className="text-xs sm:text-sm text-gray-500">Viewing</div>
+            <div className="text-sm sm:text-base font-semibold text-gray-900">
               {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto whitespace-nowrap w-full sm:w-auto">
             {/* Mobile: Month dropdown for better fit */}
             <div className="sm:hidden">
               <select
                 value={selectedMonth}
                 onChange={handleMonthChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                className="px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white"
                 aria-label="Select month"
               >
                 {Array.from({ length: 12 }, (_, m) => (
@@ -686,10 +686,10 @@ const Analytics: React.FC = () => {
               })}
             </div>
             {/* Year Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={() => setSelectedYear(selectedYear - 1)}
-                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                className="p-1.5 sm:p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
                 aria-label="Previous year"
               >
                 <ChevronLeft size={18} />
@@ -697,7 +697,7 @@ const Analytics: React.FC = () => {
               <select
                 value={selectedYear}
                 onChange={handleYearChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                className="px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white"
                 aria-label="Select year"
               >
                 {(() => {
@@ -711,7 +711,7 @@ const Analytics: React.FC = () => {
               </select>
               <button
                 onClick={() => setSelectedYear(selectedYear + 1)}
-                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                className="p-1.5 sm:p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
                 aria-label="Next year"
               >
                 <ChevronRight size={18} />
@@ -736,29 +736,29 @@ const Analytics: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 px-3 sm:px-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
         <div className="w-full sm:w-auto mt-2 sm:mt-0">
-          <div className="flex flex-row sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 overflow-x-auto sm:overflow-visible -mx-3 sm:mx-0 px-3 sm:px-0 whitespace-nowrap">
+          <div className="flex flex-row sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 overflow-x-auto sm:overflow-visible -mx-3 sm:mx-0 px-3 sm:px-0 whitespace-nowrap pb-1">
             <button
               onClick={handleDeleteHistory}
-              className="flex-shrink-0 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Delete History
             </button>
             <button
               onClick={() => setShowSettings(s => !s)}
-              className="flex-shrink-0 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
               Settings
             </button>
             <button
               onClick={generateExcelReport}
-              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
             >
               <FileSpreadsheet size={20} />
               <span>Generate Excel Report</span>
             </button>
             <button
               onClick={generateComprehensiveExcelReport}
-              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-4 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
+              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
             >
               <FileSpreadsheet size={20} />
               <span>Generate Monthly Report</span>
@@ -833,14 +833,14 @@ const Analytics: React.FC = () => {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Status Distribution</h3>
-          <div className="h-56 sm:h-64">
+          <div className="h-48 sm:h-64">
             <Doughnut data={stockStatusData} options={chartOptions} />
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Activity</h3>
-          <div className="h-56 sm:h-64">
+          <div className="h-48 sm:h-64">
             <Bar data={activityData} options={chartOptions} />
           </div>
         </div>
