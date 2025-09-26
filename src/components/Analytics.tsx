@@ -36,6 +36,8 @@ const Analytics: React.FC = () => {
   const [showAllLowStock, setShowAllLowStock] = useState(false);
   const [showActiveUsersModal, setShowActiveUsersModal] = useState(false);
   const [activeUserNames, setActiveUserNames] = useState<string[]>([]);
+  const [editTx, setEditTx] = useState<any | null>(null);
+  const isOwner = (useAuth().user?.username || '').toLowerCase() === 'pasu' || (useAuth().user?.role || '').toLowerCase() === 'owner';
 
   useEffect(() => {
     fetchAnalytics();
@@ -124,6 +126,36 @@ const Analytics: React.FC = () => {
       console.error('Error fetching analytics:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const saveTransactionEdit = async () => {
+    if (!editTx) return;
+    try {
+      const response = await fetch(API_ENDPOINTS.TRANSACTION_UPDATE(editTx.id), {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          timestamp: editTx.timestamp,
+          remarks: editTx.remarks
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEditTx(null);
+        setSuccessMessage('Transaction updated');
+        setTimeout(() => setSuccessMessage(null), 2000);
+        fetchAnalytics();
+      } else {
+        setSuccessMessage(data.message || 'Failed to update transaction');
+        setTimeout(() => setSuccessMessage(null), 3000);
+      }
+    } catch (e) {
+      setSuccessMessage('Network error');
+      setTimeout(() => setSuccessMessage(null), 3000);
     }
   };
 
@@ -853,6 +885,18 @@ const Analytics: React.FC = () => {
                           }`}>
                             {transaction.type.toUpperCase()}
                           </span>
+                          {isOwner && (
+                            <button
+                              onClick={() => setEditTx({
+                                id: transaction.id,
+                                timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
+                                remarks: transaction.remarks || ''
+                              })}
+                              className="ml-2 text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+                            >
+                              Edit
+                            </button>
+                          )}
                         </div>
                         
                         <div className="text-sm text-gray-600 mb-3">
@@ -1207,6 +1251,41 @@ const Analytics: React.FC = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Transaction Modal (Owner only) */}
+      {isOwner && editTx && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div className="p-4 border-b">
+              <h3 className="text-lg font-semibold">Edit Transaction</h3>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Date & Time</label>
+                <input
+                  type="datetime-local"
+                  value={editTx.timestamp}
+                  onChange={(e) => setEditTx({ ...editTx, timestamp: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Remarks</label>
+                <textarea
+                  value={editTx.remarks}
+                  onChange={(e) => setEditTx({ ...editTx, remarks: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  rows={3}
+                />
+              </div>
+            </div>
+            <div className="p-4 border-t flex justify-end gap-2">
+              <button onClick={() => setEditTx(null)} className="px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+              <button onClick={saveTransactionEdit} className="px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
             </div>
           </div>
         </div>

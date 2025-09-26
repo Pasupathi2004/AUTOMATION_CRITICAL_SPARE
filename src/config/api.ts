@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     BULK_UPLOAD: `${API_BASE_URL}/inventory/bulk-upload`,
   },
   TRANSACTIONS: `${API_BASE_URL}/transactions`,
+  TRANSACTION_UPDATE: (id: string) => `${API_BASE_URL}/transactions/${id}`,
   ANALYTICS: {
     DASHBOARD: `${API_BASE_URL}/analytics/dashboard`,
     REPORTS: `${API_BASE_URL}/analytics/reports`,

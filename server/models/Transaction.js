@@ -7,7 +7,9 @@ const TransactionSchema = new mongoose.Schema({
   quantity: { type: Number },
   user: { type: String },
   timestamp: { type: Date },
-  remarks: { type: String, default: '' }
+  remarks: { type: String, default: '' },
+  editedBy: { type: String, default: '' },
+  editedAt: { type: Date }
 });
 
 export default mongoose.model('Transaction', TransactionSchema); 

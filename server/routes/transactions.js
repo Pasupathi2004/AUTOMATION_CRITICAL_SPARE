@@ -1,5 +1,6 @@
 import express from 'express';
 import Transaction from '../models/Transaction.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -20,6 +21,36 @@ router.post('/', async (req, res) => {
 router.delete('/', async (req, res) => {
   await Transaction.deleteMany({});
   res.json({ success: true });
+});
+
+// Update a transaction (owner-only)
+router.put('/:id', authenticateToken, async (req, res) => {
+  try {
+    // Owner check: username 'pasu' or role 'owner'
+    const isOwner = (req.user?.username || '').toLowerCase() === 'pasu' || (req.user?.role || '').toLowerCase() === 'owner';
+    if (!isOwner) {
+      return res.status(403).json({ success: false, message: 'Only owner can edit transactions' });
+    }
+
+    const { id } = req.params;
+    const { timestamp, remarks } = req.body;
+
+    const update = {
+      ...(timestamp ? { timestamp: new Date(timestamp) } : {}),
+      ...(typeof remarks === 'string' ? { remarks } : {}),
+      editedBy: req.user?.username || 'owner',
+      editedAt: new Date()
+    };
+
+    const tx = await Transaction.findByIdAndUpdate(id, update, { new: true });
+    if (!tx) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+    return res.json({ success: true, transaction: tx });
+  } catch (e) {
+    console.error('Update transaction error:', e);
+    return res.status(500).json({ success: false, message: 'Error updating transaction' });
+  }
 });
 
 export default router;
