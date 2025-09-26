@@ -643,17 +643,17 @@ const Analytics: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Sticky Toolbar */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-white to-gray-50/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3">
             <div className="text-sm text-gray-500">Viewing</div>
             <div className="text-sm font-semibold text-gray-900">
               {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Months Chips (compact) */}
-            <div className="hidden md:flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Months Chips visible on mobile with horizontal scroll */}
+            <div className="flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto w-full sm:w-auto">
               {Array.from({ length: 12 }, (_, m) => {
                 const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
                 const isActive = selectedMonth === m;
@@ -661,7 +661,7 @@ const Analytics: React.FC = () => {
                   <button
                     key={m}
                     onClick={() => setSelectedMonth(m)}
-                    className={`px-2.5 py-1.5 text-xs rounded-md transition-colors ${
+                    className={`px-2.5 py-1.5 text-xs rounded-md transition-colors flex-shrink-0 ${
                       isActive ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -718,7 +718,7 @@ const Analytics: React.FC = () => {
         </div>
       )}
       
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 px-3 sm:px-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
           <button
