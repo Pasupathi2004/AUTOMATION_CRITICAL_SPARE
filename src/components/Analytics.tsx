@@ -48,6 +48,11 @@ const Analytics: React.FC = () => {
     checkMonthlyReset();
   }, []);
 
+  // Refetch analytics when month/year changes
+  useEffect(() => {
+    fetchAnalytics();
+  }, [selectedMonth, selectedYear]);
+
   const checkMonthlyReset = () => {
     const now = new Date();
     const lastReset = localStorage.getItem('lastMonthlyReset');
@@ -99,7 +104,8 @@ const Analytics: React.FC = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.ANALYTICS.DASHBOARD, {
+      const url = `${API_ENDPOINTS.ANALYTICS.DASHBOARD}?month=${selectedMonth}&year=${selectedYear}`;
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -597,6 +603,36 @@ const Analytics: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+          {/* Month/Year Selectors */}
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+              aria-label="Select month"
+            >
+              {Array.from({ length: 12 }, (_, m) => (
+                <option key={m} value={m}>
+                  {new Date(2000, m).toLocaleString('default', { month: 'long' })}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="px-3 py-2 border border-gray-300 rounded-lg bg-white"
+              aria-label="Select year"
+            >
+              {(() => {
+                const current = new Date().getFullYear();
+                const years = [] as number[];
+                for (let y = current - 3; y <= current + 1; y++) years.push(y);
+                return years.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ));
+              })()}
+            </select>
+          </div>
           <button
             onClick={handleDeleteHistory}
             className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"

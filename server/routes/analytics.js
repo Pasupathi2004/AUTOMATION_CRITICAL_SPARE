@@ -13,12 +13,14 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const inventory = await Inventory.find();
   const transactions = await Transaction.find();
 
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  // Allow selecting month/year via query params; default to current
+  const now = new Date();
+  const selectedMonth = Number.isInteger(Number(req.query.month)) ? Number(req.query.month) : now.getMonth();
+  const selectedYear = Number.isInteger(Number(req.query.year)) ? Number(req.query.year) : now.getFullYear();
 
   const monthlyTransactions = transactions.filter(t => {
     const date = new Date(t.timestamp);
-    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
   });
 
   // Build fast lookup for inventory by id (primary) and name (fallback)
@@ -58,7 +60,9 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
       .reduce((sum, t) => sum + t.quantity, 0),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
-    lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity)
+    lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),
+    selectedMonth,
+    selectedYear
   };
 
   res.json({
@@ -72,12 +76,14 @@ router.get('/dashboard', async (req, res) => {
   const inventory = await Inventory.find();
   const transactions = await Transaction.find();
 
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  // Allow selecting month/year via query params; default to current
+  const now = new Date();
+  const selectedMonth = Number.isInteger(Number(req.query.month)) ? Number(req.query.month) : now.getMonth();
+  const selectedYear = Number.isInteger(Number(req.query.year)) ? Number(req.query.year) : now.getFullYear();
 
   const monthlyTransactions = transactions.filter(t => {
     const date = new Date(t.timestamp);
-    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
   });
 
   // Build fast lookup for inventory by id (primary) and name (fallback)
@@ -113,7 +119,9 @@ router.get('/dashboard', async (req, res) => {
     itemsAdded: monthlyTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + t.quantity, 0),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
-    lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity)
+    lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),
+    selectedMonth,
+    selectedYear
   };
 
   res.json({ success: true, analytics });
