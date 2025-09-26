@@ -21,14 +21,15 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   });
 
-  // Build fast lookup for inventory by name
+  // Build fast lookup for inventory by id (primary) and name (fallback)
+  const inventoryById = new Map(inventory.map((i) => [i._id?.toString?.(), i]));
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
 
   // Enrich all monthly transactions with item details
   const enrichedRecentTransactions = monthlyTransactions
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     .map((t) => {
-      const item = inventoryByName.get(t.itemName);
+      const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName);
       return {
         id: t._id?.toString?.() || undefined,
         itemName: t.itemName,
@@ -79,14 +80,15 @@ router.get('/dashboard', async (req, res) => {
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   });
 
-  // Build fast lookup for inventory by name
+  // Build fast lookup for inventory by id (primary) and name (fallback)
+  const inventoryById = new Map(inventory.map((i) => [i._id?.toString?.(), i]));
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
 
   // Enrich all monthly transactions with item details
   const enrichedRecentTransactions = monthlyTransactions
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     .map((t) => {
-      const item = inventoryByName.get(t.itemName);
+      const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName);
       return {
         id: t._id?.toString?.() || undefined,
         itemName: t.itemName,
