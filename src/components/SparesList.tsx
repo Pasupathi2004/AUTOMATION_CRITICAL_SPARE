@@ -296,66 +296,103 @@ const SparesList: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E8B57]"></div>
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Spares List</h1>
-        <button
-          onClick={exportToExcel}
-          className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors mt-2 sm:mt-0"
-        >
-          <Download size={20} />
-          <span>Export Excel</span>
-        </button>
-      </div>
-
-      {/* Standalone Search Box */}
-      <div className="w-full flex flex-col items-center">
-        <div className="relative w-full max-w-xl">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search by name, make, model, specification, row, column, quantity, or user..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent bg-white"
-          />
-          {searchTerm && (
+    <div className="space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative px-6 py-8 sm:px-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                <Package className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                  Spares List
+                </h1>
+                <p className="text-blue-100 text-lg mt-1">Manage your inventory items</p>
+              </div>
+            </div>
             <button
-              onClick={() => setSearchTerm('')}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              onClick={exportToExcel}
+              className="flex items-center justify-center space-x-2 w-full sm:w-auto px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <Download size={20} />
+              <span>Export Excel</span>
             </button>
-          )}
+          </div>
         </div>
       </div>
-      {searchTerm && (
-        <div className="text-center text-sm text-gray-600">
-          Found {filteredInventory.length} item{filteredInventory.length !== 1 ? 's' : ''} matching "{searchTerm}"
-        </div>
-      )}
 
-      {/* Summary/info card comes after search bar */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-            Total Items: {inventory.length}
+      {/* Search Section */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+        <div className="w-full flex flex-col items-center">
+          <div className="relative w-full max-w-2xl">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-6 w-6 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name, make, model, specification, row, column, quantity, or user..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent bg-gray-50/50 hover:bg-white focus:bg-white text-lg transition-all duration-200"
+            />
             {searchTerm && (
-              <span className="text-sm font-normal text-gray-600 ml-2">
-                (Showing {filteredInventory.length} filtered)
-              </span>
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-100 rounded-r-xl transition-colors"
+              >
+                <X className="h-6 w-6 text-gray-400 hover:text-gray-600" />
+              </button>
             )}
-          </h2>
-          <div className="text-xs sm:text-sm text-gray-600">
-            Last updated: {getLastUpdated()}
+          </div>
+        </div>
+        {searchTerm && (
+          <div className="mt-4 text-center">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 rounded-xl border border-blue-200">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span className="text-blue-700 font-semibold">
+                Found {filteredInventory.length} item{filteredInventory.length !== 1 ? 's' : ''} matching "{searchTerm}"
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Summary Card */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Package className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                Total Items: {inventory.length}
+                {searchTerm && (
+                  <span className="text-sm font-normal text-gray-600 ml-2">
+                    (Showing {filteredInventory.length} filtered)
+                  </span>
+                )}
+              </h2>
+              <p className="text-gray-600">Complete inventory overview</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-gray-50/50 px-4 py-2 rounded-xl">
+            <Calendar className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-600 font-medium">
+              Last updated: {getLastUpdated()}
+            </span>
           </div>
         </div>
       </div>
@@ -367,115 +404,118 @@ const SparesList: React.FC = () => {
       )}
 
       {validFilteredInventory.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {validFilteredInventory.map((item) => {
             const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
             return (
-              <div key={item.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <div className="p-4 sm:p-6">
+              <div key={item.id} className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="p-6 sm:p-8">
                   {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-[#2E8B57] rounded-lg p-2">
-                        <Package className="text-white" size={20} />
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg">
+                        <Package className="text-white" size={24} />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${stockStatus.color}`}>
+                        <h3 className="text-xl font-bold text-gray-900 mb-1">{item.name}</h3>
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${stockStatus.color}`}>
                           {stockStatus.status}
                         </span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-gray-900">{item.quantity}</div>
-                      <div className="text-sm text-gray-600">in stock</div>
+                      <div className="text-3xl font-bold text-gray-900">{item.quantity}</div>
+                      <div className="text-sm text-gray-600 font-medium">in stock</div>
                     </div>
                   </div>
 
                   {/* Item Details */}
-                  <div className="space-y-3 mb-4">
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-600">Make:</span>
-                        <div className="text-gray-900">{item.make}</div>
+                  <div className="space-y-4 mb-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl">
+                        <span className="font-semibold text-gray-700 text-sm">Make:</span>
+                        <div className="text-gray-900 font-medium">{item.make}</div>
                       </div>
-                      <div>
-                        <span className="font-medium text-gray-600">Model:</span>
-                        <div className="text-gray-900">{item.model}</div>
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-xl">
+                        <span className="font-semibold text-gray-700 text-sm">Model:</span>
+                        <div className="text-gray-900 font-medium">{item.model}</div>
                       </div>
                     </div>
                     
-                    <div>
-                      <span className="font-medium text-gray-600">Specification:</span>
+                    <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-xl">
+                      <span className="font-semibold text-gray-700 text-sm">Specification:</span>
                       <div className="text-gray-900 text-sm mt-1 line-clamp-2">{item.specification}</div>
                     </div>
                   </div>
 
                   {/* Location Section - Enhanced */}
-                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <MapPin className="text-[#2E8B57]" size={16} />
-                      <span className="font-medium text-gray-700">Storage Location</span>
+                  <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-6 mb-6 border border-emerald-200/50">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
+                        <MapPin className="text-white" size={16} />
+                      </div>
+                      <span className="font-bold text-gray-800">Storage Location</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white rounded-lg p-3 border border-gray-200">
-                        <div className="flex items-center space-x-2">
-                          <Building className="text-blue-600" size={16} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white rounded-xl p-4 border border-emerald-200 shadow-sm">
+                        <div className="flex items-center space-x-3">
+                          <Building className="text-blue-600" size={18} />
                           <div>
-                            <div className="text-xs font-medium text-gray-500 uppercase">Row</div>
-                            <div className="text-lg font-bold text-gray-900">{item.rack}</div>
+                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Row</div>
+                            <div className="text-xl font-bold text-gray-900">{item.rack}</div>
                           </div>
                         </div>
                       </div>
-                      <div className="bg-white rounded-lg p-3 border border-gray-200">
-                        <div className="flex items-center space-x-2">
-                          <Archive className="text-purple-600" size={16} />
+                      <div className="bg-white rounded-xl p-4 border border-emerald-200 shadow-sm">
+                        <div className="flex items-center space-x-3">
+                          <Archive className="text-purple-600" size={18} />
                           <div>
-                            <div className="text-xs font-medium text-gray-500 uppercase">Column</div>
-                            <div className="text-lg font-bold text-gray-900">{item.bin}</div>
+                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Column</div>
+                            <div className="text-xl font-bold text-gray-900">{item.bin}</div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="mt-2 text-center">
-                      <div className="inline-flex items-center space-x-1 px-3 py-1 bg-[#2E8B57] text-white rounded-full text-sm font-medium">
-                        <span>Location: Row {item.rack} - Column {item.bin}</span>
+                    <div className="mt-4 text-center">
+                      <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl text-sm font-semibold shadow-lg">
+                        <MapPin size={16} />
+                        <span>Row {item.rack} - Column {item.bin}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Last Updated Info */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-500 mb-4 gap-2 sm:gap-0">
-                    <div className="flex items-center space-x-1">
-                      <Calendar size={14} />
-                      <span>{safeFormatDate(item.updatedAt)}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-500 mb-6 gap-3">
+                    <div className="flex items-center space-x-2 bg-gray-50/50 px-3 py-2 rounded-lg">
+                      <Calendar size={16} />
+                      <span className="font-medium">{safeFormatDate(item.updatedAt)}</span>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <User size={14} />
-                      <span>{item.updatedBy}</span>
+                    <div className="flex items-center space-x-2 bg-gray-50/50 px-3 py-2 rounded-lg">
+                      <User size={16} />
+                      <span className="font-medium">{item.updatedBy}</span>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-6 border-t border-gray-200/50">
                     {isAdmin && (
                       <button
                         onClick={() => handleEdit(item)}
-                        className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         title="Edit Item"
                       >
                         <Edit size={16} />
-                        <span className="text-sm">Edit</span>
+                        <span>Edit</span>
                       </button>
                     )}
                     {isAdmin && (
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="flex items-center justify-center space-x-1 w-full sm:w-auto px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         title="Delete Item"
                       >
                         <Trash2 size={16} />
-                        <span className="text-sm">Delete</span>
+                        <span>Delete</span>
                       </button>
                     )}
                   </div>
@@ -485,18 +525,20 @@ const SparesList: React.FC = () => {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Package className="mx-auto text-gray-400 mb-4" size={48} />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-12 sm:p-16 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Package className="w-10 h-10 text-gray-400" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">
             {searchTerm ? 'No items found matching your search' : 'No items found'}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-lg mb-6 max-w-md mx-auto">
             {searchTerm ? 'Try adjusting your search terms or clear the search to see all items.' : 'Start by adding some items to your inventory.'}
           </p>
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="mt-4 px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl hover:from-[#236B45] hover:to-[#2563EB] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Clear Search
             </button>
