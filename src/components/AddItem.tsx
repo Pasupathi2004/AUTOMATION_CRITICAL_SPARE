@@ -80,7 +80,7 @@ const AddItem: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-800 via-blue-900 to-slate-700 rounded-2xl shadow-2xl">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative px-6 py-8 sm:px-8 sm:py-12">
           <div className="flex items-center gap-4">
@@ -100,7 +100,7 @@ const AddItem: React.FC = () => {
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
         <div className="p-6 sm:p-8 border-b border-gray-200/50">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-r from-slate-700 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
               <Package className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -123,7 +123,7 @@ const AddItem: React.FC = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter item name"
               />
             </div>
@@ -139,7 +139,7 @@ const AddItem: React.FC = () => {
                 value={formData.make}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter make"
               />
             </div>
@@ -155,7 +155,7 @@ const AddItem: React.FC = () => {
                 value={formData.model}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter model"
               />
             </div>
@@ -172,7 +172,7 @@ const AddItem: React.FC = () => {
                 onChange={handleChange}
                 required
                 min="0"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter quantity"
               />
             </div>
@@ -188,7 +188,7 @@ const AddItem: React.FC = () => {
                 value={formData.rack}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter row location"
               />
             </div>
@@ -204,7 +204,7 @@ const AddItem: React.FC = () => {
                 value={formData.bin}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter column location"
               />
             </div>
@@ -221,7 +221,7 @@ const AddItem: React.FC = () => {
                 onChange={handleChange}
                 required
                 min="0"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
                 placeholder="Enter minimum quantity"
               />
             </div>
@@ -238,7 +238,7 @@ const AddItem: React.FC = () => {
               onChange={handleChange}
               required
               rows={4}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none resize-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none resize-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
               placeholder="Enter detailed specification"
             />
           </div>
@@ -246,11 +246,11 @@ const AddItem: React.FC = () => {
           {message && (
             <div className={`mt-8 p-6 rounded-2xl flex items-center gap-4 ${
               message.type === 'success' 
-                ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-700'
-                : 'bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-700'
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700'
+                : 'bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 text-red-700'
             }`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                message.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+                message.type === 'success' ? 'bg-green-600' : 'bg-red-600'
               }`}>
                 <span className="text-white text-sm font-bold">
                   {message.type === 'success' ? '✓' : '!'}
@@ -280,7 +280,7 @@ const AddItem: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl hover:from-[#236B45] hover:to-[#2563EB] transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-slate-700 to-blue-800 text-white rounded-xl hover:from-slate-800 hover:to-blue-900 transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
@@ -301,7 +301,7 @@ const AddItem: React.FC = () => {
       {/* Bulk Upload Section */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
             <Package className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -351,14 +351,14 @@ const AddItem: React.FC = () => {
               type="file"
               id="bulk-upload-file"
               accept=".xlsx,.xls,.csv"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white"
               required
             />
           </div>
           <button
             type="submit"
             disabled={bulkUploading}
-            className="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+            className="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-slate-700 to-blue-800 text-white rounded-xl hover:from-slate-800 hover:to-blue-900 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
           >
             {bulkUploading ? (
               <div className="flex items-center gap-2">
@@ -372,16 +372,16 @@ const AddItem: React.FC = () => {
           <a
             href="/example-bulk-upload-template.csv"
             download
-            className="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 text-center"
+            className="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-xl hover:from-green-700 hover:to-emerald-800 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 text-center"
           >
             Download Template
           </a>
         </form>
         
         {bulkUploadStatus && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-slate-50 border border-blue-200 rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">i</span>
               </div>
               <span className="text-blue-700 font-semibold">{bulkUploadStatus}</span>

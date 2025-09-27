@@ -599,7 +599,7 @@ const Analytics: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] text-white">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-800 via-blue-900 to-slate-700 text-white">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-7xl mx-auto">
@@ -634,7 +634,7 @@ const Analytics: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4 lg:mt-0">
                 <button
                   onClick={handleDeleteHistory}
-                  className="px-4 py-2 bg-red-500/90 hover:bg-red-600 text-white rounded-xl transition-all duration-200 backdrop-blur-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm sm:text-base"
+                  className="px-4 py-2 bg-red-600/90 hover:bg-red-700 text-white rounded-xl transition-all duration-200 backdrop-blur-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm sm:text-base"
                 >
                   Delete History
                 </button>
@@ -669,7 +669,7 @@ const Analytics: React.FC = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-slate-700 to-blue-800 rounded-xl flex items-center justify-center">
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <div>
@@ -684,7 +684,7 @@ const Analytics: React.FC = () => {
               <select
                 value={selectedMonth}
                 onChange={handleMonthChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-slate-700 focus:border-transparent"
                 aria-label="Select month"
               >
                 {Array.from({ length: 12 }, (_, m) => (
@@ -706,7 +706,7 @@ const Analytics: React.FC = () => {
                     onClick={() => setSelectedMonth(m)}
                       className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
                         isActive 
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
+                          ? 'bg-gradient-to-r from-slate-700 to-blue-800 text-white shadow-lg transform scale-105' 
                           : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-md'
                     }`}
                   >
@@ -782,11 +782,11 @@ const Analytics: React.FC = () => {
       {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {/* Total Items Card */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10"></div>
+          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-slate-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-slate-600/10"></div>
             <div className="relative p-4 sm:p-6">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Package className="text-white" size={20} />
             </div>
                 <div className="text-right">
@@ -805,10 +805,10 @@ const Analytics: React.FC = () => {
 
           {/* Low Stock Card */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-red-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-600/10"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 to-red-600/10"></div>
             <div className="relative p-4 sm:p-6">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
                   <TrendingUp className="text-white" size={20} />
             </div>
                 <div className="text-right">
@@ -826,11 +826,11 @@ const Analytics: React.FC = () => {
         </div>
 
           {/* Transactions Card */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-600/10"></div>
+          <div className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-emerald-700/10"></div>
             <div className="relative p-4 sm:p-6">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Activity className="text-white" size={20} />
             </div>
                 <div className="text-right">
@@ -849,13 +849,13 @@ const Analytics: React.FC = () => {
 
           {/* Active Users Card */}
         <div 
-            className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+            className="group relative overflow-hidden bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
           onClick={() => setShowActiveUsersModal(true)}
         >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-indigo-600/10"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-600/10 to-gray-600/10"></div>
             <div className="relative p-4 sm:p-6">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-slate-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Users className="text-white" size={20} />
             </div>
                 <div className="text-right">
@@ -865,7 +865,7 @@ const Analytics: React.FC = () => {
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">Active Users</h3>
               <p className="text-xs sm:text-sm text-gray-600">Users with activity this month</p>
-              <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm text-purple-600">
+              <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm text-slate-700">
                 <Users size={14} className="mr-1" />
                 <span>Click to view details</span>
             </div>
@@ -877,10 +877,10 @@ const Analytics: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
           {/* Stock Status Chart */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-slate-50/50"></div>
             <div className="relative">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
                   <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
@@ -912,10 +912,10 @@ const Analytics: React.FC = () => {
 
           {/* Monthly Activity Chart */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-green-50/50"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/50"></div>
             <div className="relative">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
@@ -927,15 +927,15 @@ const Analytics: React.FC = () => {
             <Bar data={activityData} options={chartOptions} />
               </div>
               <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
+                <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-green-50 rounded-xl">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-600 rounded-full"></div>
                   <div>
                     <div className="text-xs sm:text-sm font-medium text-gray-900">Items Added</div>
                     <div className="text-xs text-gray-600">{analytics?.itemsAdded || 0} units</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-600 rounded-full"></div>
                   <div>
                     <div className="text-xs sm:text-sm font-medium text-gray-900">Items Consumed</div>
                     <div className="text-xs text-gray-600">{analytics?.itemsConsumed || 0} units</div>

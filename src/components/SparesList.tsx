@@ -298,7 +298,7 @@ const SparesList: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-700 border-t-transparent absolute top-0 left-0"></div>
         </div>
       </div>
     );
@@ -307,7 +307,7 @@ const SparesList: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-800 via-blue-900 to-slate-700 rounded-2xl shadow-2xl">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative px-6 py-8 sm:px-8 sm:py-12">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -345,7 +345,7 @@ const SparesList: React.FC = () => {
               placeholder="Search by name, make, model, specification, row, column, quantity, or user..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent bg-gray-50/50 hover:bg-white focus:bg-white text-lg transition-all duration-200"
+              className="block w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-slate-700 focus:border-transparent bg-gray-50/50 hover:bg-white focus:bg-white text-lg transition-all duration-200"
             />
             {searchTerm && (
               <button
@@ -359,8 +359,8 @@ const SparesList: React.FC = () => {
         </div>
         {searchTerm && (
           <div className="mt-4 text-center">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 rounded-xl border border-blue-200">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-slate-50 px-4 py-2 rounded-xl border border-blue-200">
+              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
               <span className="text-blue-700 font-semibold">
                 Found {filteredInventory.length} item{filteredInventory.length !== 1 ? 's' : ''} matching "{searchTerm}"
               </span>
@@ -373,7 +373,7 @@ const SparesList: React.FC = () => {
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
               <Package className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -413,7 +413,7 @@ const SparesList: React.FC = () => {
                   {/* Header */}
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg">
+                      <div className="w-12 h-12 bg-gradient-to-r from-slate-700 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
                         <Package className="text-white" size={24} />
                       </div>
                       <div>
@@ -432,43 +432,43 @@ const SparesList: React.FC = () => {
                   {/* Item Details */}
                   <div className="space-y-4 mb-6">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl">
+                      <div className="bg-gradient-to-r from-blue-50 to-slate-50 p-3 rounded-xl">
                         <span className="font-semibold text-gray-700 text-sm">Make:</span>
                         <div className="text-gray-900 font-medium">{item.make}</div>
                       </div>
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-xl">
+                      <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-3 rounded-xl">
                         <span className="font-semibold text-gray-700 text-sm">Model:</span>
                         <div className="text-gray-900 font-medium">{item.model}</div>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-xl">
+                    <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-4 rounded-xl">
                       <span className="font-semibold text-gray-700 text-sm">Specification:</span>
                       <div className="text-gray-900 text-sm mt-1 line-clamp-2">{item.specification}</div>
                     </div>
                   </div>
 
                   {/* Location Section - Enhanced */}
-                  <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-6 mb-6 border border-emerald-200/50">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mb-6 border border-green-200/50">
                     <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-emerald-700 rounded-lg flex items-center justify-center">
                         <MapPin className="text-white" size={16} />
                       </div>
                       <span className="font-bold text-gray-800">Storage Location</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white rounded-xl p-4 border border-emerald-200 shadow-sm">
+                        <div className="bg-white rounded-xl p-4 border border-green-200 shadow-sm">
                         <div className="flex items-center space-x-3">
-                          <Building className="text-blue-600" size={18} />
+                          <Building className="text-slate-700" size={18} />
                           <div>
                             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Row</div>
                             <div className="text-xl font-bold text-gray-900">{item.rack}</div>
                           </div>
                         </div>
                       </div>
-                      <div className="bg-white rounded-xl p-4 border border-emerald-200 shadow-sm">
+                        <div className="bg-white rounded-xl p-4 border border-green-200 shadow-sm">
                         <div className="flex items-center space-x-3">
-                          <Archive className="text-purple-600" size={18} />
+                          <Archive className="text-gray-700" size={18} />
                           <div>
                             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Column</div>
                             <div className="text-xl font-bold text-gray-900">{item.bin}</div>
@@ -477,7 +477,7 @@ const SparesList: React.FC = () => {
                       </div>
                     </div>
                     <div className="mt-4 text-center">
-                      <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl text-sm font-semibold shadow-lg">
+                      <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-slate-700 to-blue-800 text-white rounded-xl text-sm font-semibold shadow-lg">
                         <MapPin size={16} />
                         <span>Row {item.rack} - Column {item.bin}</span>
                       </div>
@@ -501,7 +501,7 @@ const SparesList: React.FC = () => {
                     {isAdmin && (
                       <button
                         onClick={() => handleEdit(item)}
-                        className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-slate-700 to-blue-800 text-white rounded-xl hover:from-slate-800 hover:to-blue-900 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         title="Edit Item"
                       >
                         <Edit size={16} />
@@ -511,7 +511,7 @@ const SparesList: React.FC = () => {
                     {isAdmin && (
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl hover:from-red-700 hover:to-orange-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         title="Delete Item"
                       >
                         <Trash2 size={16} />
@@ -526,7 +526,7 @@ const SparesList: React.FC = () => {
         </div>
       ) : (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-12 sm:p-16 text-center">
-          <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-gradient-to-r from-slate-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Package className="w-10 h-10 text-gray-400" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">
@@ -538,7 +538,7 @@ const SparesList: React.FC = () => {
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="px-6 py-3 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl hover:from-[#236B45] hover:to-[#2563EB] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="px-6 py-3 bg-gradient-to-r from-slate-700 to-blue-800 text-white rounded-xl hover:from-slate-800 hover:to-blue-900 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Clear Search
             </button>

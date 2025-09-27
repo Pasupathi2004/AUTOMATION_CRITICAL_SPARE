@@ -70,9 +70,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-gray-50 to-blue-50">
       {/* Header */}
-      <header className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] text-white shadow-2xl">
+      <header className="relative overflow-hidden bg-gradient-to-r from-slate-800 via-blue-900 to-slate-700 text-white shadow-2xl">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative px-2 sm:px-4 lg:px-8 w-full">
           <div className="flex flex-row items-center h-16 w-full relative">
@@ -216,12 +216,12 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                       }}
                       className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-xl transition-all duration-200 group ${
                         isActive
-                          ? 'bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white shadow-lg transform scale-105'
-                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:shadow-md hover:transform hover:scale-102'
+                          ? 'bg-gradient-to-r from-slate-700 to-blue-800 text-white shadow-lg transform scale-105'
+                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-blue-100 hover:shadow-md hover:transform hover:scale-102'
                       }`}
                     >
                       <Icon size={20} className={`transition-colors duration-200 ${
-                        isActive ? 'text-white' : 'text-gray-600 group-hover:text-[#2E8B57]'
+                        isActive ? 'text-white' : 'text-gray-600 group-hover:text-slate-700'
                       }`} />
                       <span className="font-medium">{item.label}</span>
                     </button>

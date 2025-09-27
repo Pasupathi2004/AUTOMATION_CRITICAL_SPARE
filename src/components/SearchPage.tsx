@@ -243,7 +243,7 @@ const SearchPage: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-700 border-t-transparent absolute top-0 left-0"></div>
         </div>
       </div>
     );
@@ -253,16 +253,16 @@ const SearchPage: React.FC = () => {
     <div className="space-y-6 sm:space-y-8">
       {/* Success Message */}
       {successMessage && (
-        <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-between shadow-lg">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 px-6 py-4 rounded-2xl flex items-center justify-between shadow-lg">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">✓</span>
             </div>
             <span className="font-semibold">{successMessage}</span>
           </div>
           <button
             onClick={() => setSuccessMessage(null)}
-            className="text-emerald-500 hover:text-emerald-700 p-1 rounded-lg hover:bg-emerald-100 transition-colors"
+            className="text-green-600 hover:text-green-700 p-1 rounded-lg hover:bg-green-100 transition-colors"
           >
             ×
           </button>
@@ -270,7 +270,7 @@ const SearchPage: React.FC = () => {
       )}
       
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-800 via-blue-900 to-slate-700 rounded-2xl shadow-2xl">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative px-6 py-8 sm:px-8 sm:py-12">
           <div className="flex items-center gap-4">
@@ -297,7 +297,7 @@ const SearchPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, make, model, specification, row, column, quantity, or location..."
-              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white text-lg"
+              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white text-lg"
             />
           </div>
           
@@ -306,8 +306,8 @@ const SearchPage: React.FC = () => {
               onClick={isListening ? stopVoiceSearch : startVoiceSearch}
               className={`w-full sm:w-auto p-4 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
                 isListening 
-                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700' 
-                  : 'bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white hover:from-[#236B45] hover:to-[#2563EB]'
+                  ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800' 
+                  : 'bg-gradient-to-r from-slate-700 to-blue-800 text-white hover:from-slate-800 hover:to-blue-900'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -322,8 +322,8 @@ const SearchPage: React.FC = () => {
         
         {isListening && (
           <div className="mt-6 flex items-center justify-center">
-            <div className="flex items-center space-x-3 bg-gradient-to-r from-red-50 to-pink-50 px-6 py-3 rounded-xl border border-red-200">
-              <div className="animate-pulse w-4 h-4 bg-red-500 rounded-full"></div>
+            <div className="flex items-center space-x-3 bg-gradient-to-r from-red-50 to-orange-50 px-6 py-3 rounded-xl border border-red-200">
+              <div className="animate-pulse w-4 h-4 bg-red-600 rounded-full"></div>
               <span className="text-red-700 font-semibold">Listening for your voice...</span>
             </div>
           </div>
@@ -335,7 +335,7 @@ const SearchPage: React.FC = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
           <div className="p-6 sm:p-8 border-b border-gray-200/50">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
                 <Package className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -352,11 +352,11 @@ const SearchPage: React.FC = () => {
               {filteredItems.map((item) => {
                 const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
                 return (
-                  <div key={item.id} className="p-6 sm:p-8 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200 group">
+                  <div key={item.id} className="p-6 sm:p-8 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-200 group">
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg">
+                          <div className="w-12 h-12 bg-gradient-to-r from-slate-700 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
                             <Package className="text-white" size={24} />
                           </div>
                           <div>
@@ -381,7 +381,7 @@ const SearchPage: React.FC = () => {
                         
                         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 text-sm text-gray-600">
                           <div className="flex items-center space-x-2 bg-blue-50/50 px-3 py-2 rounded-lg">
-                            <MapPin size={16} className="text-blue-600" />
+                            <MapPin size={16} className="text-slate-700" />
                             <span className="font-medium">Row {item.rack} - Column {item.bin}</span>
                           </div>
                           <div className="bg-gray-50/50 px-3 py-2 rounded-lg">
@@ -394,11 +394,11 @@ const SearchPage: React.FC = () => {
                       </div>
                       
                       <div className="lg:text-right">
-                        <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl border border-gray-200/50">
+                        <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-6 rounded-2xl border border-gray-200/50">
                           <div className="mb-4">
                             <div className="text-4xl font-bold text-gray-900 mb-1">
                               {updatingItems.has(item.id) ? (
-                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#2E8B57] border-t-transparent mx-auto"></div>
+                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-slate-700 border-t-transparent mx-auto"></div>
                               ) : (
                                 item.quantity
                               )}
@@ -413,21 +413,21 @@ const SearchPage: React.FC = () => {
                               max={item.quantity}
                               value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : ''}
                               onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all"
                               disabled={updatingItems.has(item.id)}
                               placeholder="Qty to take"
                             />
                             <textarea
                               value={remarksInputs[item.id] || ''}
                               onChange={(e) => setRemarksInputs(prev => ({ ...prev, [item.id]: e.target.value }))}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-left focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all resize-none"
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-left focus:ring-2 focus:ring-slate-700 focus:border-transparent outline-none transition-all resize-none"
                               placeholder="Remarks (required)"
                               rows={2}
                             />
                             <button
                               onClick={() => handleTakeQuantity(item)}
                               disabled={updatingItems.has(item.id) || !quantityInputs[item.id] || isNaN(Number(quantityInputs[item.id])) || Number(quantityInputs[item.id]) < 1 || Number(quantityInputs[item.id]) > item.quantity || !remarksInputs[item.id] || !remarksInputs[item.id].trim()}
-                              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                              className="w-full bg-gradient-to-r from-slate-700 to-blue-800 text-white py-2 px-4 rounded-lg hover:from-slate-800 hover:to-blue-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
                             >
                               Update Quantity
                             </button>
@@ -441,7 +441,7 @@ const SearchPage: React.FC = () => {
             </div>
           ) : (
             <div className="p-12 sm:p-16 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-gradient-to-r from-slate-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Package className="w-10 h-10 text-gray-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">No items found</h3>
@@ -456,7 +456,7 @@ const SearchPage: React.FC = () => {
       {/* Search Instructions */}
       {!searchQuery && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 sm:p-12 text-center">
-          <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-gradient-to-r from-slate-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Search className="w-10 h-10 text-gray-400" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">Start searching</h3>
@@ -464,22 +464,22 @@ const SearchPage: React.FC = () => {
             Enter keywords to search through inventory items by name, make, model, specification, or location.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="group p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl hover:shadow-lg transition-all duration-200">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+            <div className="group p-6 bg-gradient-to-br from-blue-50 to-slate-100 rounded-2xl hover:shadow-lg transition-all duration-200">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-slate-700 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
                 <Search className="w-6 h-6 text-white" />
               </div>
               <h4 className="font-bold text-gray-900 mb-2 text-lg">🔍 Text Search</h4>
               <p className="text-gray-600">Type any keyword to find matching items</p>
             </div>
-            <div className="group p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl hover:shadow-lg transition-all duration-200">
-              <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+            <div className="group p-6 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl hover:shadow-lg transition-all duration-200">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
                 <Mic className="w-6 h-6 text-white" />
               </div>
               <h4 className="font-bold text-gray-900 mb-2 text-lg">🎤 Voice Search</h4>
               <p className="text-gray-600">Click the microphone icon to search by voice</p>
             </div>
-            <div className="group p-6 bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl hover:shadow-lg transition-all duration-200">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+            <div className="group p-6 bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl hover:shadow-lg transition-all duration-200">
+              <div className="w-12 h-12 bg-gradient-to-r from-slate-600 to-gray-700 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <h4 className="font-bold text-gray-900 mb-2 text-lg">⌨️ Quick Search</h4>

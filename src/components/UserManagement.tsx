@@ -172,7 +172,7 @@ const UserManagement: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-700 border-t-transparent absolute top-0 left-0"></div>
         </div>
       </div>
     );
@@ -181,7 +181,7 @@ const UserManagement: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-800 via-blue-900 to-slate-700 rounded-2xl shadow-2xl">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative px-6 py-8 sm:px-8 sm:py-12">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -210,11 +210,11 @@ const UserManagement: React.FC = () => {
       {message && (
         <div className={`p-6 rounded-2xl flex items-center gap-4 ${
           message.type === 'success' 
-            ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-700'
-            : 'bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-700'
+            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700'
+            : 'bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 text-red-700'
         }`}>
           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            message.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+            message.type === 'success' ? 'bg-green-600' : 'bg-red-600'
           }`}>
             <span className="text-white text-sm font-bold">
               {message.type === 'success' ? '✓' : '!'}
@@ -227,7 +227,7 @@ const UserManagement: React.FC = () => {
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
         <div className="p-6 sm:p-8 border-b border-gray-200/50">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -242,7 +242,7 @@ const UserManagement: React.FC = () => {
             {/* Desktop Table */}
             <div className="hidden sm:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200/50">
-              <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
+              <thead className="bg-gradient-to-r from-slate-50 to-blue-50">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     User
@@ -260,16 +260,16 @@ const UserManagement: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200/50">
                 {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200">
+                  <tr key={user.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-slate-50/50 transition-all duration-200">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className={`rounded-xl p-3 shadow-lg ${
-                          user.role === 'admin' ? 'bg-gradient-to-r from-red-100 to-pink-100' : 'bg-gradient-to-r from-blue-100 to-indigo-100'
+                          user.role === 'admin' ? 'bg-gradient-to-r from-red-100 to-orange-100' : 'bg-gradient-to-r from-blue-100 to-slate-100'
                         }`}>
                           {user.role === 'admin' ? (
-                            <Shield className={`${user.role === 'admin' ? 'text-red-600' : 'text-blue-600'}`} size={20} />
+                            <Shield className={`${user.role === 'admin' ? 'text-red-600' : 'text-slate-700'}`} size={20} />
                           ) : (
-                            <UserIcon className="text-blue-600" size={20} />
+                            <UserIcon className="text-slate-700" size={20} />
                           )}
                         </div>
                         <div className="ml-4">
@@ -283,8 +283,8 @@ const UserManagement: React.FC = () => {
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                         user.role === 'admin' 
-                          ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800' 
-                          : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800'
+                          ? 'bg-gradient-to-r from-red-100 to-orange-100 text-red-800' 
+                          : 'bg-gradient-to-r from-blue-100 to-slate-100 text-blue-800'
                       }`}>
                         {user.role}
                       </span>
@@ -296,7 +296,7 @@ const UserManagement: React.FC = () => {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-2">
                         <button
                           onClick={() => openEditModal(user)}
-                            className="text-blue-600 hover:text-blue-900 p-2 rounded-xl w-full sm:w-auto text-center bg-blue-50 hover:bg-blue-100 transition-all duration-200 shadow-sm hover:shadow-md"
+                            className="text-slate-700 hover:text-slate-900 p-2 rounded-xl w-full sm:w-auto text-center bg-slate-50 hover:bg-slate-100 transition-all duration-200 shadow-sm hover:shadow-md"
                           title="Change Password"
                         >
                           <Edit size={18} />
@@ -320,15 +320,15 @@ const UserManagement: React.FC = () => {
             {/* Mobile Cards */}
             <div className="sm:hidden space-y-4 p-6">
               {users.map((user) => (
-                <div key={user.id} className="bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-lg border border-blue-200/50 p-6">
+                <div key={user.id} className="bg-gradient-to-r from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200/50 p-6">
                   <div className="flex items-center gap-4 mb-4">
                     <div className={`rounded-xl p-3 shadow-lg ${
-                      user.role === 'admin' ? 'bg-gradient-to-r from-red-100 to-pink-100' : 'bg-gradient-to-r from-blue-100 to-indigo-100'
+                      user.role === 'admin' ? 'bg-gradient-to-r from-red-100 to-orange-100' : 'bg-gradient-to-r from-blue-100 to-slate-100'
                     }`}>
                       {user.role === 'admin' ? (
                         <Shield className="text-red-600" size={20} />
                       ) : (
-                        <UserIcon className="text-blue-600" size={20} />
+                        <UserIcon className="text-slate-700" size={20} />
                       )}
                     </div>
                     <div className="flex-1">
@@ -342,8 +342,8 @@ const UserManagement: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
                       user.role === 'admin' 
-                        ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800' 
-                        : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800'
+                        ? 'bg-gradient-to-r from-red-100 to-orange-100 text-red-800' 
+                        : 'bg-gradient-to-r from-blue-100 to-slate-100 text-blue-800'
                     }`}>
                       {user.role}
                     </span>
@@ -353,7 +353,7 @@ const UserManagement: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       onClick={() => openEditModal(user)}
-                      className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center"
+                      className="flex-1 bg-gradient-to-r from-slate-700 to-blue-800 text-white p-3 rounded-xl hover:from-slate-800 hover:to-blue-900 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center"
                       title="Change Password"
                     >
                       <Edit size={18} className="mx-auto" />
@@ -361,7 +361,7 @@ const UserManagement: React.FC = () => {
                     {user.id !== currentUser?.id && (
                       <button
                         onClick={() => handleDeleteUser(user.id)}
-                        className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 text-white p-3 rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center"
+                        className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 text-white p-3 rounded-xl hover:from-red-700 hover:to-orange-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center"
                         title="Delete User"
                       >
                         <Trash2 size={18} className="mx-auto" />
@@ -374,14 +374,14 @@ const UserManagement: React.FC = () => {
           </>
         ) : (
           <div className="p-12 sm:p-16 text-center">
-            <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-gradient-to-r from-slate-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Users className="w-10 h-10 text-gray-400" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3">No users found</h3>
             <p className="text-gray-600 text-lg mb-6">Start by adding some users to the system.</p>
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-6 py-3 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl hover:from-[#236B45] hover:to-[#2563EB] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="px-6 py-3 bg-gradient-to-r from-slate-700 to-blue-800 text-white rounded-xl hover:from-slate-800 hover:to-blue-900 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Add First User
             </button>
