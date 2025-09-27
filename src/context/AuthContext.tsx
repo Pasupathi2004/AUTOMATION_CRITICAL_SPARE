@@ -30,8 +30,13 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('token');
+  });
   const [isLoading] = useState(false);
 
   const login = async (username: string, password: string): Promise<boolean> => {
@@ -49,6 +54,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data.success && data.user && data.token) {
         setUser(data.user);
         setToken(data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('token', data.token);
         return true;
       } else {
         console.error('Login failed:', data.message);
@@ -63,6 +70,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   return (
