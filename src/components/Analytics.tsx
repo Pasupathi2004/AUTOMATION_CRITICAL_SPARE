@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, BarChart3, X } from 'lucide-react';
+import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Analytics as AnalyticsType } from '../types';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
@@ -597,180 +597,142 @@ const Analytics: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative px-6 py-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                    <BarChart3 className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                      Analytics Dashboard
-                    </h1>
-                    <p className="text-blue-100 text-lg">
-                      Comprehensive insights and reporting
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
-                    <Calendar className="w-4 h-4" />
-                    <span>{new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
-                    <Activity className="w-4 h-4" />
-                    <span>{analytics?.totalTransactions || 0} Transactions</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  onClick={handleDeleteHistory}
-                  className="px-4 py-2 bg-red-500/90 hover:bg-red-600 text-white rounded-xl transition-all duration-200 backdrop-blur-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Delete History
-                </button>
-                <button
-                  onClick={() => setShowSettings(s => !s)}
-                  className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30"
-                >
-                  Settings
-                </button>
-                <button
-                  onClick={generateExcelReport}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30"
-                >
-                  <FileSpreadsheet size={18} />
-                  <span>Excel Report</span>
-                </button>
-                <button
-                  onClick={generateComprehensiveExcelReport}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30"
-                >
-                  <FileSpreadsheet size={18} />
-                  <span>Monthly Report</span>
-                </button>
-              </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Viewing {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+          <button
+            onClick={handleDeleteHistory}
+            className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <span className="text-sm">Delete History</span>
+          </button>
+          <button
+            onClick={() => setShowSettings(s => !s)}
+            className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <span className="text-sm">Settings</span>
+          </button>
+          <button
+            onClick={generateExcelReport}
+            className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+          >
+            <FileSpreadsheet size={16} />
+            <span className="text-sm">Excel Report</span>
+          </button>
+          <button
+            onClick={generateComprehensiveExcelReport}
+            className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
+          >
+            <FileSpreadsheet size={16} />
+            <span className="text-sm">Monthly Report</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Period Selector */}
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#2E8B57] rounded-lg p-2">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Select Period</h3>
+              <p className="text-sm text-gray-600">Choose the time range for your analytics</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Mobile: Month dropdown */}
+            <div className="sm:hidden">
+              <select
+                value={selectedMonth}
+                onChange={handleMonthChange}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+                aria-label="Select month"
+              >
+                {Array.from({ length: 12 }, (_, m) => (
+                  <option key={m} value={m}>
+                    {new Date(2000, m).toLocaleString('default', { month: 'long' })}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Desktop: Month chips */}
+            <div className="hidden sm:flex gap-1 p-1 bg-gray-100 rounded-lg">
+              {Array.from({ length: 12 }, (_, m) => {
+                const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
+                const isActive = selectedMonth === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => setSelectedMonth(m)}
+                    className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                      isActive ? 'bg-[#2E8B57] text-white shadow' : 'text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Year Controls */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedYear(selectedYear - 1)}
+                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                aria-label="Previous year"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <select
+                value={selectedYear}
+                onChange={handleYearChange}
+                className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+                aria-label="Select year"
+              >
+                {(() => {
+                  const current = new Date().getFullYear();
+                  const years = [] as number[];
+                  for (let y = current - 5; y <= current + 2; y++) years.push(y);
+                  return years.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ));
+                })()}
+              </select>
+              <button
+                onClick={() => setSelectedYear(selectedYear + 1)}
+                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                aria-label="Next year"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Period Selector */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">Select Period</h3>
-                <p className="text-gray-600">Choose the time range for your analytics</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Mobile: Month dropdown */}
-              <div className="lg:hidden">
-                <select
-                  value={selectedMonth}
-                  onChange={handleMonthChange}
-                  className="px-4 py-3 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  aria-label="Select month"
-                >
-                  {Array.from({ length: 12 }, (_, m) => (
-                    <option key={m} value={m}>
-                      {new Date(2000, m).toLocaleString('default', { month: 'long' })}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              {/* Desktop: Month chips */}
-              <div className="hidden lg:flex gap-2 p-2 bg-gray-50 rounded-xl">
-                {Array.from({ length: 12 }, (_, m) => {
-                  const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
-                  const isActive = selectedMonth === m;
-                  return (
-                    <button
-                      key={m}
-                      onClick={() => setSelectedMonth(m)}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                        isActive 
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
-                          : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-md'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-              
-              {/* Year Controls */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSelectedYear(selectedYear - 1)}
-                  className="p-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-200"
-                  aria-label="Previous year"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <select
-                  value={selectedYear}
-                  onChange={handleYearChange}
-                  className="px-4 py-3 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  aria-label="Select year"
-                >
-                  {(() => {
-                    const current = new Date().getFullYear();
-                    const years = [] as number[];
-                    for (let y = current - 5; y <= current + 2; y++) years.push(y);
-                    return years.map((y) => (
-                      <option key={y} value={y}>{y}</option>
-                    ));
-                  })()}
-                </select>
-                <button
-                  onClick={() => setSelectedYear(selectedYear + 1)}
-                  className="p-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-200"
-                  aria-label="Next year"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
+          <span className="text-sm">{successMessage}</span>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="text-green-500 hover:text-green-700 ml-2"
+          >
+            <X size={16} />
+          </button>
         </div>
-
-        {/* Success Message */}
-        {successMessage && (
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-6 py-4 rounded-2xl flex items-center justify-between shadow-lg">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="font-medium">{successMessage}</span>
-            </div>
-            <button
-              onClick={() => setSuccessMessage(null)}
-              className="text-green-600 hover:text-green-800 transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-        )}
+      )}
 
       {showSettings && (
         <div className="bg-white rounded-lg shadow-md p-6 mt-4">
@@ -779,557 +741,425 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {/* Total Items Card */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10"></div>
-            <div className="relative p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Package className="text-white" size={24} />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{analytics?.totalItems || 0}</div>
-                  <div className="text-sm text-gray-600">Items</div>
-                </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Total Items Card */}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="bg-blue-100 rounded-lg p-3">
+                <Package className="text-blue-600" size={24} />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Inventory</h3>
-              <p className="text-sm text-gray-600">Complete item count in system</p>
-              <div className="mt-4 flex items-center text-sm text-blue-600">
-                <TrendingUp size={16} className="mr-1" />
-                <span>All categories</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Low Stock Card */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-red-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-600/10"></div>
-            <div className="relative p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <TrendingUp className="text-white" size={24} />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{analytics?.lowStockItems || 0}</div>
-                  <div className="text-sm text-gray-600">Items</div>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Low Stock Alert</h3>
-              <p className="text-sm text-gray-600">Items requiring attention</p>
-              <div className="mt-4 flex items-center text-sm text-orange-600">
-                <Activity size={16} className="mr-1" />
-                <span>Needs restocking</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Transactions Card */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-600/10"></div>
-            <div className="relative p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Activity className="text-white" size={24} />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{analytics?.totalTransactions || 0}</div>
-                  <div className="text-sm text-gray-600">This Month</div>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Monthly Activity</h3>
-              <p className="text-sm text-gray-600">Total transactions recorded</p>
-              <div className="mt-4 flex items-center text-sm text-emerald-600">
-                <Calendar size={16} className="mr-1" />
-                <span>{new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long' })}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Users Card */}
-          <div 
-            className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
-            onClick={() => setShowActiveUsersModal(true)}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-indigo-600/10"></div>
-            <div className="relative p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Users className="text-white" size={24} />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{analytics?.activeUsers || 0}</div>
-                  <div className="text-sm text-gray-600">Users</div>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Active Users</h3>
-              <p className="text-sm text-gray-600">Users with activity this month</p>
-              <div className="mt-4 flex items-center text-sm text-purple-600">
-                <Users size={16} className="mr-1" />
-                <span>Click to view details</span>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Items</p>
+                <p className="text-2xl font-bold text-gray-900">{analytics?.totalItems || 0}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {/* Stock Status Chart */}
-          <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Stock Status Distribution</h3>
-                  <p className="text-gray-600">Current inventory levels overview</p>
-                </div>
+        {/* Low Stock Card */}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="bg-orange-100 rounded-lg p-3">
+                <TrendingUp className="text-orange-600" size={24} />
               </div>
-              <div className="h-80 flex items-center justify-center">
-                <Doughnut data={stockStatusData} options={chartOptions} />
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-red-50 rounded-xl">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Out of Stock</div>
-                    <div className="text-xs text-gray-600">{analytics?.lowStockAlerts?.filter(item => item.quantity === 0).length || 0} items</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Low Stock</div>
-                    <div className="text-xs text-gray-600">{analytics?.lowStockAlerts?.filter(item => item.quantity > 0 && item.quantity <= 5).length || 0} items</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Monthly Activity Chart */}
-          <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-green-50/50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Activity className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Monthly Activity</h3>
-                  <p className="text-gray-600">Items added vs consumed this month</p>
-                </div>
-              </div>
-              <div className="h-80 flex items-center justify-center">
-                <Bar data={activityData} options={chartOptions} />
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl">
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Items Added</div>
-                    <div className="text-xs text-gray-600">{analytics?.itemsAdded || 0} units</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-red-50 rounded-xl">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Items Consumed</div>
-                    <div className="text-xs text-gray-600">{analytics?.itemsConsumed || 0} units</div>
-                  </div>
-                </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
+                <p className="text-2xl font-bold text-gray-900">{analytics?.lowStockItems || 0}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Recent Transactions */}
-        <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
-          <div className="relative">
-            <div className="p-8 border-b border-gray-200/50">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Activity className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Recent Transactions</h3>
-                    <p className="text-gray-600">
-                      {analytics?.totalTransactions || 0} transactions in {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAllTransactions(!showAllTransactions)}
-                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  <span>{showAllTransactions ? 'Show Less' : 'Show All'}</span>
-                  {showAllTransactions ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </button>
+        {/* Transactions Card */}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="bg-emerald-100 rounded-lg p-3">
+                <Activity className="text-emerald-600" size={24} />
               </div>
-            </div>
-            <div className="divide-y divide-gray-200/50">
-              {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
-                (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 5)).map((transaction) => (
-                  <div key={transaction.id} className="p-6 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-300 group">
-                    <div className="flex items-start gap-6">
-                      {/* Status Indicator */}
-                      <div className="flex-shrink-0">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
-                          transaction.type === 'added' ? 'bg-gradient-to-br from-emerald-500 to-emerald-700' :
-                          transaction.type === 'taken' ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 
-                          'bg-gradient-to-br from-orange-500 to-orange-700'
-                        }`}>
-                          <span className="text-white font-bold text-xl">
-                            {transaction.type === 'added' ? '+' : transaction.type === 'taken' ? '-' : '↻'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Transaction Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-3">
-                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
-                                {transaction.itemName}
-                              </h4>
-                              <span className={`px-4 py-2 text-sm font-semibold rounded-xl shadow-sm ${
-                                transaction.type === 'added' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                                transaction.type === 'taken' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 
-                                'bg-orange-100 text-orange-800 border border-orange-200'
-                              }`}>
-                                {transaction.type.toUpperCase()}
-                              </span>
-                              {isOwner && (
-                                <button
-                                  onClick={() => setEditTx({
-                                    id: transaction.id,
-                                    timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
-                                    remarks: transaction.remarks || '',
-                                    quantity: transaction.quantity || 0
-                                  })}
-                                  className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                                >
-                                  Edit
-                                </button>
-                              )}
-                            </div>
-                            
-                            <div className="text-gray-600 mb-4">
-                              <div className="font-semibold text-gray-900">{transaction.make} {transaction.model}</div>
-                              <div className="text-gray-500">{transaction.specification}</div>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                <span className="font-semibold">Qty: {transaction.quantity}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <User size={18} className="text-gray-400" />
-                                <span>{transaction.user}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar size={18} className="text-gray-400" />
-                                <span>{safeFormatDate(transaction.timestamp)}</span>
-                              </div>
-                            </div>
-
-                            {transaction.remarks && (
-                              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-400">
-                                <div className="text-sm text-gray-700">
-                                  <span className="font-semibold text-gray-900">Remarks:</span> {transaction.remarks}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <Activity className="w-10 h-10 text-blue-500" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">No Recent Transactions</h3>
-                  <p className="text-gray-600 max-w-md mx-auto">Transaction history will appear here as activity occurs in your inventory system.</p>
-                </div>
-              )}
-              {analytics?.recentTransactions && analytics.recentTransactions.length > 5 && !showAllTransactions && (
-                <div className="p-8 text-center bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-t border-gray-200/50">
-                  <div className="flex items-center justify-center gap-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                      <ChevronDown className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-2">
-                        Showing 5 of {analytics.recentTransactions.length} transactions
-                      </p>
-                      <button 
-                        onClick={() => setShowAllTransactions(true)}
-                        className="text-sm text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors"
-                      >
-                        View all {analytics.recentTransactions.length} transactions →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Monthly Transactions</p>
+                <p className="text-2xl font-bold text-gray-900">{analytics?.totalTransactions || 0}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Low Stock Alerts */}
-        {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
-          <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-orange-50/50"></div>
-            <div className="relative">
-              <div className="p-8 border-b border-gray-200/50">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <TrendingUp className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Low Stock Alerts</h3>
-                      <p className="text-gray-600">
-                        {analytics.lowStockAlerts.length} item{analytics.lowStockAlerts.length !== 1 ? 's' : ''} need attention
-                      </p>
-                    </div>
-                  </div>
-                  {analytics.lowStockAlerts.length > 5 && (
-                    <button
-                      onClick={() => setShowAllLowStock(!showAllLowStock)}
-                      className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                    >
-                      <span>{showAllLowStock ? 'Show Less' : 'Show All'}</span>
-                      {showAllLowStock ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                    </button>
-                  )}
-                </div>
+        {/* Active Users Card */}
+        <div 
+          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => setShowActiveUsersModal(true)}
+        >
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="bg-indigo-100 rounded-lg p-3">
+                <Users className="text-indigo-600" size={24} />
               </div>
-              <div className="divide-y divide-gray-200/50">
-                {(showAllLowStock ? analytics.lowStockAlerts : analytics.lowStockAlerts.slice(0, 5)).map((item) => (
-                  <div key={item.id} className="p-6 hover:bg-gradient-to-r hover:from-red-50/50 hover:to-orange-50/50 transition-all duration-300 group">
-                    <div className="flex items-start gap-6">
-                      {/* Status Indicator */}
-                      <div className="flex-shrink-0">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
-                          item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
-                          item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
-                          'bg-gradient-to-br from-amber-500 to-amber-700'
-                        }`}>
-                          <span className="text-white font-bold text-xl">
-                            {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Item Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-3">
-                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-red-900 transition-colors">
-                                {item.name}
-                              </h4>
-                              <span className={`px-4 py-2 text-sm font-semibold rounded-xl shadow-sm ${
-                                item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
-                                item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
-                                'bg-amber-100 text-amber-800 border border-amber-200'
-                              }`}>
-                                {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
-                              </span>
-                            </div>
-                            
-                            <div className="text-gray-600 mb-4">
-                              <div className="font-semibold text-gray-900">{item.make} {item.model}</div>
-                              <div className="text-gray-500">{item.specification}</div>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                <span className="font-semibold">Qty: {item.quantity}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Package size={18} className="text-gray-400" />
-                                <span>Row {item.rack} - Column {item.bin}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar size={18} className="text-gray-400" />
-                                <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
-                              </div>
-                            </div>
-
-                            {item.updatedBy && (
-                              <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-400">
-                                <div className="text-sm text-gray-700">
-                                  <span className="font-semibold text-gray-900">Last Updated by:</span> {item.updatedBy}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Quantity Display */}
-                      <div className="text-right">
-                        <div className={`text-3xl font-bold ${
-                          item.quantity === 0 ? 'text-red-600' :
-                          item.quantity <= 2 ? 'text-orange-600' :
-                          'text-amber-600'
-                        }`}>
-                          {item.quantity}
-                        </div>
-                        <div className="text-sm text-gray-600">remaining</div>
-                        <div className={`text-xs font-semibold mt-2 px-3 py-1 rounded-lg ${
-                          item.quantity === 0 ? 'bg-red-100 text-red-800' :
-                          item.quantity <= 2 ? 'bg-orange-100 text-orange-800' :
-                          'bg-amber-100 text-amber-800'
-                        }`}>
-                          {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {analytics.lowStockAlerts.length > 5 && !showAllLowStock && (
-                  <div className="p-8 text-center bg-gradient-to-r from-red-50/50 to-orange-50/50 border-t border-gray-200/50">
-                    <div className="flex items-center justify-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center">
-                        <ChevronDown className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
-                          Showing 5 of {analytics.lowStockAlerts.length} low stock items
-                        </p>
-                        <button 
-                          onClick={() => setShowAllLowStock(true)}
-                          className="text-sm text-red-600 hover:text-red-800 font-semibold hover:underline transition-colors"
-                        >
-                          View all {analytics.lowStockAlerts.length} items →
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Active Users</p>
+                <p className="text-2xl font-bold text-gray-900">{analytics?.activeUsers || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">Click to view names</p>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Data Integrity & Storage Cards */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {/* Data Integrity Card */}
-          <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Data Integrity</h3>
-                  <p className="text-gray-600">System health and data validation</p>
-                </div>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Stock Status Chart */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Stock Status Distribution</h3>
+          <div className="h-40 sm:h-64">
+            <Doughnut data={stockStatusData} options={chartOptions} />
+          </div>
+        </div>
+
+        {/* Monthly Activity Chart */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Monthly Activity</h3>
+          <div className="h-40 sm:h-64">
+            <Bar data={activityData} options={chartOptions} />
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Transactions */}
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-gray-50 to-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <Activity className="w-5 h-5 text-blue-600" />
               </div>
-              {integrity ? (
-                <div className="space-y-4">
-                  {Object.entries(integrity).map(([key, value]: [string, any]) => (
-                    <div key={key} className="flex justify-between items-center p-4 bg-white/50 rounded-xl">
-                      <span className="text-sm font-semibold text-gray-700 capitalize">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Transactions - {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
+                <p className="text-sm text-gray-600">
+                  {analytics?.totalTransactions || 0} total transactions in {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long' })}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowAllTransactions(!showAllTransactions)}
+              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            >
+              <span>{showAllTransactions ? 'Show Less' : 'Show All'}</span>
+              {showAllTransactions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
+            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 5)).map((transaction) => (
+              <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group">
+                <div className="flex items-start space-x-4">
+                  {/* Status Indicator */}
+                  <div className="flex-shrink-0">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
+                      transaction.type === 'added' ? 'bg-gradient-to-br from-emerald-500 to-emerald-700' :
+                      transaction.type === 'taken' ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 
+                      'bg-gradient-to-br from-orange-500 to-orange-700'
+                    }`}>
+                      <span className="text-white font-bold text-lg">
+                        {transaction.type === 'added' ? '+' : transaction.type === 'taken' ? '-' : '↻'}
                       </span>
-                      <div className="flex items-center gap-3">
-                        {value.valid ? (
-                          <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-green-100 text-green-800">
-                            ✓ Valid
+                    </div>
+                  </div>
+
+                  {/* Transaction Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                          <h4 className="font-semibold text-gray-900 group-hover:text-blue-900 transition-colors">
+                            {transaction.itemName}
+                          </h4>
+                          <span className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
+                            transaction.type === 'added' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                            transaction.type === 'taken' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 
+                            'bg-orange-100 text-orange-800 border border-orange-200'
+                          }`}>
+                            {transaction.type.toUpperCase()}
                           </span>
-                        ) : (
-                          <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-red-100 text-red-800">
-                            ✗ Invalid
-                          </span>
-                        )}
-                        <span className="text-sm font-medium text-gray-600">
-                          {value.count || 0} records
-                        </span>
-                        {value.hasBackup && (
-                          <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-blue-100 text-blue-800">
-                            Backup
-                          </span>
+                          {isOwner && (
+                            <button
+                              onClick={() => setEditTx({
+                                id: transaction.id,
+                                timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
+                                remarks: transaction.remarks || '',
+                                quantity: transaction.quantity || 0
+                              })}
+                              className="ml-2 text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 mb-3">
+                          <div className="font-medium">{transaction.make} {transaction.model}</div>
+                          <div className="text-gray-500">{transaction.specification}</div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <span className="font-medium">Qty: {transaction.quantity}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <User size={16} className="text-gray-400" />
+                            <span>{transaction.user}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Calendar size={16} className="text-gray-400" />
+                            <span>{safeFormatDate(transaction.timestamp)}</span>
+                          </div>
+                        </div>
+
+                        {transaction.remarks && (
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border-l-4 border-blue-200">
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium text-gray-900">Remarks:</span> {transaction.remarks}
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <div className="w-6 h-6 bg-gray-300 rounded animate-pulse"></div>
                   </div>
-                  <p className="text-gray-500">Loading integrity data...</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Storage Usage Card */}
-          <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Storage Usage</h3>
-                  <p className="text-gray-600">Database and file storage metrics</p>
                 </div>
               </div>
-              {storage !== null ? (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center p-4 bg-white/50 rounded-xl">
-                    <span className="text-sm font-semibold text-gray-700">Total Storage</span>
-                    <span className="text-2xl font-bold text-gray-900">{storage} MB</span>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Usage</span>
-                      <span className="font-semibold text-gray-900">{Math.min((storage / 10) * 100, 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500" 
-                        style={{ width: `${Math.min((storage / 10) * 100, 100)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 text-center">
-                      {storage < 1 ? 'Low storage usage' : storage < 5 ? 'Moderate storage usage' : 'High storage usage'}
-                    </p>
-                  </div>
+            ))
+          ) : (
+            <div className="p-12 text-center">
+              <Activity className="mx-auto text-gray-400 mb-4" size={48} />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No recent transactions</h3>
+              <p className="text-gray-600">Transaction history will appear here as activity occurs.</p>
+            </div>
+          )}
+          {analytics?.recentTransactions && analytics.recentTransactions.length > 5 && !showAllTransactions && (
+            <div className="p-6 text-center bg-gradient-to-r from-blue-50 to-purple-50 border-t">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <ChevronDown className="w-4 h-4 text-blue-600" />
                 </div>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <div className="w-6 h-6 bg-gray-300 rounded animate-pulse"></div>
-                  </div>
-                  <p className="text-gray-500">Loading storage data...</p>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">
+                    Showing 5 of {analytics.recentTransactions.length} transactions
+                  </p>
+                  <button 
+                    onClick={() => setShowAllTransactions(true)}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                  >
+                    View all {analytics.recentTransactions.length} transactions →
+                  </button>
                 </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Low Stock Alerts */}
+      {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-red-50 to-orange-50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Low Stock Alerts</h3>
+                  <p className="text-sm text-gray-600">
+                    {analytics.lowStockAlerts.length} item{analytics.lowStockAlerts.length !== 1 ? 's' : ''} need attention
+                  </p>
+                </div>
+              </div>
+              {analytics.lowStockAlerts.length > 5 && (
+                <button
+                  onClick={() => setShowAllLowStock(!showAllLowStock)}
+                  className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  <span>{showAllLowStock ? 'Show Less' : 'Show All'}</span>
+                  {showAllLowStock ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
               )}
             </div>
           </div>
+          <div className="divide-y divide-gray-200">
+            {(showAllLowStock ? analytics.lowStockAlerts : analytics.lowStockAlerts.slice(0, 5)).map((item) => (
+              <div key={item.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all duration-200 group">
+                <div className="flex items-start space-x-4">
+                  {/* Status Indicator */}
+                  <div className="flex-shrink-0">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
+                      item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
+                      item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
+                      'bg-gradient-to-br from-amber-500 to-amber-700'
+                    }`}>
+                      <span className="text-white font-bold text-lg">
+                        {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Item Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                          <h4 className="font-semibold text-gray-900 group-hover:text-red-900 transition-colors">
+                            {item.name}
+                          </h4>
+                          <span className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
+                            item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
+                            item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                            'bg-amber-100 text-amber-800 border border-amber-200'
+                          }`}>
+                            {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
+                          </span>
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 mb-3">
+                          <div className="font-medium">{item.make} {item.model}</div>
+                          <div className="text-gray-500">{item.specification}</div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <span className="font-medium">Qty: {item.quantity}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Package size={16} className="text-gray-400" />
+                            <span>Row {item.rack} - Column {item.bin}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Calendar size={16} className="text-gray-400" />
+                            <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
+                          </div>
+                        </div>
+
+                        {item.updatedBy && (
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg border-l-4 border-red-200">
+                            <div className="text-sm text-gray-700">
+                              <span className="font-medium text-gray-900">Last Updated by:</span> {item.updatedBy}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quantity Display */}
+                  <div className="text-right">
+                    <div className={`text-2xl font-bold ${
+                      item.quantity === 0 ? 'text-red-600' :
+                      item.quantity <= 2 ? 'text-orange-600' :
+                      'text-amber-600'
+                    }`}>
+                      {item.quantity}
+                    </div>
+                    <div className="text-sm text-gray-600">remaining</div>
+                    <div className={`text-xs font-medium mt-1 ${
+                      item.quantity === 0 ? 'text-red-600' :
+                      item.quantity <= 2 ? 'text-orange-600' :
+                      'text-amber-600'
+                    }`}>
+                      {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {analytics.lowStockAlerts.length > 5 && !showAllLowStock && (
+              <div className="p-6 text-center bg-gradient-to-r from-red-50 to-orange-50 border-t">
+                <div className="flex items-center justify-center space-x-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                    <ChevronDown className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">
+                      Showing 5 of {analytics.lowStockAlerts.length} low stock items
+                    </p>
+                    <button 
+                      onClick={() => setShowAllLowStock(true)}
+                      className="text-sm text-red-600 hover:text-red-800 font-medium hover:underline transition-colors"
+                    >
+                      View all {analytics.lowStockAlerts.length} items →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Data Integrity & Storage Cards */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Data Integrity Card */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Integrity</h3>
+          {integrity ? (
+            <div className="space-y-3">
+              {Object.entries(integrity).map(([key, value]: [string, any]) => (
+                <div key={key} className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-600 capitalize">
+                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    {value.valid ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        ✓ Valid
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        ✗ Invalid
+                      </span>
+                    )}
+                    <span className="text-sm text-gray-500">
+                      {value.count || 0} records
+                    </span>
+                    {value.hasBackup && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        Backup
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">Loading integrity data...</p>
+          )}
+        </div>
+
+        {/* Storage Usage Card */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Storage Usage</h3>
+          {storage !== null ? (
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600">Total Storage</span>
+                <span className="text-lg font-semibold text-gray-900">{storage} MB</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full" 
+                  style={{ width: `${Math.min((storage / 10) * 100, 100)}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500">
+                {storage < 1 ? 'Low storage usage' : storage < 5 ? 'Moderate storage usage' : 'High storage usage'}
+              </p>
+            </div>
+          ) : (
+            <p className="text-gray-500">Loading storage data...</p>
+          )}
         </div>
       </div>
 
