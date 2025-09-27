@@ -3,7 +3,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Analytics as AnalyticsType } from '../types';
-import { format, addMonths, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import * as XLSX from 'xlsx';
@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from '../config/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
-const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
+const safeFormatDate = (dateValue: any) => {
   if (!dateValue) return 'N/A';
   const date = new Date(dateValue);
   if (isNaN(date.getTime())) return 'N/A';
@@ -28,7 +28,6 @@ const Analytics: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [userCount, setUserCount] = useState<number | null>(null);
   const [storageMB, setStorageMB] = useState<number | null>(null);
   const [integrity, setIntegrity] = useState<any>(null);
   const [storage, setStorage] = useState<any>(null);
@@ -41,7 +40,6 @@ const Analytics: React.FC = () => {
 
   useEffect(() => {
     fetchAnalytics();
-    fetchUserCount();
     fetchStorageMB();
     checkDataIntegrity();
     checkStorage();
@@ -118,7 +116,7 @@ const Analytics: React.FC = () => {
         setAnalytics(data.analytics);
         // Extract unique user names from transactions
         if (data.analytics.recentTransactions) {
-          const uniqueUsers = [...new Set(data.analytics.recentTransactions.map(t => t.user).filter(Boolean))];
+          const uniqueUsers = [...new Set(data.analytics.recentTransactions.map((t: any) => t.user).filter(Boolean))] as string[];
           setActiveUserNames(uniqueUsers);
         }
       }
@@ -160,20 +158,6 @@ const Analytics: React.FC = () => {
     }
   };
 
-  const fetchUserCount = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.USERS.LIST + '/count', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      if (data.success) setUserCount(data.count);
-    } catch (error) {
-      setUserCount(null);
-    }
-  };
 
   const fetchStorageMB = async () => {
     try {
@@ -220,63 +204,6 @@ const Analytics: React.FC = () => {
     setSelectedYear(Number(e.target.value));
   };
 
-  const generateMonthlyExcelReport = () => {
-    if (!analytics) return;
-    const month = selectedMonth;
-    const year = selectedYear;
-    const filteredTransactions = analytics.recentTransactions.filter(t => {
-      const d = new Date(t.timestamp);
-      return d.getMonth() === month && d.getFullYear() === year;
-    });
-    const workbook = XLSX.utils.book_new();
-    const timestamp = `${year}-${String(month+1).padStart(2,'0')}`;
-    const monthName = new Date(year, month).toLocaleString('default', { month: 'long' });
-    
-    // Summary Sheet
-    const summaryData = [
-      [`Inventory Management System - ${monthName} ${year} Report`],
-      ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
-      [''],
-      ['Metric', 'Value'],
-      ['Total Items', analytics.totalItems.toString()],
-      ['Low Stock Items', analytics.lowStockItems.toString()],
-      ['Total Transactions', filteredTransactions.length.toString()],
-      ['Items Consumed', analytics.itemsConsumed.toString()],
-      ['Items Added', analytics.itemsAdded.toString()],
-      ['Active Users', analytics.activeUsers.toString()]
-    ];
-    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-    
-    // Monthly Transactions Sheet
-    if (filteredTransactions.length > 0) {
-      const transactionsData = [
-        ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
-      ];
-      filteredTransactions.forEach(transaction => {
-        const action = transaction.type === 'added' ? 'Stock Added' : 
-                      transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
-        transactionsData.push([
-          transaction.itemName ?? '',
-          transaction.specification ?? '',
-          transaction.make ?? '',
-          transaction.model ?? '',
-          (transaction.type ?? '').toUpperCase(),
-          transaction.quantity?.toString() ?? '',
-          transaction.user ?? '',
-          transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
-          action,
-          transaction.remarks || ''
-        ]);
-      });
-      const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
-      XLSX.utils.book_append_sheet(workbook, transactionsSheet, `${monthName} Transactions`);
-    }
-    
-    XLSX.writeFile(workbook, `inventory_report_${monthName}_${year}.xlsx`);
-    setSuccessMessage(`${monthName} ${year} Excel report generated successfully!`);
-    setTimeout(() => setSuccessMessage(null), 3000);
-  };
 
   const generateComprehensiveExcelReport = async () => {
     if (!analytics) {
@@ -328,7 +255,7 @@ const Analytics: React.FC = () => {
               ['Total Transactions', monthTransactions.length.toString()],
               ['Items Added', monthTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
               ['Items Taken', monthTransactions.filter(t => t.type === 'taken').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
-              ['Items Updated', monthTransactions.filter(t => t.type === 'updated').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
+              ['Items Updated', monthTransactions.filter(t => t.type === 'deleted').reduce((sum, t) => sum + (t.quantity || 0), 0).toString()],
               ['Active Users', [...new Set(monthTransactions.map(t => t.user).filter(Boolean))].length.toString()],
               [''],
               ['User Activity Breakdown:'],
@@ -345,7 +272,7 @@ const Analytics: React.FC = () => {
               user.total++;
               if (transaction.type === 'added') user.added += transaction.quantity || 0;
               else if (transaction.type === 'taken') user.taken += transaction.quantity || 0;
-              else if (transaction.type === 'updated') user.updated += transaction.quantity || 0;
+              else if (transaction.type === 'deleted') user.updated += transaction.quantity || 0;
             });
 
             userActivity.forEach((activity, user) => {
@@ -372,7 +299,7 @@ const Analytics: React.FC = () => {
             monthTransactions.forEach(transaction => {
               if (transaction) {
                 const action = transaction.type === 'added' ? 'Stock Added' : 
-                              transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
+                              transaction.type === 'taken' ? 'Stock Taken' : 'Stock Deleted';
                 monthlyData.push([
                   transaction.itemName || '',
                   transaction.specification || '',
@@ -474,7 +401,7 @@ const Analytics: React.FC = () => {
         analytics.recentTransactions.forEach(transaction => {
           if (transaction) {
             const action = transaction.type === 'added' ? 'Stock Added' : 
-                          transaction.type === 'taken' ? 'Stock Taken' : 'Stock Updated';
+                          transaction.type === 'taken' ? 'Stock Taken' : 'Stock Deleted';
             transactionsData.push([
               transaction.itemName || '',
               transaction.specification || '',
@@ -575,28 +502,57 @@ const Analytics: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-white to-gray-50/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="h-6 w-48 bg-gray-200 rounded animate-pulse"></div>
+      <div className="space-y-6">
+        {/* Page Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mt-2"></div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-10 w-24 bg-gray-200 rounded animate-pulse"></div>
+            ))}
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+        {/* Month/Year Selector Skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="h-6 w-32 bg-gray-200 rounded animate-pulse"></div>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-10 w-20 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Summary Cards Skeleton */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg shadow p-6">
-              <div className="h-5 w-24 bg-gray-200 rounded mb-3 animate-pulse"></div>
-              <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
+            <div key={i} className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center">
+                <div className="bg-gray-100 rounded-lg p-3">
+                  <div className="h-6 w-6 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="ml-4">
+                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="h-6 w-40 bg-gray-200 rounded mb-4 animate-pulse"></div>
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
-              ))}
-            </div>
+
+        {/* Charts Skeleton */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
+            <div className="h-64 bg-gray-100 rounded animate-pulse"></div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
+            <div className="h-64 bg-gray-100 rounded animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -642,22 +598,55 @@ const Analytics: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Sticky Toolbar */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Viewing {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleDeleteHistory}
+            className="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Delete History
+          </button>
+          <button
+            onClick={() => setShowSettings(s => !s)}
+            className="px-3 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Settings
+          </button>
+          <button
+            onClick={generateExcelReport}
+            className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
+          >
+            <FileSpreadsheet size={16} />
+            <span>Excel Report</span>
+          </button>
+          <button
+            onClick={generateComprehensiveExcelReport}
+            className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
+          >
+            <FileSpreadsheet size={16} />
+            <span>Monthly Report</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Month/Year Selector */}
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h3 className="text-lg font-semibold text-gray-900">Select Period</h3>
           <div className="flex items-center gap-3">
-            <div className="text-xs sm:text-sm text-gray-500">Viewing</div>
-            <div className="text-sm sm:text-base font-semibold text-gray-900">
-              {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto whitespace-nowrap w-full sm:w-auto">
-            {/* Mobile: Month dropdown for better fit */}
+            {/* Mobile: Month dropdown */}
             <div className="sm:hidden">
               <select
                 value={selectedMonth}
                 onChange={handleMonthChange}
-                className="px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white"
+                className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white"
                 aria-label="Select month"
               >
                 {Array.from({ length: 12 }, (_, m) => (
@@ -667,8 +656,8 @@ const Analytics: React.FC = () => {
                 ))}
               </select>
             </div>
-            {/* Desktop: Month chips with horizontal scroll if needed */}
-            <div className="hidden sm:flex gap-1 p-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto w-full sm:w-auto">
+            {/* Desktop: Month chips */}
+            <div className="hidden sm:flex gap-1 p-1 bg-gray-100 rounded-lg">
               {Array.from({ length: 12 }, (_, m) => {
                 const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
                 const isActive = selectedMonth === m;
@@ -676,8 +665,8 @@ const Analytics: React.FC = () => {
                   <button
                     key={m}
                     onClick={() => setSelectedMonth(m)}
-                    className={`px-2.5 py-1.5 text-xs rounded-md transition-colors flex-shrink-0 ${
-                      isActive ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:bg-gray-100'
+                    className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                      isActive ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     {label}
@@ -686,10 +675,10 @@ const Analytics: React.FC = () => {
               })}
             </div>
             {/* Year Controls */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setSelectedYear(selectedYear - 1)}
-                className="p-1.5 sm:p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
                 aria-label="Previous year"
               >
                 <ChevronLeft size={18} />
@@ -697,7 +686,7 @@ const Analytics: React.FC = () => {
               <select
                 value={selectedYear}
                 onChange={handleYearChange}
-                className="px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white"
+                className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white"
                 aria-label="Select year"
               >
                 {(() => {
@@ -711,7 +700,7 @@ const Analytics: React.FC = () => {
               </select>
               <button
                 onClick={() => setSelectedYear(selectedYear + 1)}
-                className="p-1.5 sm:p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
                 aria-label="Next year"
               >
                 <ChevronRight size={18} />
@@ -720,6 +709,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       </div>
+
       {/* Success Message */}
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
@@ -732,40 +722,6 @@ const Analytics: React.FC = () => {
           </button>
         </div>
       )}
-      
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 px-3 sm:px-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Analytics & Reports</h1>
-        <div className="w-full sm:w-auto mt-2 sm:mt-0">
-          <div className="flex flex-row sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 overflow-x-auto sm:overflow-visible -mx-3 sm:mx-0 px-3 sm:px-0 whitespace-nowrap pb-1">
-            <button
-              onClick={handleDeleteHistory}
-              className="flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Delete History
-            </button>
-            <button
-              onClick={() => setShowSettings(s => !s)}
-              className="flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              Settings
-            </button>
-            <button
-              onClick={generateExcelReport}
-              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors"
-            >
-              <FileSpreadsheet size={20} />
-              <span>Generate Excel Report</span>
-            </button>
-            <button
-              onClick={generateComprehensiveExcelReport}
-              className="flex-shrink-0 inline-flex items-center justify-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
-            >
-              <FileSpreadsheet size={20} />
-              <span>Generate Monthly Report</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       {showSettings && (
         <div className="bg-white rounded-lg shadow-md p-6 mt-4">
@@ -872,7 +828,7 @@ const Analytics: React.FC = () => {
         </div>
         <div className="divide-y divide-gray-200">
           {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
-            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 5)).map((transaction, index) => (
+            (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 5)).map((transaction) => (
               <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group">
                 <div className="flex items-start space-x-4">
                   {/* Status Indicator */}
@@ -909,9 +865,7 @@ const Analytics: React.FC = () => {
                                 id: transaction.id,
                                 timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
                                 remarks: transaction.remarks || '',
-                                quantity: transaction.quantity || 0,
-                                editedBy: transaction.editedBy || '',
-                                editedAt: transaction.editedAt || null
+                                quantity: transaction.quantity || 0
                               })}
                               className="ml-2 text-xs px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
                             >
@@ -936,14 +890,8 @@ const Analytics: React.FC = () => {
                           </div>
                           <div className="flex items-center space-x-2">
                             <Calendar size={16} className="text-gray-400" />
-                            <span>{safeFormatDate(transaction.timestamp, 'MMM dd, yyyy HH:mm')}</span>
+                            <span>{safeFormatDate(transaction.timestamp)}</span>
                           </div>
-                          {(transaction.editedBy || transaction.editedAt) && (
-                            <div className="text-xs text-gray-500">
-                              Last edited {transaction.editedAt ? `on ${safeFormatDate(transaction.editedAt)}` : ''}
-                              {transaction.editedBy ? ` by ${transaction.editedBy}` : ''}
-                            </div>
-                          )}
                         </div>
 
                         {transaction.remarks && (
@@ -1319,12 +1267,6 @@ const Analytics: React.FC = () => {
                   rows={3}
                 />
               </div>
-              {(editTx.editedBy || editTx.editedAt) && (
-                <div className="text-xs text-gray-500">
-                  Last edited {editTx.editedAt ? `on ${safeFormatDate(editTx.editedAt)}` : ''}
-                  {editTx.editedBy ? ` by ${editTx.editedBy}` : ''}
-                </div>
-              )}
             </div>
             <div className="p-4 border-t flex justify-end gap-2">
               <button onClick={() => setEditTx(null)} className="px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
