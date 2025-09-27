@@ -170,39 +170,70 @@ const UserManagement: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E8B57]"></div>
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 w-full">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center w-full">User Management</h1>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center justify-center space-x-2 w-full sm:w-auto px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B45] transition-colors mt-2 sm:mt-0"
-        >
-          <Plus size={20} />
-          <span>Add User</span>
-        </button>
+    <div className="space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative px-6 py-8 sm:px-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                  User Management
+                </h1>
+                <p className="text-blue-100 text-lg mt-1">Manage system users and permissions</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center justify-center space-x-2 w-full sm:w-auto px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <Plus size={20} />
+              <span>Add User</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {message && (
-        <div className={`p-4 rounded-lg ${
+        <div className={`p-6 rounded-2xl flex items-center gap-4 ${
           message.type === 'success' 
-            ? 'bg-green-50 border border-green-200 text-green-700'
-            : 'bg-red-50 border border-red-200 text-red-700'
+            ? 'bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-700'
+            : 'bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-700'
         }`}>
-          {message.text}
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            message.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+          }`}>
+            <span className="text-white text-sm font-bold">
+              {message.type === 'success' ? '✓' : '!'}
+            </span>
+          </div>
+          <span className="font-semibold text-lg">{message.text}</span>
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-x-auto mt-4 w-full">
-        <div className="p-6 border-b">
-          <div className="flex items-center space-x-3">
-            <Users className="text-[#2E8B57]" size={24} />
-            <h2 className="text-xl font-semibold text-gray-900">Users ({users.length})</h2>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-gray-200/50">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Users className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Users</h2>
+              <p className="text-gray-600">{users.length} user{users.length !== 1 ? 's' : ''} in system</p>
+            </div>
           </div>
         </div>
 
@@ -210,70 +241,70 @@ const UserManagement: React.FC = () => {
           <>
             {/* Desktop Table */}
             <div className="hidden sm:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200/50">
+              <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Created At
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200/50">
                 {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
+                  <tr key={user.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
-                        <div className={`rounded-full p-2 ${
-                          user.role === 'admin' ? 'bg-red-100' : 'bg-blue-100'
+                        <div className={`rounded-xl p-3 shadow-lg ${
+                          user.role === 'admin' ? 'bg-gradient-to-r from-red-100 to-pink-100' : 'bg-gradient-to-r from-blue-100 to-indigo-100'
                         }`}>
                           {user.role === 'admin' ? (
-                            <Shield className={`${user.role === 'admin' ? 'text-red-600' : 'text-blue-600'}`} size={16} />
+                            <Shield className={`${user.role === 'admin' ? 'text-red-600' : 'text-blue-600'}`} size={20} />
                           ) : (
-                            <UserIcon className="text-blue-600" size={16} />
+                            <UserIcon className="text-blue-600" size={20} />
                           )}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                          <div className="text-sm font-bold text-gray-900">{user.username}</div>
                           {user.id === currentUser?.id && (
-                            <div className="text-xs text-gray-500">(You)</div>
+                            <div className="text-xs text-gray-500 font-medium">(You)</div>
                           )}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                         user.role === 'admin' 
-                          ? 'bg-red-100 text-red-800' 
-                          : 'bg-blue-100 text-blue-800'
+                          ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800' 
+                          : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800'
                       }`}>
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-gray-900 font-medium">
                       {safeFormatDate(user.createdAt)}
                     </td>
                     <td className="px-6 py-4">
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-2">
                         <button
                           onClick={() => openEditModal(user)}
-                            className="text-blue-600 hover:text-blue-900 p-2 rounded-md w-full sm:w-auto text-center"
+                            className="text-blue-600 hover:text-blue-900 p-2 rounded-xl w-full sm:w-auto text-center bg-blue-50 hover:bg-blue-100 transition-all duration-200 shadow-sm hover:shadow-md"
                           title="Change Password"
                         >
-                            <Edit size={18} />
+                          <Edit size={18} />
                         </button>
                         {user.id !== currentUser?.id && (
                           <button
                             onClick={() => handleDeleteUser(user.id)}
-                              className="text-red-600 hover:text-red-900 p-2 rounded-md w-full sm:w-auto text-center"
+                              className="text-red-600 hover:text-red-900 p-2 rounded-xl w-full sm:w-auto text-center bg-red-50 hover:bg-red-100 transition-all duration-200 shadow-sm hover:shadow-md"
                             title="Delete User"
                           >
                               <Trash2 size={18} />
@@ -287,35 +318,53 @@ const UserManagement: React.FC = () => {
             </table>
           </div>
             {/* Mobile Cards */}
-            <div className="sm:hidden space-y-4">
+            <div className="sm:hidden space-y-4 p-6">
               {users.map((user) => (
-                <div key={user.id} className="bg-gray-50 rounded-lg shadow p-4 flex flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className={`rounded-full p-2 ${user.role === 'admin' ? 'bg-red-100' : 'bg-blue-100'}`}>{user.role === 'admin' ? (<Shield className="text-red-600" size={18} />) : (<UserIcon className="text-blue-600" size={18} />)}</div>
-                    <div>
-                      <div className="text-base font-semibold text-gray-900">{user.username}</div>
-                      {user.id === currentUser?.id && (<div className="text-xs text-gray-500">(You)</div>)}
+                <div key={user.id} className="bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-lg border border-blue-200/50 p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className={`rounded-xl p-3 shadow-lg ${
+                      user.role === 'admin' ? 'bg-gradient-to-r from-red-100 to-pink-100' : 'bg-gradient-to-r from-blue-100 to-indigo-100'
+                    }`}>
+                      {user.role === 'admin' ? (
+                        <Shield className="text-red-600" size={20} />
+                      ) : (
+                        <UserIcon className="text-blue-600" size={20} />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-lg font-bold text-gray-900">{user.username}</div>
+                      {user.id === currentUser?.id && (
+                        <div className="text-sm text-gray-500 font-medium">(You)</div>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>{user.role}</span>
-                    <span className="text-xs text-gray-500 ml-auto">{safeFormatDate(user.createdAt)}</span>
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
+                      user.role === 'admin' 
+                        ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800' 
+                        : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800'
+                    }`}>
+                      {user.role}
+                    </span>
+                    <span className="text-sm text-gray-500 font-medium">{safeFormatDate(user.createdAt)}</span>
                   </div>
-                  <div className="flex gap-2 mt-2">
+                  
+                  <div className="flex gap-3">
                     <button
                       onClick={() => openEditModal(user)}
-                      className="flex-1 text-blue-600 hover:text-blue-900 p-2 rounded-md bg-white border border-blue-100 text-center"
+                      className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center"
                       title="Change Password"
                     >
-                      <Edit size={18} />
+                      <Edit size={18} className="mx-auto" />
                     </button>
                     {user.id !== currentUser?.id && (
                       <button
                         onClick={() => handleDeleteUser(user.id)}
-                        className="flex-1 text-red-600 hover:text-red-900 p-2 rounded-md bg-white border border-red-100 text-center"
+                        className="flex-1 bg-gradient-to-r from-red-500 to-pink-600 text-white p-3 rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center"
                         title="Delete User"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={18} className="mx-auto" />
                       </button>
                     )}
                   </div>
@@ -324,10 +373,18 @@ const UserManagement: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="p-12 text-center">
-            <Users className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-            <p className="text-gray-600">Start by adding some users to the system.</p>
+          <div className="p-12 sm:p-16 text-center">
+            <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Users className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">No users found</h3>
+            <p className="text-gray-600 text-lg mb-6">Start by adding some users to the system.</p>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-6 py-3 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white rounded-xl hover:from-[#236B45] hover:to-[#2563EB] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Add First User
+            </button>
           </div>
         )}
       </div>
