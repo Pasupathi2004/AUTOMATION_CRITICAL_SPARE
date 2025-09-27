@@ -241,63 +241,90 @@ const SearchPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E8B57]"></div>
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Success Message */}
       {successMessage && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
-          <span>{successMessage}</span>
+        <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">✓</span>
+            </div>
+            <span className="font-semibold">{successMessage}</span>
+          </div>
           <button
             onClick={() => setSuccessMessage(null)}
-            className="text-green-500 hover:text-green-700"
+            className="text-emerald-500 hover:text-emerald-700 p-1 rounded-lg hover:bg-emerald-100 transition-colors"
           >
             ×
           </button>
         </div>
       )}
       
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Search Inventory</h1>
+      {/* Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative px-6 py-8 sm:px-8 sm:py-12">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+              <Search className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                Search Inventory
+              </h1>
+              <p className="text-blue-100 text-lg mt-1">Find items quickly with smart search</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, make, model, specification, row, column, quantity, or location..."
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
+              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white text-lg"
             />
           </div>
           
           {recognition.current && (
             <button
               onClick={isListening ? stopVoiceSearch : startVoiceSearch}
-              className={`w-full sm:w-auto p-3 rounded-lg transition-colors mt-2 sm:mt-0 ${
+              className={`w-full sm:w-auto p-4 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
                 isListening 
-                  ? 'bg-red-500 text-white hover:bg-red-600' 
-                  : 'bg-[#2E8B57] text-white hover:bg-[#236B45]'
+                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700' 
+                  : 'bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] text-white hover:from-[#236B45] hover:to-[#2563EB]'
               }`}
             >
-              {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+              <div className="flex items-center gap-2">
+                {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+                <span className="hidden sm:inline">
+                  {isListening ? 'Stop' : 'Voice Search'}
+                </span>
+              </div>
             </button>
           )}
         </div>
         
         {isListening && (
-          <div className="mt-4 flex items-center justify-center">
-            <div className="flex items-center space-x-2 text-red-600">
-              <div className="animate-pulse w-3 h-3 bg-red-600 rounded-full"></div>
-              <span>Listening...</span>
+          <div className="mt-6 flex items-center justify-center">
+            <div className="flex items-center space-x-3 bg-gradient-to-r from-red-50 to-pink-50 px-6 py-3 rounded-xl border border-red-200">
+              <div className="animate-pulse w-4 h-4 bg-red-500 rounded-full"></div>
+              <span className="text-red-700 font-semibold">Listening for your voice...</span>
             </div>
           </div>
         )}
@@ -305,92 +332,107 @@ const SearchPage: React.FC = () => {
 
       {/* Search Results */}
       {searchQuery && (
-        <div className="bg-white rounded-lg shadow-md">
-          <div className="p-4 sm:p-6 border-b">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-              Search Results ({filteredItems.length})
-            </h2>
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
+          <div className="p-6 sm:p-8 border-b border-gray-200/50">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Package className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  Search Results
+                </h2>
+                <p className="text-gray-600">{filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} found</p>
+              </div>
+            </div>
           </div>
           
           {filteredItems.length > 0 ? (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200/50">
               {filteredItems.map((item) => {
                 const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
                 return (
-                  <div key={item.id} className="p-4 sm:p-6 hover:bg-gray-50">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0">
+                  <div key={item.id} className="p-6 sm:p-8 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200 group">
+                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <Package className="text-[#2E8B57]" size={20} />
-                          <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${stockStatus.color}`}>
-                            {stockStatus.status}
-                          </span>
-                        </div>
-                        
-                        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 text-sm text-gray-600">
-                          <div>
-                            <strong>Make:</strong> {item.make}
+                        <div className="flex items-center space-x-4 mb-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg">
+                            <Package className="text-white" size={24} />
                           </div>
                           <div>
-                            <strong>Model:</strong> {item.model}
-                          </div>
-                          <div>
-                            <strong>Specification:</strong> {item.specification}
+                            <h3 className="text-xl font-bold text-gray-900 mb-1">{item.name}</h3>
+                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${stockStatus.color}`}>
+                              {stockStatus.status}
+                            </span>
                           </div>
                         </div>
                         
-                        <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 text-sm text-gray-600">
-                          <div className="flex items-center space-x-1">
-                            <MapPin size={16} />
-                            <span>Location: Row {item.rack} - Column {item.bin}</span>
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 text-sm text-gray-600 mb-4">
+                          <div className="bg-gray-50/50 p-3 rounded-lg">
+                            <strong className="text-gray-800">Make:</strong> {item.make}
                           </div>
-                          <div>
-                            <strong>Updated:</strong> {safeFormatDate(item.updatedAt)}
+                          <div className="bg-gray-50/50 p-3 rounded-lg">
+                            <strong className="text-gray-800">Model:</strong> {item.model}
                           </div>
-                          <div>
-                            <strong>By:</strong> {item.updatedBy}
+                          <div className="bg-gray-50/50 p-3 rounded-lg md:col-span-2 lg:col-span-1">
+                            <strong className="text-gray-800">Specification:</strong> {item.specification}
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2 bg-blue-50/50 px-3 py-2 rounded-lg">
+                            <MapPin size={16} className="text-blue-600" />
+                            <span className="font-medium">Row {item.rack} - Column {item.bin}</span>
+                          </div>
+                          <div className="bg-gray-50/50 px-3 py-2 rounded-lg">
+                            <strong className="text-gray-800">Updated:</strong> {safeFormatDate(item.updatedAt)}
+                          </div>
+                          <div className="bg-gray-50/50 px-3 py-2 rounded-lg">
+                            <strong className="text-gray-800">By:</strong> {item.updatedBy}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="text-right mt-2 sm:mt-0">
-                        <div className="mb-2">
-                          <div className="text-2xl font-bold text-gray-900 min-w-[3rem] text-center">
-                            {updatingItems.has(item.id) ? (
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#2E8B57] mx-auto"></div>
-                            ) : (
-                              item.quantity
-                            )}
+                      <div className="lg:text-right">
+                        <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl border border-gray-200/50">
+                          <div className="mb-4">
+                            <div className="text-4xl font-bold text-gray-900 mb-1">
+                              {updatingItems.has(item.id) ? (
+                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#2E8B57] border-t-transparent mx-auto"></div>
+                              ) : (
+                                item.quantity
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600 font-medium">in stock</div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <input
+                              type="number"
+                              min="1"
+                              max={item.quantity}
+                              value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : ''}
+                              onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all"
+                              disabled={updatingItems.has(item.id)}
+                              placeholder="Qty to take"
+                            />
+                            <textarea
+                              value={remarksInputs[item.id] || ''}
+                              onChange={(e) => setRemarksInputs(prev => ({ ...prev, [item.id]: e.target.value }))}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-left focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none transition-all resize-none"
+                              placeholder="Remarks (required)"
+                              rows={2}
+                            />
+                            <button
+                              onClick={() => handleTakeQuantity(item)}
+                              disabled={updatingItems.has(item.id) || !quantityInputs[item.id] || isNaN(Number(quantityInputs[item.id])) || Number(quantityInputs[item.id]) < 1 || Number(quantityInputs[item.id]) > item.quantity || !remarksInputs[item.id] || !remarksInputs[item.id].trim()}
+                              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                            >
+                              Update Quantity
+                            </button>
                           </div>
                         </div>
-                        <div className="flex flex-col items-end space-y-2 mt-2">
-                          <input
-                            type="number"
-                            min="1"
-                            max={item.quantity}
-                            value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : ''}
-                            onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
-                            className="w-full sm:w-24 px-2 py-1 border border-gray-300 rounded text-right"
-                            disabled={updatingItems.has(item.id)}
-                            placeholder="Qty to take"
-                          />
-                          <textarea
-                            value={remarksInputs[item.id] || ''}
-                            onChange={(e) => setRemarksInputs(prev => ({ ...prev, [item.id]: e.target.value }))}
-                            className="w-full sm:w-48 px-2 py-1 border border-gray-300 rounded text-left"
-                            placeholder="Remarks (required)"
-                            rows={2}
-                          />
-                          <button
-                            onClick={() => handleTakeQuantity(item)}
-                            disabled={updatingItems.has(item.id) || !quantityInputs[item.id] || isNaN(Number(quantityInputs[item.id])) || Number(quantityInputs[item.id]) < 1 || Number(quantityInputs[item.id]) > item.quantity || !remarksInputs[item.id] || !remarksInputs[item.id].trim()}
-                            className="w-full sm:w-auto px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                          >
-                            Update
-                          </button>
-                        </div>
-                        <div className="text-sm text-gray-600">in stock</div>
                       </div>
                     </div>
                   </div>
@@ -398,10 +440,12 @@ const SearchPage: React.FC = () => {
               })}
             </div>
           ) : (
-            <div className="p-12 text-center">
-              <Package className="mx-auto text-gray-400 mb-4" size={48} />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-              <p className="text-gray-600">
+            <div className="p-12 sm:p-16 text-center">
+              <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Package className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">No items found</h3>
+              <p className="text-gray-600 text-lg">
                 No items match your search criteria. Try different keywords.
               </p>
             </div>
@@ -411,23 +455,34 @@ const SearchPage: React.FC = () => {
 
       {/* Search Instructions */}
       {!searchQuery && (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <Search className="mx-auto text-gray-400 mb-4" size={48} />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Start searching</h3>
-          <p className="text-gray-600 mb-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 sm:p-12 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Search className="w-10 h-10 text-gray-400" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Start searching</h3>
+          <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
             Enter keywords to search through inventory items by name, make, model, specification, or location.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">🔍 Text Search</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="group p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl hover:shadow-lg transition-all duration-200">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+                <Search className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2 text-lg">🔍 Text Search</h4>
               <p className="text-gray-600">Type any keyword to find matching items</p>
             </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">🎤 Voice Search</h4>
+            <div className="group p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl hover:shadow-lg transition-all duration-200">
+              <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+                <Mic className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2 text-lg">🎤 Voice Search</h4>
               <p className="text-gray-600">Click the microphone icon to search by voice</p>
             </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">⌨️ Quick Search</h4>
+            <div className="group p-6 bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl hover:shadow-lg transition-all duration-200">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+                <Package className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2 text-lg">⌨️ Quick Search</h4>
               <p className="text-gray-600">Use keyboard shortcuts for faster navigation</p>
             </div>
           </div>
