@@ -513,7 +513,7 @@ const Analytics: React.FC = () => {
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-10 w-24 bg-gray-200 rounded animate-pulse"></div>
             ))}
-          </div>
+        </div>
         </div>
 
         {/* Month/Year Selector Skeleton */}
@@ -537,12 +537,12 @@ const Analytics: React.FC = () => {
                 </div>
                 <div className="ml-4">
                   <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              </div>
+              <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
             </div>
-          ))}
         </div>
+            </div>
+              ))}
+            </div>
 
         {/* Charts Skeleton */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -608,7 +608,7 @@ const Analytics: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                     <BarChart3 className="w-5 h-5 sm:w-7 sm:h-7" />
-                  </div>
+            </div>
                   <div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
                       Analytics Dashboard
@@ -616,7 +616,7 @@ const Analytics: React.FC = () => {
                     <p className="text-blue-100 text-sm sm:text-lg">
                       Comprehensive insights and reporting
                     </p>
-                  </div>
+          </div>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-sm">
                   <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
@@ -680,80 +680,80 @@ const Analytics: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               {/* Mobile: Month dropdown */}
-              <div className="sm:hidden">
-                <select
-                  value={selectedMonth}
-                  onChange={handleMonthChange}
+            <div className="sm:hidden">
+              <select
+                value={selectedMonth}
+                onChange={handleMonthChange}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  aria-label="Select month"
-                >
-                  {Array.from({ length: 12 }, (_, m) => (
-                    <option key={m} value={m}>
-                      {new Date(2000, m).toLocaleString('default', { month: 'long' })}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                aria-label="Select month"
+              >
+                {Array.from({ length: 12 }, (_, m) => (
+                  <option key={m} value={m}>
+                    {new Date(2000, m).toLocaleString('default', { month: 'long' })}
+                  </option>
+                ))}
+              </select>
+            </div>
               
               {/* Desktop: Month chips */}
               <div className="hidden sm:flex gap-1 p-1 bg-gray-50 rounded-xl overflow-x-auto">
-                {Array.from({ length: 12 }, (_, m) => {
-                  const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
-                  const isActive = selectedMonth === m;
-                  return (
-                    <button
-                      key={m}
-                      onClick={() => setSelectedMonth(m)}
+              {Array.from({ length: 12 }, (_, m) => {
+                const label = new Date(2000, m).toLocaleString('default', { month: 'short' });
+                const isActive = selectedMonth === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => setSelectedMonth(m)}
                       className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
                         isActive 
                           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
                           : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-md'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
               
-              {/* Year Controls */}
+            {/* Year Controls */}
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSelectedYear(selectedYear - 1)}
+              <button
+                onClick={() => setSelectedYear(selectedYear - 1)}
                   className="p-2 sm:p-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-200"
-                  aria-label="Previous year"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <select
-                  value={selectedYear}
-                  onChange={handleYearChange}
+                aria-label="Previous year"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <select
+                value={selectedYear}
+                onChange={handleYearChange}
                   className="px-3 sm:px-4 py-2 sm:py-3 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  aria-label="Select year"
-                >
-                  {(() => {
-                    const current = new Date().getFullYear();
-                    const years = [] as number[];
-                    for (let y = current - 5; y <= current + 2; y++) years.push(y);
-                    return years.map((y) => (
-                      <option key={y} value={y}>{y}</option>
-                    ));
-                  })()}
-                </select>
-                <button
-                  onClick={() => setSelectedYear(selectedYear + 1)}
+                aria-label="Select year"
+              >
+                {(() => {
+                  const current = new Date().getFullYear();
+                  const years = [] as number[];
+                  for (let y = current - 5; y <= current + 2; y++) years.push(y);
+                  return years.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ));
+                })()}
+              </select>
+              <button
+                onClick={() => setSelectedYear(selectedYear + 1)}
                   className="p-2 sm:p-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-200"
-                  aria-label="Next year"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
+                aria-label="Next year"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Success Message */}
-        {successMessage && (
+      {/* Success Message */}
+      {successMessage && (
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-6 py-4 rounded-2xl flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -763,14 +763,14 @@ const Analytics: React.FC = () => {
               </div>
               <span className="font-medium">{successMessage}</span>
             </div>
-            <button
-              onClick={() => setSuccessMessage(null)}
+          <button
+            onClick={() => setSuccessMessage(null)}
               className="text-green-600 hover:text-green-800 transition-colors"
-            >
+          >
               <X size={20} />
-            </button>
-          </div>
-        )}
+          </button>
+        </div>
+      )}
 
       {showSettings && (
         <div className="bg-white rounded-lg shadow-md p-6 mt-4">
@@ -779,7 +779,7 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-        {/* Summary Cards */}
+      {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {/* Total Items Card */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
@@ -788,7 +788,7 @@ const Analytics: React.FC = () => {
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Package className="text-white" size={20} />
-                </div>
+            </div>
                 <div className="text-right">
                   <div className="text-2xl sm:text-3xl font-bold text-gray-900">{analytics?.totalItems || 0}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Items</div>
@@ -799,9 +799,9 @@ const Analytics: React.FC = () => {
               <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm text-blue-600">
                 <TrendingUp size={14} className="mr-1" />
                 <span>All categories</span>
-              </div>
             </div>
           </div>
+        </div>
 
           {/* Low Stock Card */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-red-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
@@ -810,7 +810,7 @@ const Analytics: React.FC = () => {
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
                   <TrendingUp className="text-white" size={20} />
-                </div>
+            </div>
                 <div className="text-right">
                   <div className="text-2xl sm:text-3xl font-bold text-gray-900">{analytics?.lowStockItems || 0}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Items</div>
@@ -821,9 +821,9 @@ const Analytics: React.FC = () => {
               <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm text-orange-600">
                 <Activity size={14} className="mr-1" />
                 <span>Needs restocking</span>
-              </div>
             </div>
           </div>
+        </div>
 
           {/* Transactions Card */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
@@ -832,7 +832,7 @@ const Analytics: React.FC = () => {
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Activity className="text-white" size={20} />
-                </div>
+            </div>
                 <div className="text-right">
                   <div className="text-2xl sm:text-3xl font-bold text-gray-900">{analytics?.totalTransactions || 0}</div>
                   <div className="text-xs sm:text-sm text-gray-600">This Month</div>
@@ -843,21 +843,21 @@ const Analytics: React.FC = () => {
               <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm text-emerald-600">
                 <Calendar size={14} className="mr-1" />
                 <span>{new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long' })}</span>
-              </div>
             </div>
           </div>
+        </div>
 
           {/* Active Users Card */}
-          <div 
+        <div 
             className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
-            onClick={() => setShowActiveUsersModal(true)}
-          >
+          onClick={() => setShowActiveUsersModal(true)}
+        >
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-indigo-600/10"></div>
             <div className="relative p-4 sm:p-6">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Users className="text-white" size={20} />
-                </div>
+            </div>
                 <div className="text-right">
                   <div className="text-2xl sm:text-3xl font-bold text-gray-900">{analytics?.activeUsers || 0}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Users</div>
@@ -868,10 +868,10 @@ const Analytics: React.FC = () => {
               <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm text-purple-600">
                 <Users size={14} className="mr-1" />
                 <span>Click to view details</span>
-              </div>
             </div>
           </div>
         </div>
+      </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
@@ -889,7 +889,7 @@ const Analytics: React.FC = () => {
                 </div>
               </div>
               <div className="h-60 sm:h-80 flex items-center justify-center">
-                <Doughnut data={stockStatusData} options={chartOptions} />
+            <Doughnut data={stockStatusData} options={chartOptions} />
               </div>
               <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
@@ -907,8 +907,8 @@ const Analytics: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
           </div>
+        </div>
 
           {/* Monthly Activity Chart */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
@@ -924,7 +924,7 @@ const Analytics: React.FC = () => {
                 </div>
               </div>
               <div className="h-60 sm:h-80 flex items-center justify-center">
-                <Bar data={activityData} options={chartOptions} />
+            <Bar data={activityData} options={chartOptions} />
               </div>
               <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
@@ -942,49 +942,49 @@ const Analytics: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
           </div>
         </div>
+      </div>
 
-        {/* Recent Transactions */}
+      {/* Recent Transactions */}
         <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
           <div className="relative">
-            <div className="p-8 border-b border-gray-200/50">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Activity className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Recent Transactions</h3>
-                    <p className="text-gray-600">
+            <div className="p-4 sm:p-8 border-b border-gray-200/50">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div>
+                    <h3 className="text-lg sm:text-2xl font-bold text-gray-900">Recent Transactions</h3>
+                    <p className="text-sm sm:text-base text-gray-600">
                       {analytics?.totalTransactions || 0} transactions in {new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAllTransactions(!showAllTransactions)}
-                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  <span>{showAllTransactions ? 'Show Less' : 'Show All'}</span>
-                  {showAllTransactions ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </button>
+                </p>
               </div>
             </div>
+            <button
+              onClick={() => setShowAllTransactions(!showAllTransactions)}
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <span>{showAllTransactions ? 'Show Less' : 'Show All'}</span>
+              {showAllTransactions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
+        </div>
             <div className="divide-y divide-gray-200/50">
-              {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
+          {analytics?.recentTransactions && analytics.recentTransactions.length > 0 ? (
                 (showAllTransactions ? analytics.recentTransactions : analytics.recentTransactions.slice(0, 5)).map((transaction) => (
-                  <div key={transaction.id} className="p-6 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-300 group">
-                    <div className="flex items-start gap-6">
+                  <div key={transaction.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-300 group">
+                    <div className="flex items-start gap-4 sm:gap-6">
                       {/* Status Indicator */}
                       <div className="flex-shrink-0">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+                        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg ${
                           transaction.type === 'added' ? 'bg-gradient-to-br from-emerald-500 to-emerald-700' :
                           transaction.type === 'taken' ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 
                           'bg-gradient-to-br from-orange-500 to-orange-700'
                         }`}>
-                          <span className="text-white font-bold text-xl">
+                          <span className="text-white font-bold text-lg sm:text-xl">
                             {transaction.type === 'added' ? '+' : transaction.type === 'taken' ? '-' : '↻'}
                           </span>
                         </div>
@@ -992,13 +992,13 @@ const Analytics: React.FC = () => {
 
                       {/* Transaction Details */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start justify-between mb-3 sm:mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-3">
-                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2 sm:mb-3">
+                              <h4 className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
                                 {transaction.itemName}
                               </h4>
-                              <span className={`px-4 py-2 text-sm font-semibold rounded-xl shadow-sm ${
+                              <span className={`px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-semibold rounded-xl shadow-sm ${
                                 transaction.type === 'added' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
                                 transaction.type === 'taken' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 
                                 'bg-orange-100 text-orange-800 border border-orange-200'
@@ -1013,36 +1013,36 @@ const Analytics: React.FC = () => {
                                     remarks: transaction.remarks || '',
                                     quantity: transaction.quantity || 0
                                   })}
-                                  className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                  className="px-2 sm:px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                                 >
                                   Edit
                                 </button>
                               )}
                             </div>
                             
-                            <div className="text-gray-600 mb-4">
+                            <div className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                               <div className="font-semibold text-gray-900">{transaction.make} {transaction.model}</div>
                               <div className="text-gray-500">{transaction.specification}</div>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-600">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                                 <span className="font-semibold">Qty: {transaction.quantity}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <User size={18} className="text-gray-400" />
+                                <User size={14} className="text-gray-400" />
                                 <span>{transaction.user}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Calendar size={18} className="text-gray-400" />
+                                <Calendar size={14} className="text-gray-400" />
                                 <span>{safeFormatDate(transaction.timestamp)}</span>
                               </div>
                             </div>
 
                             {transaction.remarks && (
-                              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-400">
-                                <div className="text-sm text-gray-700">
+                              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-400">
+                                <div className="text-xs sm:text-sm text-gray-700">
                                   <span className="font-semibold text-gray-900">Remarks:</span> {transaction.remarks}
                                 </div>
                               </div>
@@ -1052,54 +1052,54 @@ const Analytics: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <Activity className="w-10 h-10 text-blue-500" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">No Recent Transactions</h3>
-                  <p className="text-gray-600 max-w-md mx-auto">Transaction history will appear here as activity occurs in your inventory system.</p>
-                </div>
-              )}
-              {analytics?.recentTransactions && analytics.recentTransactions.length > 5 && !showAllTransactions && (
-                <div className="p-8 text-center bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-t border-gray-200/50">
-                  <div className="flex items-center justify-center gap-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                      <ChevronDown className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-2">
-                        Showing 5 of {analytics.recentTransactions.length} transactions
-                      </p>
-                      <button 
-                        onClick={() => setShowAllTransactions(true)}
-                        className="text-sm text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors"
-                      >
-                        View all {analytics.recentTransactions.length} transactions →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+            ))
+          ) : (
+            <div className="p-8 sm:p-16 text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Activity className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">No Recent Transactions</h3>
+              <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto">Transaction history will appear here as activity occurs in your inventory system.</p>
             </div>
-          </div>
+          )}
+          {analytics?.recentTransactions && analytics.recentTransactions.length > 5 && !showAllTransactions && (
+            <div className="p-4 sm:p-8 text-center bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-t border-gray-200/50">
+              <div className="flex items-center justify-center gap-3 sm:gap-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">
+                    Showing 5 of {analytics.recentTransactions.length} transactions
+                  </p>
+                  <button 
+                    onClick={() => setShowAllTransactions(true)}
+                    className="text-sm sm:text-base text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors"
+                  >
+                    View all {analytics.recentTransactions.length} transactions →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+            </div>
         </div>
+      </div>
 
-        {/* Low Stock Alerts */}
-        {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
+      {/* Low Stock Alerts */}
+      {analytics?.lowStockAlerts && analytics.lowStockAlerts.length > 0 && (
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
             <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-orange-50/50"></div>
             <div className="relative">
-              <div className="p-8 border-b border-gray-200/50">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <TrendingUp className="w-6 h-6 text-white" />
+              <div className="p-4 sm:p-8 border-b border-gray-200/50">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Low Stock Alerts</h3>
-                      <p className="text-gray-600">
+                      <h3 className="text-lg sm:text-2xl font-bold text-gray-900">Low Stock Alerts</h3>
+                      <p className="text-sm sm:text-base text-gray-600">
                         {analytics.lowStockAlerts.length} item{analytics.lowStockAlerts.length !== 1 ? 's' : ''} need attention
                       </p>
                     </div>
@@ -1107,128 +1107,128 @@ const Analytics: React.FC = () => {
                   {analytics.lowStockAlerts.length > 5 && (
                     <button
                       onClick={() => setShowAllLowStock(!showAllLowStock)}
-                      className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     >
                       <span>{showAllLowStock ? 'Show Less' : 'Show All'}</span>
-                      {showAllLowStock ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      {showAllLowStock ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </button>
                   )}
                 </div>
               </div>
               <div className="divide-y divide-gray-200/50">
-                {(showAllLowStock ? analytics.lowStockAlerts : analytics.lowStockAlerts.slice(0, 5)).map((item) => (
+            {(showAllLowStock ? analytics.lowStockAlerts : analytics.lowStockAlerts.slice(0, 5)).map((item) => (
                   <div key={item.id} className="p-6 hover:bg-gradient-to-r hover:from-red-50/50 hover:to-orange-50/50 transition-all duration-300 group">
                     <div className="flex items-start gap-6">
-                      {/* Status Indicator */}
-                      <div className="flex-shrink-0">
+                  {/* Status Indicator */}
+                  <div className="flex-shrink-0">
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
-                          item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
-                          item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
-                          'bg-gradient-to-br from-amber-500 to-amber-700'
-                        }`}>
+                      item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
+                      item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
+                      'bg-gradient-to-br from-amber-500 to-amber-700'
+                    }`}>
                           <span className="text-white font-bold text-xl">
-                            {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
-                          </span>
-                        </div>
-                      </div>
+                        {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
+                      </span>
+                    </div>
+                  </div>
 
-                      {/* Item Details */}
-                      <div className="flex-1 min-w-0">
+                  {/* Item Details */}
+                  <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
+                      <div className="flex-1">
                             <div className="flex items-center gap-4 mb-3">
                               <h4 className="text-lg font-bold text-gray-900 group-hover:text-red-900 transition-colors">
-                                {item.name}
-                              </h4>
+                            {item.name}
+                          </h4>
                               <span className={`px-4 py-2 text-sm font-semibold rounded-xl shadow-sm ${
-                                item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
-                                item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
-                                'bg-amber-100 text-amber-800 border border-amber-200'
-                              }`}>
-                                {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
-                              </span>
-                            </div>
-                            
+                            item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
+                            item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                            'bg-amber-100 text-amber-800 border border-amber-200'
+                          }`}>
+                            {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
+                          </span>
+                        </div>
+                        
                             <div className="text-gray-600 mb-4">
                               <div className="font-semibold text-gray-900">{item.make} {item.model}</div>
-                              <div className="text-gray-500">{item.specification}</div>
-                            </div>
+                          <div className="text-gray-500">{item.specification}</div>
+                        </div>
 
                             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                                 <span className="font-semibold">Qty: {item.quantity}</span>
-                              </div>
+                          </div>
                               <div className="flex items-center gap-2">
                                 <Package size={18} className="text-gray-400" />
-                                <span>Row {item.rack} - Column {item.bin}</span>
-                              </div>
+                            <span>Row {item.rack} - Column {item.bin}</span>
+                          </div>
                               <div className="flex items-center gap-2">
                                 <Calendar size={18} className="text-gray-400" />
-                                <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
-                              </div>
-                            </div>
-
-                            {item.updatedBy && (
-                              <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-400">
-                                <div className="text-sm text-gray-700">
-                                  <span className="font-semibold text-gray-900">Last Updated by:</span> {item.updatedBy}
-                                </div>
-                              </div>
-                            )}
+                            <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Quantity Display */}
-                      <div className="text-right">
+                        {item.updatedBy && (
+                              <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-400">
+                            <div className="text-sm text-gray-700">
+                                  <span className="font-semibold text-gray-900">Last Updated by:</span> {item.updatedBy}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quantity Display */}
+                  <div className="text-right">
                         <div className={`text-3xl font-bold ${
-                          item.quantity === 0 ? 'text-red-600' :
-                          item.quantity <= 2 ? 'text-orange-600' :
-                          'text-amber-600'
-                        }`}>
-                          {item.quantity}
-                        </div>
-                        <div className="text-sm text-gray-600">remaining</div>
+                      item.quantity === 0 ? 'text-red-600' :
+                      item.quantity <= 2 ? 'text-orange-600' :
+                      'text-amber-600'
+                    }`}>
+                      {item.quantity}
+                    </div>
+                    <div className="text-sm text-gray-600">remaining</div>
                         <div className={`text-xs font-semibold mt-2 px-3 py-1 rounded-lg ${
                           item.quantity === 0 ? 'bg-red-100 text-red-800' :
                           item.quantity <= 2 ? 'bg-orange-100 text-orange-800' :
                           'bg-amber-100 text-amber-800'
-                        }`}>
-                          {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
-                        </div>
-                      </div>
+                    }`}>
+                      {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
                     </div>
                   </div>
-                ))}
-                {analytics.lowStockAlerts.length > 5 && !showAllLowStock && (
+                </div>
+              </div>
+            ))}
+            {analytics.lowStockAlerts.length > 5 && !showAllLowStock && (
                   <div className="p-8 text-center bg-gradient-to-r from-red-50/50 to-orange-50/50 border-t border-gray-200/50">
                     <div className="flex items-center justify-center gap-4">
                       <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center">
                         <ChevronDown className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
-                          Showing 5 of {analytics.lowStockAlerts.length} low stock items
-                        </p>
-                        <button 
-                          onClick={() => setShowAllLowStock(true)}
-                          className="text-sm text-red-600 hover:text-red-800 font-semibold hover:underline transition-colors"
-                        >
-                          View all {analytics.lowStockAlerts.length} items →
-                        </button>
-                      </div>
-                    </div>
                   </div>
-                )}
+                  <div>
+                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                      Showing 5 of {analytics.lowStockAlerts.length} low stock items
+                    </p>
+                    <button 
+                      onClick={() => setShowAllLowStock(true)}
+                          className="text-sm text-red-600 hover:text-red-800 font-semibold hover:underline transition-colors"
+                    >
+                      View all {analytics.lowStockAlerts.length} items →
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+              </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* Data Integrity & Storage Cards */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {/* Data Integrity Card */}
+      {/* Data Integrity Card */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/50"></div>
             <div className="relative">
@@ -1243,47 +1243,47 @@ const Analytics: React.FC = () => {
                   <p className="text-gray-600">System health and data validation</p>
                 </div>
               </div>
-              {integrity ? (
+        {integrity ? (
                 <div className="space-y-4">
-                  {Object.entries(integrity).map(([key, value]: [string, any]) => (
+            {Object.entries(integrity).map(([key, value]: [string, any]) => (
                     <div key={key} className="flex justify-between items-center p-4 bg-white/50 rounded-xl">
                       <span className="text-sm font-semibold text-gray-700 capitalize">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
                       <div className="flex items-center gap-3">
-                        {value.valid ? (
+                  {value.valid ? (
                           <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-green-100 text-green-800">
-                            ✓ Valid
-                          </span>
-                        ) : (
+                      ✓ Valid
+                    </span>
+                  ) : (
                           <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-red-100 text-red-800">
-                            ✗ Invalid
-                          </span>
-                        )}
+                      ✗ Invalid
+                    </span>
+                  )}
                         <span className="text-sm font-medium text-gray-600">
-                          {value.count || 0} records
-                        </span>
-                        {value.hasBackup && (
+                    {value.count || 0} records
+                  </span>
+                  {value.hasBackup && (
                           <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-blue-100 text-blue-800">
-                            Backup
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                      Backup
+                    </span>
+                  )}
                 </div>
-              ) : (
+              </div>
+            ))}
+          </div>
+        ) : (
                 <div className="text-center py-8">
                   <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <div className="w-6 h-6 bg-gray-300 rounded animate-pulse"></div>
                   </div>
-                  <p className="text-gray-500">Loading integrity data...</p>
+          <p className="text-gray-500">Loading integrity data...</p>
                 </div>
-              )}
+        )}
             </div>
-          </div>
+      </div>
 
-          {/* Storage Usage Card */}
+      {/* Storage Usage Card */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
             <div className="relative">
@@ -1298,36 +1298,36 @@ const Analytics: React.FC = () => {
                   <p className="text-gray-600">Database and file storage metrics</p>
                 </div>
               </div>
-              {storage !== null ? (
+        {storage !== null ? (
                 <div className="space-y-6">
                   <div className="flex justify-between items-center p-4 bg-white/50 rounded-xl">
                     <span className="text-sm font-semibold text-gray-700">Total Storage</span>
                     <span className="text-2xl font-bold text-gray-900">{storage} MB</span>
                   </div>
-                  <div className="space-y-3">
+          <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Usage</span>
                       <span className="font-semibold text-gray-900">{Math.min((storage / 10) * 100, 100).toFixed(1)}%</span>
-                    </div>
+            </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
+              <div 
                         className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500" 
-                        style={{ width: `${Math.min((storage / 10) * 100, 100)}%` }}
-                      ></div>
-                    </div>
+                style={{ width: `${Math.min((storage / 10) * 100, 100)}%` }}
+              ></div>
+            </div>
                     <p className="text-xs text-gray-500 text-center">
-                      {storage < 1 ? 'Low storage usage' : storage < 5 ? 'Moderate storage usage' : 'High storage usage'}
-                    </p>
+              {storage < 1 ? 'Low storage usage' : storage < 5 ? 'Moderate storage usage' : 'High storage usage'}
+            </p>
                   </div>
-                </div>
-              ) : (
+          </div>
+        ) : (
                 <div className="text-center py-8">
                   <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <div className="w-6 h-6 bg-gray-300 rounded animate-pulse"></div>
                   </div>
-                  <p className="text-gray-500">Loading storage data...</p>
+          <p className="text-gray-500">Loading storage data...</p>
                 </div>
-              )}
+        )}
             </div>
           </div>
         </div>
