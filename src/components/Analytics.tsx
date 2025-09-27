@@ -1117,103 +1117,103 @@ const Analytics: React.FC = () => {
               </div>
               <div className="divide-y divide-gray-200/50">
             {(showAllLowStock ? analytics.lowStockAlerts : analytics.lowStockAlerts.slice(0, 5)).map((item) => (
-                  <div key={item.id} className="p-6 hover:bg-gradient-to-r hover:from-red-50/50 hover:to-orange-50/50 transition-all duration-300 group">
-                    <div className="flex items-start gap-6">
-                  {/* Status Indicator */}
-                  <div className="flex-shrink-0">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
-                      item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
-                      item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
-                      'bg-gradient-to-br from-amber-500 to-amber-700'
-                    }`}>
-                          <span className="text-white font-bold text-xl">
-                        {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Item Details */}
-                  <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-3">
-                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-red-900 transition-colors">
-                            {item.name}
-                          </h4>
-                              <span className={`px-4 py-2 text-sm font-semibold rounded-xl shadow-sm ${
-                            item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
-                            item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
-                            'bg-amber-100 text-amber-800 border border-amber-200'
-                          }`}>
-                            {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
+                  <div key={item.id} className="p-4 sm:p-6 hover:bg-gradient-to-r hover:from-red-50/50 hover:to-orange-50/50 transition-all duration-300 group">
+                    <div className="flex items-start gap-4 sm:gap-6">
+                      {/* Status Indicator */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+                          item.quantity === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
+                          item.quantity <= 2 ? 'bg-gradient-to-br from-orange-500 to-orange-700' :
+                          'bg-gradient-to-br from-amber-500 to-amber-700'
+                        }`}>
+                          <span className="text-white font-bold text-lg sm:text-xl">
+                            {item.quantity === 0 ? '!' : item.quantity <= 2 ? '⚠' : '⚡'}
                           </span>
                         </div>
-                        
-                            <div className="text-gray-600 mb-4">
-                              <div className="font-semibold text-gray-900">{item.make} {item.model}</div>
-                          <div className="text-gray-500">{item.specification}</div>
-                        </div>
-
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-                              <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                <span className="font-semibold">Qty: {item.quantity}</span>
-                          </div>
-                              <div className="flex items-center gap-2">
-                                <Package size={18} className="text-gray-400" />
-                            <span>Row {item.rack} - Column {item.bin}</span>
-                          </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar size={18} className="text-gray-400" />
-                            <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
-                          </div>
-                        </div>
-
-                        {item.updatedBy && (
-                              <div className="mt-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-400">
-                            <div className="text-sm text-gray-700">
-                                  <span className="font-semibold text-gray-900">Last Updated by:</span> {item.updatedBy}
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Quantity Display */}
-                  <div className="text-right">
-                        <div className={`text-3xl font-bold ${
-                      item.quantity === 0 ? 'text-red-600' :
-                      item.quantity <= 2 ? 'text-orange-600' :
-                      'text-amber-600'
-                    }`}>
-                      {item.quantity}
-                    </div>
-                    <div className="text-sm text-gray-600">remaining</div>
-                        <div className={`text-xs font-semibold mt-2 px-3 py-1 rounded-lg ${
+                      {/* Item Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-3 sm:mb-4">
+                          <div className="flex-1">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2 sm:mb-3">
+                              <h4 className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-red-900 transition-colors">
+                                {item.name}
+                              </h4>
+                              <span className={`px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-semibold rounded-xl shadow-sm ${
+                                item.quantity === 0 ? 'bg-red-100 text-red-800 border border-red-200' :
+                                item.quantity <= 2 ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                                'bg-amber-100 text-amber-800 border border-amber-200'
+                              }`}>
+                                {item.quantity === 0 ? 'OUT OF STOCK' : item.quantity <= 2 ? 'CRITICAL' : 'LOW STOCK'}
+                              </span>
+                            </div>
+                            
+                            <div className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                              <div className="font-semibold text-gray-900">{item.make} {item.model}</div>
+                              <div className="text-gray-500">{item.specification}</div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-600">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                <span className="font-semibold">Qty: {item.quantity}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Package size={14} className="text-gray-400" />
+                                <span>Row {item.rack} - Column {item.bin}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Calendar size={14} className="text-gray-400" />
+                                <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
+                              </div>
+                            </div>
+
+                            {item.updatedBy && (
+                              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-400">
+                                <div className="text-xs sm:text-sm text-gray-700">
+                                  <span className="font-semibold text-gray-900">Last Updated by:</span> {item.updatedBy}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Quantity Display */}
+                      <div className="text-right">
+                        <div className={`text-2xl sm:text-3xl font-bold ${
+                          item.quantity === 0 ? 'text-red-600' :
+                          item.quantity <= 2 ? 'text-orange-600' :
+                          'text-amber-600'
+                        }`}>
+                          {item.quantity}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-600">remaining</div>
+                        <div className={`text-xs font-semibold mt-1 sm:mt-2 px-2 sm:px-3 py-1 rounded-lg ${
                           item.quantity === 0 ? 'bg-red-100 text-red-800' :
                           item.quantity <= 2 ? 'bg-orange-100 text-orange-800' :
                           'bg-amber-100 text-amber-800'
-                    }`}>
-                      {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
+                        }`}>
+                          {item.quantity === 0 ? 'URGENT' : item.quantity <= 2 ? 'CRITICAL' : 'LOW'}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
             ))}
             {analytics.lowStockAlerts.length > 5 && !showAllLowStock && (
-                  <div className="p-8 text-center bg-gradient-to-r from-red-50/50 to-orange-50/50 border-t border-gray-200/50">
-                    <div className="flex items-center justify-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center">
-                        <ChevronDown className="w-5 h-5 text-white" />
+              <div className="p-4 sm:p-8 text-center bg-gradient-to-r from-red-50/50 to-orange-50/50 border-t border-gray-200/50">
+                <div className="flex items-center justify-center gap-3 sm:gap-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center">
+                    <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                    <p className="text-sm sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">
                       Showing 5 of {analytics.lowStockAlerts.length} low stock items
                     </p>
                     <button 
                       onClick={() => setShowAllLowStock(true)}
-                          className="text-sm text-red-600 hover:text-red-800 font-semibold hover:underline transition-colors"
+                      className="text-sm sm:text-base text-red-600 hover:text-red-800 font-semibold hover:underline transition-colors"
                     >
                       View all {analytics.lowStockAlerts.length} items →
                     </button>
