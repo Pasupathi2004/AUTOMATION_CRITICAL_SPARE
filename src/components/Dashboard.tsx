@@ -64,7 +64,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E8B57]"></div>
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#2E8B57] border-t-transparent absolute top-0 left-0"></div>
+        </div>
       </div>
     );
   }
@@ -75,7 +78,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       description: 'Find inventory items quickly',
       icon: Search,
       action: () => onPageChange('search'),
-      color: 'bg-blue-500',
+      gradient: 'from-blue-500 to-blue-600',
+      bgGradient: 'from-blue-50 to-blue-100',
       roles: ['admin', 'user']
     },
     {
@@ -83,7 +87,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       description: 'Add items to inventory',
       icon: Plus,
       action: () => onPageChange('add-item'),
-      color: 'bg-green-600',
+      gradient: 'from-emerald-500 to-emerald-600',
+      bgGradient: 'from-emerald-50 to-emerald-100',
       roles: ['admin']
     },
     {
@@ -91,7 +96,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       description: 'Browse all spare parts',
       icon: Package,
       action: () => onPageChange('spares-list'),
-      color: 'bg-purple-600',
+      gradient: 'from-purple-500 to-purple-600',
+      bgGradient: 'from-purple-50 to-purple-100',
       roles: ['admin', 'user']
     },
     {
@@ -99,86 +105,138 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       description: 'View detailed reports',
       icon: TrendingUp,
       action: () => onPageChange('analytics'),
-      color: 'bg-orange-600',
+      gradient: 'from-orange-500 to-orange-600',
+      bgGradient: 'from-orange-50 to-orange-100',
       roles: ['admin']
     }
   ].filter(action => action.roles.includes(user?.role || 'user'));
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 text-sm sm:text-base">Welcome back, {user?.username}!</p>
+    <div className="space-y-6 sm:space-y-8">
+      {/* Welcome Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#2E8B57] via-[#3B82F6] to-[#8B5CF6] rounded-2xl shadow-2xl">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative px-6 py-8 sm:px-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent mb-2">
+                Dashboard
+              </h1>
+              <p className="text-blue-100 text-lg sm:text-xl">Welcome back, {user?.username}! 👋</p>
+            </div>
+            <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
+              <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+              <span className="text-white text-sm font-medium">
+                {isConnected ? 'Live Updates' : 'Offline'}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="bg-blue-100 rounded-lg p-3">
-              <Package className="text-blue-600" size={24} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Package className="text-white" size={24} />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-gray-900">{analytics?.totalItems || 0}</div>
+                <div className="text-sm text-gray-600">Items</div>
+              </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Items</p>
-              <p className="text-2xl font-bold text-gray-900">{analytics?.totalItems || 0}</p>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Total Inventory</h3>
+            <p className="text-sm text-gray-600">Complete item count</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="bg-red-100 rounded-lg p-3">
-              <AlertTriangle className="text-red-600" size={24} />
+        <div className="group relative overflow-hidden bg-gradient-to-br from-red-50 to-orange-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-orange-600/10"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                <AlertTriangle className="text-white" size={24} />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-gray-900">{analytics?.lowStockItems || 0}</div>
+                <div className="text-sm text-gray-600">Alerts</div>
+              </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Low Stock</p>
-              <p className="text-2xl font-bold text-gray-900">{analytics?.lowStockItems || 0}</p>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Low Stock</h3>
+            <p className="text-sm text-gray-600">Items need attention</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="bg-green-100 rounded-lg p-3">
-              <TrendingUp className="text-green-600" size={24} />
+        <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-600/10"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <TrendingUp className="text-white" size={24} />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-gray-900">{analytics?.totalTransactions || 0}</div>
+                <div className="text-sm text-gray-600">This Month</div>
+              </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Monthly Transactions</p>
-              <p className="text-2xl font-bold text-gray-900">{analytics?.totalTransactions || 0}</p>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Transactions</h3>
+            <p className="text-sm text-gray-600">Monthly activity</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center">
-            <div className="bg-purple-100 rounded-lg p-3">
-              <Users className="text-purple-600" size={24} />
+        <div className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-indigo-600/10"></div>
+          <div className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Users className="text-white" size={24} />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-gray-900">{analytics?.activeUsers || 0}</div>
+                <div className="text-sm text-gray-600">Users</div>
+              </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Users</p>
-              <p className="text-2xl font-bold text-gray-900">{analytics?.activeUsers || 0}</p>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Active Users</h3>
+            <p className="text-sm text-gray-600">This month</p>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-r from-[#2E8B57] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg">
+            <Plus className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Quick Actions</h2>
+            <p className="text-gray-600">Access your most used features</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
               <button
                 key={index}
                 onClick={action.action}
-                className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow text-left"
+                className="group relative overflow-hidden bg-gradient-to-br p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+                style={{
+                  background: `linear-gradient(135deg, var(--tw-gradient-stops))`,
+                  '--tw-gradient-from': action.bgGradient.split(' ')[0].replace('from-', ''),
+                  '--tw-gradient-to': action.bgGradient.split(' ')[2].replace('-100', ''),
+                } as React.CSSProperties}
               >
-                <div className={`${action.color} rounded-lg p-2 w-fit mb-3`}>
-                  <Icon className="text-white" size={20} />
+                <div className="relative">
+                  <div className={`w-12 h-12 bg-gradient-to-r ${action.gradient} rounded-xl flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform duration-200`}>
+                    <Icon className="text-white" size={24} />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2 text-lg">{action.title}</h3>
+                  <p className="text-sm text-gray-600">{action.description}</p>
                 </div>
-                <h3 className="font-medium text-gray-900 mb-1 text-base sm:text-lg">{action.title}</h3>
-                <p className="text-xs sm:text-sm text-gray-600">{action.description}</p>
               </button>
             );
           })}
@@ -187,18 +245,37 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
 
       {/* Recent Activity */}
       {analytics?.recentTransactions && analytics.recentTransactions.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-4">Recent Activity</h2>
-          <div className="space-y-2 sm:space-y-3">
-            {analytics.recentTransactions.slice(0, 5).map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                <div>
-                  <p className="font-medium text-gray-900 text-sm sm:text-base">{transaction.itemName}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    {transaction.type} {transaction.quantity} units by {transaction.user}
-                  </p>
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Recent Activity</h2>
+              <p className="text-gray-600">Latest inventory transactions</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            {analytics.recentTransactions.slice(0, 5).map((transaction, index) => (
+              <div key={transaction.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50/50 to-blue-50/50 rounded-xl hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200 group">
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
+                    transaction.type === 'added' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                    transaction.type === 'taken' ? 'bg-gradient-to-r from-amber-500 to-amber-600' : 
+                    'bg-gradient-to-r from-orange-500 to-orange-600'
+                  }`}>
+                    <span className="text-white font-bold text-sm">
+                      {transaction.type === 'added' ? '+' : transaction.type === 'taken' ? '-' : '↻'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-base">{transaction.itemName}</p>
+                    <p className="text-sm text-gray-600">
+                      {transaction.type} {transaction.quantity} units by {transaction.user}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-500">
+                <p className="text-sm text-gray-500 font-medium">
                   {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                 </p>
               </div>
