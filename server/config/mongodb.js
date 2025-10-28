@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI = process.env.MONGO_URI;
+// Support both local and Atlas MongoDB
+const MONGO_URI = process.env.MONGO_URI || 
+  'mongodb://localhost:27017/inventory-management' ||
+  'mongodb+srv://atlas-connection-string/database';
 
 export const connectDB = async () => {
   try {
