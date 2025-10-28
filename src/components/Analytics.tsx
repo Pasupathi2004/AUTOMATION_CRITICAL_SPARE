@@ -1043,9 +1043,6 @@ const Analytics: React.FC = () => {
                               <div className="font-semibold text-gray-900">{transaction.make} {transaction.model}</div>
                               <div className="text-gray-500 mb-2">{transaction.specification}</div>
                               <div className="flex flex-wrap gap-2 text-xs">
-                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-lg">
-                                  📍 Row {transaction.rack} - Column {transaction.bin}
-                                </span>
                                 <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg">
                                   🏷️ {transaction.itemName}
                                 </span>
