@@ -140,6 +140,7 @@ const Analytics: React.FC = () => {
           timestamp: editTx.timestamp,
           remarks: editTx.remarks,
           quantity: editTx.quantity,
+          specification: editTx.specification,
           // If user picked an explicit editor, send it; else backend will use current user
           editedBy: editTx.editedBy
         })
@@ -1016,7 +1017,14 @@ const Analytics: React.FC = () => {
                                     timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
                                     remarks: transaction.remarks || '',
                                     quantity: transaction.quantity || 0,
-                                    editedBy: transaction.editedBy || ''
+                                    editedBy: transaction.editedBy || '',
+                                    // Include item details and specification for editing
+                                    itemName: transaction.itemName,
+                                    make: transaction.make,
+                                    model: transaction.model,
+                                    specification: transaction.specification || '',
+                                    rack: transaction.rack,
+                                    bin: transaction.bin
                                   })}
                                   className="px-2 sm:px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                                 >
@@ -1456,6 +1464,28 @@ const Analytics: React.FC = () => {
               <h3 className="text-lg font-semibold">Edit Transaction</h3>
             </div>
             <div className="p-4 space-y-4">
+              {/* Read-only Item Details Section */}
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 mb-2 font-semibold">ITEM DETAILS (Read-only)</p>
+                <div className="text-sm space-y-1">
+                  <p><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-600">{editTx.itemName}</span></p>
+                  <p><span className="font-semibold text-gray-700">Make:</span> <span className="text-gray-600">{editTx.make}</span></p>
+                  <p><span className="font-semibold text-gray-700">Model:</span> <span className="text-gray-600">{editTx.model}</span></p>
+                  <p><span className="font-semibold text-gray-700">Location:</span> <span className="text-gray-600">Row {editTx.rack} - Column {editTx.bin}</span></p>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Specification *</label>
+                <textarea
+                  value={editTx.specification || ''}
+                  onChange={(e) => setEditTx({ ...editTx, specification: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  rows={3}
+                  placeholder="Enter item specifications..."
+                />
+              </div>
+              
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Date & Time</label>
                 <input
@@ -1465,6 +1495,7 @@ const Analytics: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
+              
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Quantity</label>
                 <input
@@ -1475,6 +1506,7 @@ const Analytics: React.FC = () => {
                   min={0}
                 />
               </div>
+              
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Updated By</label>
                 <select
@@ -1488,6 +1520,7 @@ const Analytics: React.FC = () => {
                   ))}
                 </select>
               </div>
+              
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Remarks</label>
                 <textarea

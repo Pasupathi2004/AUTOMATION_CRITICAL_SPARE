@@ -33,12 +33,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     const { id } = req.params;
-    const { timestamp, remarks, quantity, editedBy } = req.body;
+    const { timestamp, remarks, quantity, editedBy, specification } = req.body;
 
     const update = {
       ...(timestamp ? { timestamp: new Date(timestamp) } : {}),
       ...(typeof remarks === 'string' ? { remarks } : {}),
       ...(typeof quantity !== 'undefined' && !isNaN(Number(quantity)) ? { quantity: Number(quantity) } : {}),
+      ...(typeof specification === 'string' ? { specification } : {}),
       // Allow owner to explicitly set editedBy via body; fallback to current user
       editedBy: (typeof editedBy === 'string' && editedBy.trim().length > 0) ? editedBy.trim() : (req.user?.username || 'owner'),
       editedAt: new Date()
