@@ -29,7 +29,10 @@ export interface Transaction {
   quantity: number;
   user: string;
   timestamp: string;
-  // Optional enriched fields from inventory for UI/export convenience
+  // Optional last-update metadata (present when transaction was edited)
+  editedBy?: string;
+  editedAt?: string;
+  // Enhanced item details for comprehensive analytics
   make?: string;
   model?: string;
   specification?: string;

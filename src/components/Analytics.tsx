@@ -139,7 +139,9 @@ const Analytics: React.FC = () => {
         body: JSON.stringify({
           timestamp: editTx.timestamp,
           remarks: editTx.remarks,
-          quantity: editTx.quantity
+          quantity: editTx.quantity,
+          // If user picked an explicit editor, send it; else backend will use current user
+          editedBy: editTx.editedBy
         })
       });
       const data = await response.json();
@@ -293,7 +295,7 @@ const Analytics: React.FC = () => {
               [`${monthName} ${year} - Transaction Details`],
               ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
               [''],
-              ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
+              ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
             ];
 
             monthTransactions.forEach(transaction => {
@@ -305,6 +307,7 @@ const Analytics: React.FC = () => {
                   transaction.specification || '',
                   transaction.make || '',
                   transaction.model || '',
+                  `Row ${transaction.rack || ''} - Column ${transaction.bin || ''}`,
                   (transaction.type || '').toUpperCase(),
                   (transaction.quantity || 0).toString(),
                   transaction.user || '',
@@ -395,7 +398,7 @@ const Analytics: React.FC = () => {
       // Recent Transactions Sheet (with item details, no Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionsData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
@@ -407,6 +410,7 @@ const Analytics: React.FC = () => {
               transaction.specification || '',
               transaction.make || '',
               transaction.model || '',
+              `Row ${transaction.rack || ''} - Column ${transaction.bin || ''}`,
               (transaction.type || '').toUpperCase(),
               (transaction.quantity || 0).toString(),
               transaction.user || '',
@@ -1011,7 +1015,8 @@ const Analytics: React.FC = () => {
                                     id: transaction.id,
                                     timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
                                     remarks: transaction.remarks || '',
-                                    quantity: transaction.quantity || 0
+                                    quantity: transaction.quantity || 0,
+                                    editedBy: transaction.editedBy || ''
                                   })}
                                   className="px-2 sm:px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                                 >
@@ -1019,10 +1024,24 @@ const Analytics: React.FC = () => {
                                 </button>
                               )}
                             </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs sm:text-sm text-gray-600">
+                              <span>Created: {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
+                              {transaction.editedAt && (
+                                <span className="sm:ml-4">Last updated: {new Date(transaction.editedAt as any).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}{transaction.editedBy ? ` by ${transaction.editedBy}` : ''}</span>
+                              )}
+                            </div>
                             
                             <div className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                               <div className="font-semibold text-gray-900">{transaction.make} {transaction.model}</div>
-                              <div className="text-gray-500">{transaction.specification}</div>
+                              <div className="text-gray-500 mb-2">{transaction.specification}</div>
+                              <div className="flex flex-wrap gap-2 text-xs">
+                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-lg">
+                                  📍 Row {transaction.rack} - Column {transaction.bin}
+                                </span>
+                                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg">
+                                  🏷️ {transaction.itemName}
+                                </span>
+                              </div>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-600">
@@ -1455,6 +1474,19 @@ const Analytics: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   min={0}
                 />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Updated By</label>
+                <select
+                  value={editTx.editedBy || ''}
+                  onChange={(e) => setEditTx({ ...editTx, editedBy: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white"
+                >
+                  <option value="">Current User</option>
+                  {activeUserNames.map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Remarks</label>

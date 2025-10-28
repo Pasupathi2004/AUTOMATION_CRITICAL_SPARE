@@ -198,9 +198,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                     {transaction.type} {transaction.quantity} units by {transaction.user}
                   </p>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-500">
-                  {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                </p>
+                <div className="text-right">
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                  </p>
+                  {transaction.editedAt && (
+                    <p className="text-[10px] sm:text-xs text-gray-400">Updated {new Date(transaction.editedAt as any).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}{transaction.editedBy ? ` by ${transaction.editedBy}` : ''}</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
