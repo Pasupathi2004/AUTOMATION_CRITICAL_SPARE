@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { initializeDatabase } from './config/database.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
-import { connectDB } from './config/mongodb.js';
+// import { connectDB } from './config/mongodb.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -60,7 +60,7 @@ app.get('/health', (req, res) => {
     message: 'Server is running',
     timestamp: new Date().toISOString(),
     environment: 'development',
-    database: 'MongoDB'
+    database: 'JSON Files'
   });
 });
 
@@ -87,8 +87,9 @@ app.set('io', io);
 // Initialize database and start server
 const startServer = async () => {
   try {
-    await connectDB(); // Connect to MongoDB before starting the server
-    await User.ensureDefaultAdmin(); // Ensure default admin user exists
+    await initializeDatabase(); // Initialize JSON database
+    // await connectDB(); // Connect to MongoDB before starting the server
+    // await User.ensureDefaultAdmin(); // Ensure default admin user exists
     console.log('Database initialized successfully');
     // Start server
     server.listen(PORT, () => {
@@ -97,7 +98,7 @@ const startServer = async () => {
       console.log(`🔐 JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Not Set'}`);
       console.log(`🌐 CORS Origin: http://localhost:5173`);
       console.log(`🔌 Socket.IO enabled`);
-      console.log(`🗄️ Database: MongoDB`);
+      console.log(`🗄️ Database: JSON Files`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
