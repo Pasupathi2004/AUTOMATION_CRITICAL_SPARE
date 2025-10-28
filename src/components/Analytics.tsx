@@ -1032,12 +1032,6 @@ const Analytics: React.FC = () => {
                                 </button>
                               )}
                             </div>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs sm:text-sm text-gray-600">
-                              <span>Created: {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
-                              {transaction.editedAt && (
-                                <span className="sm:ml-4">Last updated: {new Date(transaction.editedAt as any).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}{transaction.editedBy ? ` by ${transaction.editedBy}` : ''}</span>
-                              )}
-                            </div>
                             
                             <div className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                               <div className="font-semibold text-gray-900">{transaction.make} {transaction.model}</div>
