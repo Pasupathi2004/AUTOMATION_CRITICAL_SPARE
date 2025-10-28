@@ -85,7 +85,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
       quantity: Math.abs(change),
       user: req.user?.username || 'system',
       timestamp: new Date().toISOString(),
-      remarks: typeof req.body.remarks === 'string' ? req.body.remarks : ''
+      remarks: typeof req.body.remarks === 'string' ? req.body.remarks : '',
+      // Include full item specifications for better analytics
+      make: currentItem.make,
+      model: currentItem.model,
+      specification: currentItem.specification,
+      rack: currentItem.rack,
+      bin: currentItem.bin
     });
     await transaction.save();
     // Emit socket event for real-time updates
@@ -115,7 +121,13 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     type: 'deleted',
     quantity: deletedItem.quantity,
     user: req.user?.username || 'system',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    // Include full item specifications for better analytics
+    make: deletedItem.make,
+    model: deletedItem.model,
+    specification: deletedItem.specification,
+    rack: deletedItem.rack,
+    bin: deletedItem.bin
   });
   await transaction.save();
   // Emit socket event for real-time updates

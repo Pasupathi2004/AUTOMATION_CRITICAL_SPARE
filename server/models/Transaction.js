@@ -9,7 +9,13 @@ const TransactionSchema = new mongoose.Schema({
   timestamp: { type: Date },
   remarks: { type: String, default: '' },
   editedBy: { type: String, default: '' },
-  editedAt: { type: Date }
+  editedAt: { type: Date },
+  // Enhanced item details for better analytics
+  make: { type: String, default: '' },
+  model: { type: String, default: '' },
+  specification: { type: String, default: '' },
+  rack: { type: String, default: '' },
+  bin: { type: String, default: '' }
 });
 
 export default mongoose.model('Transaction', TransactionSchema); 

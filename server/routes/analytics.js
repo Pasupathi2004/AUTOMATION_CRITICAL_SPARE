@@ -42,11 +42,12 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
         remarks: t.remarks || '',
         editedBy: t.editedBy || '',
         editedAt: t.editedAt || null,
-        make: item?.make || '',
-        model: item?.model || '',
-        specification: item?.specification || '',
-        rack: item?.rack || '',
-        bin: item?.bin || ''
+        // Prioritize stored transaction data, fallback to inventory lookup
+        make: t.make || item?.make || '',
+        model: t.model || item?.model || '',
+        specification: t.specification || item?.specification || '',
+        rack: t.rack || item?.rack || '',
+        bin: t.bin || item?.bin || ''
       };
     });
 
@@ -107,11 +108,12 @@ router.get('/dashboard', async (req, res) => {
         remarks: t.remarks || '',
         editedBy: t.editedBy || '',
         editedAt: t.editedAt || null,
-        make: item?.make || '',
-        model: item?.model || '',
-        specification: item?.specification || '',
-        rack: item?.rack || '',
-        bin: item?.bin || ''
+        // Prioritize stored transaction data, fallback to inventory lookup
+        make: t.make || item?.make || '',
+        model: t.model || item?.model || '',
+        specification: t.specification || item?.specification || '',
+        rack: t.rack || item?.rack || '',
+        bin: t.bin || item?.bin || ''
       };
     });
 
