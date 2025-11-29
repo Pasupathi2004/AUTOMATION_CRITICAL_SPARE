@@ -37,7 +37,8 @@ const SparesList: React.FC = () => {
     rack: '',
     bin: '',
     quantity: '',
-    minimumQuantity: ''
+    minimumQuantity: '',
+    category: ''
   });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -60,6 +61,7 @@ const SparesList: React.FC = () => {
         item.rack.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.bin.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.quantity.toString().includes(searchTerm) ||
+        (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (item.updatedBy && item.updatedBy.toLowerCase().includes(searchTerm.toLowerCase()))
       );
       setFilteredInventory(filtered);
@@ -138,7 +140,8 @@ const SparesList: React.FC = () => {
       rack: item.rack,
       bin: item.bin,
       quantity: item.quantity.toString(),
-      minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : ''
+      minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : '',
+      category: item.category || 'consumable'
     });
     setShowEditModal(true);
   };
@@ -160,6 +163,7 @@ const SparesList: React.FC = () => {
         body: JSON.stringify({
           ...formData,
           quantity: parseInt(formData.quantity),
+          minimumQuantity: parseInt(formData.minimumQuantity),
           updatedBy: user?.username
         }),
       });
@@ -205,7 +209,7 @@ const SparesList: React.FC = () => {
   const exportToCSV = () => {
     const headers = [
       'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-      'Quantity', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+      'Quantity', 'Minimum Quantity', 'Category', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
     ];
     
     const csvData = inventory.map(item => [
@@ -217,6 +221,8 @@ const SparesList: React.FC = () => {
       item.rack,
       item.bin,
       item.quantity,
+      item.minimumQuantity,
+      item.category || 'consumable',
       getStockStatus(item.quantity, item.minimumQuantity).status,
       safeFormatDate(item.createdAt),
       safeFormatDate(item.updatedAt),
@@ -240,7 +246,7 @@ const SparesList: React.FC = () => {
     try {
       const headers = [
         'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-        'Quantity', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+        'Quantity', 'Minimum Quantity', 'Category', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
       ];
       
       const excelData = inventory.map(item => [
@@ -252,6 +258,8 @@ const SparesList: React.FC = () => {
         item.rack,
         item.bin,
         item.quantity,
+        item.minimumQuantity,
+        item.category || 'consumable',
         getStockStatus(item.quantity, item.minimumQuantity).status,
         safeFormatDate(item.createdAt),
         safeFormatDate(item.updatedAt),
@@ -322,7 +330,7 @@ const SparesList: React.FC = () => {
           </div>
           <input
             type="text"
-            placeholder="Search by name, make, model, specification, row, column, quantity, or user..."
+            placeholder="Search by name, make, model, specification, row, column, quantity, category, or user..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent bg-white"
@@ -381,9 +389,20 @@ const SparesList: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${stockStatus.color}`}>
-                          {stockStatus.status}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${stockStatus.color}`}>
+                            {stockStatus.status}
+                          </span>
+                          {item.category && (
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              item.category === 'critical' 
+                                ? 'bg-red-100 text-red-700' 
+                                : 'bg-blue-100 text-blue-700'
+                            }`}>
+                              {item.category === 'critical' ? 'Critical' : 'Consumable'}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -591,6 +610,20 @@ const SparesList: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select category</option>
+                    <option value="critical">Critical</option>
+                    <option value="consumable">Consumable</option>
+                  </select>
                 </div>
               </div>
               
