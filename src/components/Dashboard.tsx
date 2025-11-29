@@ -200,10 +200,26 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                 </div>
                 <div className="text-right">
                   <p className="text-xs sm:text-sm text-gray-500">
-                    {new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                    {new Date(transaction.timestamp).toLocaleString('en-IN', { 
+                      timeZone: 'Asia/Kolkata',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    })}
                   </p>
                   {transaction.editedAt && (
-                    <p className="text-[10px] sm:text-xs text-gray-400">Updated {new Date(transaction.editedAt as any).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}{transaction.editedBy ? ` by ${transaction.editedBy}` : ''}</p>
+                    <p className="text-[10px] sm:text-xs text-gray-400">Updated {new Date(transaction.editedAt as any).toLocaleString('en-IN', { 
+                      timeZone: 'Asia/Kolkata',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    })}{transaction.editedBy ? ` by ${transaction.editedBy}` : ''}</p>
                   )}
                 </div>
               </div>

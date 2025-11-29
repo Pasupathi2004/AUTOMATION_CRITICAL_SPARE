@@ -11,12 +11,23 @@ import { API_ENDPOINTS } from '../config/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
+// Date formatting options for Indian 12-hour format
+const INDIAN_12H_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  timeZone: 'Asia/Kolkata',
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+};
+
 const safeFormatDate = (dateValue: any) => {
   if (!dateValue) return 'N/A';
   const date = new Date(dateValue);
   if (isNaN(date.getTime())) return 'N/A';
-  // Use toLocaleString for IST
-  return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  // Use toLocaleString for IST with 12-hour format
+  return date.toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS);
 };
 
 const Analytics: React.FC = () => {
@@ -223,7 +234,7 @@ const Analytics: React.FC = () => {
       // Summary Sheet
       const summaryData = [
         ['Inventory Management System - Comprehensive Report'],
-        ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+        ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
         [''],
         ['Metric', 'Value'],
         ['Total Items', (analytics.totalItems || 0).toString()],
@@ -252,7 +263,7 @@ const Analytics: React.FC = () => {
             // Monthly Summary Sheet
             const monthlySummaryData = [
               [`${monthName} ${year} - Monthly Summary`],
-              ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+              ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
               [''],
               ['Metric', 'Value'],
               ['Total Transactions', monthTransactions.length.toString()],
@@ -294,7 +305,7 @@ const Analytics: React.FC = () => {
             // Monthly Transactions Detail Sheet
             const monthlyData = [
               [`${monthName} ${year} - Transaction Details`],
-              ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+              ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
               [''],
               ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
             ];
@@ -312,7 +323,7 @@ const Analytics: React.FC = () => {
                   (transaction.type || '').toUpperCase(),
                   (transaction.quantity || 0).toString(),
                   transaction.user || '',
-                  transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+                  transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
                   action,
                   transaction.remarks || ''
                 ]);
@@ -342,7 +353,7 @@ const Analytics: React.FC = () => {
               item.specification || '',
               (item.quantity || 0).toString(),
               `Row ${item.rack || ''} - Column ${item.bin || ''}`,
-              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
               item.updatedBy || '',
               status
             ]);
@@ -382,7 +393,7 @@ const Analytics: React.FC = () => {
       // Summary Sheet
       const summaryData = [
         ['Inventory Management System - Analytics Report'],
-        ['Generated At:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })],
+        ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
         [''],
         ['Metric', 'Value'],
         ['Total Items', (analytics.totalItems || 0).toString()],
@@ -415,7 +426,7 @@ const Analytics: React.FC = () => {
               (transaction.type || '').toUpperCase(),
               (transaction.quantity || 0).toString(),
               transaction.user || '',
-              transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+                  transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
               action,
               transaction.remarks || ''
             ]);
@@ -445,7 +456,7 @@ const Analytics: React.FC = () => {
               item.specification || '',
               (item.quantity || 0).toString(),
               `Row ${item.rack || ''} - Column ${item.bin || ''}`,
-              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '',
+              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
               item.updatedBy || '',
               status
             ]);
@@ -1183,7 +1194,7 @@ const Analytics: React.FC = () => {
                               </div>
                               <div className="flex items-center gap-2">
                                 <Calendar size={14} className="text-gray-400" />
-                                <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</span>
+                                <span>{item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : 'N/A'}</span>
                               </div>
                             </div>
 

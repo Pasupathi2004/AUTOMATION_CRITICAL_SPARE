@@ -7,13 +7,21 @@ import { format } from 'date-fns';
 import { API_ENDPOINTS } from '../config/api';
 import * as XLSX from 'xlsx';
 
-// Helper function for safe date formatting
+// Helper function for safe date formatting in Indian 12-hour format
 const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
   if (!dateValue) return 'N/A';
   const date = new Date(dateValue);
   if (isNaN(date.getTime())) return 'N/A';
-  // Use toLocaleString for IST
-  return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  // Use toLocaleString for IST with 12-hour format
+  return date.toLocaleString('en-IN', { 
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 };
 
 // Helper to check for valid MongoDB ObjectId
