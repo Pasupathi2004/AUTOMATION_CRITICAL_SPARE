@@ -26,6 +26,7 @@ const SparesList: React.FC = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'critical' | 'consumable'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -50,10 +51,19 @@ const SparesList: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredInventory(inventory);
-    } else {
-      const filtered = inventory.filter(item =>
+    let filtered = inventory;
+
+    // Apply category filter
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(item => {
+        const itemCategory = item.category || 'consumable';
+        return itemCategory.toLowerCase() === categoryFilter.toLowerCase();
+      });
+    }
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -64,9 +74,10 @@ const SparesList: React.FC = () => {
         (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (item.updatedBy && item.updatedBy.toLowerCase().includes(searchTerm.toLowerCase()))
       );
-      setFilteredInventory(filtered);
     }
-  }, [searchTerm, inventory]);
+
+    setFilteredInventory(filtered);
+  }, [searchTerm, categoryFilter, inventory]);
 
   // Socket.IO event listeners for real-time updates
   useEffect(() => {
@@ -351,12 +362,52 @@ const SparesList: React.FC = () => {
         </div>
       )}
 
+      {/* Category Filter Buttons */}
+      <div className="flex flex-wrap justify-center gap-3">
+        <button
+          onClick={() => setCategoryFilter('all')}
+          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            categoryFilter === 'all'
+              ? 'bg-[#2E8B57] text-white shadow-md'
+              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+          }`}
+        >
+          All Items
+        </button>
+        <button
+          onClick={() => setCategoryFilter('critical')}
+          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            categoryFilter === 'critical'
+              ? 'bg-red-600 text-white shadow-md'
+              : 'bg-white text-red-600 border border-red-300 hover:bg-red-50'
+          }`}
+        >
+          Critical
+        </button>
+        <button
+          onClick={() => setCategoryFilter('consumable')}
+          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            categoryFilter === 'consumable'
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'bg-white text-blue-600 border border-blue-300 hover:bg-blue-50'
+          }`}
+        >
+          Consumable
+        </button>
+      </div>
+
+      {categoryFilter !== 'all' && (
+        <div className="text-center text-sm text-gray-600">
+          Showing {filteredInventory.length} {categoryFilter} item{filteredInventory.length !== 1 ? 's' : ''}
+        </div>
+      )}
+
       {/* Summary/info card comes after search bar */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             Total Items: {inventory.length}
-            {searchTerm && (
+            {(searchTerm || categoryFilter !== 'all') && (
               <span className="text-sm font-normal text-gray-600 ml-2">
                 (Showing {filteredInventory.length} filtered)
               </span>
