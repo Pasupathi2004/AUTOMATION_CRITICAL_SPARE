@@ -13,7 +13,8 @@ const AddItem: React.FC = () => {
     rack: '',
     bin: '',
     quantity: '',
-    minimumQuantity: ''
+    minimumQuantity: '',
+    category: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -21,7 +22,7 @@ const AddItem: React.FC = () => {
   const [bulkUploading, setBulkUploading] = useState(false);
   const [refreshInventory, setRefreshInventory] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -58,7 +59,8 @@ const AddItem: React.FC = () => {
           rack: '',
           bin: '',
           quantity: '',
-          minimumQuantity: ''
+          minimumQuantity: '',
+          category: ''
         });
       } else {
         setMessage({ type: 'error', text: data.message || 'Failed to add item. Please try again.' });
@@ -206,6 +208,24 @@ const AddItem: React.FC = () => {
                 placeholder="Enter minimum quantity"
               />
             </div>
+
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                Category *
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
+              >
+                <option value="">Select category</option>
+                <option value="critical">Critical</option>
+                <option value="consumable">Consumable</option>
+              </select>
+            </div>
           </div>
 
           <div className="mt-6">
@@ -245,7 +265,8 @@ const AddItem: React.FC = () => {
                 rack: '',
                 bin: '',
                 quantity: '',
-                minimumQuantity: ''
+                minimumQuantity: '',
+                category: ''
               })}
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >

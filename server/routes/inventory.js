@@ -158,8 +158,19 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
       const row = data[i];
       if (!row || row.length < 8) continue;
 
-      const [name, make, model, specification, rack, bin, quantity, minimumQuantity] = row;
-
+      // Parse row with optional category field (can be in different positions based on CSV structure)
+      // Try to handle both old format (8 cols) and new format (9+ cols)
+      const name = row[0];
+      const make = row[1];
+      const model = row[2];
+      const specification = row[3];
+      const rack = row[4];
+      const bin = row[5];
+      const quantity = row[6];
+      const minimumQuantity = row[7];
+      // Category might be at position 8 or later depending on CSV structure
+      let category = row[8];
+      
       // Validate required fields
       if (!name || !make || !model || !specification || !rack || !bin) {
         errors.push(`Row ${i + 1}: Missing required fields`);
@@ -180,6 +191,12 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
       continue;
     }
 
+      // Validate and normalize category
+      const categoryStr = category ? category.toString().trim().toLowerCase() : 'consumable';
+      const validCategory = (categoryStr === 'critical' || categoryStr === 'consumable') 
+        ? categoryStr 
+        : 'consumable';
+
       items.push({
         name: name.toString().trim(),
         make: make.toString().trim(),
@@ -189,6 +206,7 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
         bin: bin.toString().trim(),
         quantity: quantityNum,
         minimumQuantity: minimumQuantityNum,
+        category: validCategory,
         updatedBy: req.user?.username || 'bulk-upload'
       });
   }

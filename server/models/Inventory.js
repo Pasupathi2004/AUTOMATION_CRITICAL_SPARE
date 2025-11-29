@@ -9,6 +9,7 @@ const InventorySchema = new mongoose.Schema({
   minimumQuantity: Number,
   rack: String,
   bin: String,
+  category: { type: String, enum: ['critical', 'consumable'], default: 'consumable' },
   updatedBy: String
 }, { timestamps: true }); // Enable timestamps
 

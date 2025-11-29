@@ -1,2 +1,2 @@
-Name,Make,Model,Specification,Row,Column,Quantity,Minimum Quantity,Updated By
-Sample Item,BrandX,ModelY,Specs here,1,A,10,2,admin 
+Name,Make,Model,Specification,Row,Column,Quantity,Minimum Quantity,Category,Updated By
+Sample Item,BrandX,ModelY,Specs here,1,A,10,2,consumable,admin 
