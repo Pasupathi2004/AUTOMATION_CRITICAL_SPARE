@@ -87,14 +87,6 @@ const Requests: React.FC = () => {
     }
   };
 
-  if (user?.role !== 'admin') {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-gray-700">Requests are visible to admin users only.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
       {message && (
@@ -106,7 +98,9 @@ const Requests: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <ClipboardList className="text-[#2E8B57]" />
-          <h1 className="text-2xl font-bold text-gray-900">Breakdown Requests</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {user?.role === 'admin' ? 'Breakdown Requests' : 'My Breakdown Requests'}
+          </h1>
         </div>
         <button
           onClick={fetchRequests}
@@ -153,13 +147,16 @@ const Requests: React.FC = () => {
                 <p><strong>Quantity:</strong> {req.quantity}</p>
                 <p><strong>Requested by:</strong> {req.requestedBy}</p>
                 <p><strong>Remarks:</strong> {req.remarks || '—'}</p>
+          {req.resolvedBy && (
+            <p><strong>Resolved by:</strong> {req.resolvedBy}</p>
+          )}
                 {req.createdAt && (
                   <p className="text-xs text-gray-500">
                     Raised on: {new Date(req.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                   </p>
                 )}
               </div>
-              {req.status === 'pending' && (
+              {req.status === 'pending' && user?.role === 'admin' && (
                 <div className="mt-3 flex space-x-2">
                   <button
                     onClick={() => updateStatus(req.id, 'approved')}

@@ -92,7 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
     { id: 'search', label: 'Search', icon: Search, roles: ['admin', 'user'] },
     { id: 'add-item', label: 'Add Item', icon: Plus, roles: ['admin'] },
     { id: 'spares-list', label: 'Spares List', icon: Package, roles: ['admin', 'user'] },
-    { id: 'requests', label: 'Requests', icon: ClipboardList, roles: ['admin'] },
+    { id: 'requests', label: 'Requests', icon: ClipboardList, roles: ['admin', 'user'] },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
     { id: 'users', label: 'User Management', icon: Users, roles: ['admin'] },
   ];
@@ -249,7 +249,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                     >
                       <Icon size={20} />
                       <span>{item.label}</span>
-                      {item.id === 'requests' && pendingRequests > 0 && (
+                      {item.id === 'requests' && user?.role === 'admin' && pendingRequests > 0 && (
                         <span className="ml-auto px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700">
                           {pendingRequests}
                         </span>

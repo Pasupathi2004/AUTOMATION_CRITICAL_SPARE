@@ -9,6 +9,9 @@ const TransactionSchema = new mongoose.Schema({
   timestamp: { type: Date },
   // Purpose of the movement (e.g., breakdown vs routine consumption)
   purpose: { type: String, enum: ['breakdown', 'others'], default: 'others' },
+  requestedBy: { type: String, default: '' },
+  requestStatus: { type: String, enum: ['pending', 'approved', 'rejected', ''], default: '' },
+  resolvedBy: { type: String, default: '' },
   remarks: { type: String, default: '' },
   editedBy: { type: String, default: '' },
   editedAt: { type: Date },

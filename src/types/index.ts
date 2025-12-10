@@ -28,6 +28,9 @@ export interface Transaction {
   itemName: string;
   type: 'added' | 'taken' | 'deleted';
   purpose?: 'breakdown' | 'others';
+  requestedBy?: string;
+  requestStatus?: 'pending' | 'approved' | 'rejected' | '';
+  resolvedBy?: string;
   quantity: number;
   user: string;
   timestamp: string;

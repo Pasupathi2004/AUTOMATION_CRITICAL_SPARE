@@ -4,11 +4,17 @@ import { authenticateToken, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Get all requests (admin only)
-router.get('/', authenticateToken, requireRole(['admin']), async (req, res) => {
+// Get requests
+// Admins: can filter all, optionally by status query param.
+// Non-admin: only their own requests.
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const { status } = req.query;
-    const filter = status ? { status } : {};
+    const filter = {};
+    if (status) filter.status = status;
+    if ((req.user?.role || '').toLowerCase() !== 'admin') {
+      filter.requestedBy = req.user?.username || '';
+    }
     const requests = await Request.find(filter).sort({ createdAt: -1 });
     res.json({ success: true, requests });
   } catch (error) {
@@ -69,6 +75,19 @@ router.put('/:id', authenticateToken, requireRole(['admin']), async (req, res) =
     const updated = await Request.findByIdAndUpdate(id, update, { new: true });
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Request not found' });
+    }
+
+    // Mirror request resolution onto related breakdown transactions (best-effort)
+    try {
+      const txFilter = {
+        itemId: updated.itemId || undefined,
+        purpose: 'breakdown',
+        requestedBy: updated.requestedBy || '',
+        requestStatus: { $in: ['pending', ''] }
+      };
+      await Transaction.updateMany(txFilter, { requestStatus: updated.status, resolvedBy: updated.resolvedBy || '' });
+    } catch (e) {
+      console.error('Failed to sync transaction request status:', e);
     }
 
     if (req.app.get('io')) {

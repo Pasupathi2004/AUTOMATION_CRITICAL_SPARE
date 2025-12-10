@@ -81,6 +81,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const normalizedPurpose = (req.body.purpose || 'others').toString().toLowerCase() === 'breakdown'
       ? 'breakdown'
       : 'others';
+    const isBreakdown = normalizedPurpose === 'breakdown';
     const transaction = new Transaction({
       itemId: id,
       itemName: currentItem.name,
@@ -89,6 +90,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
       user: req.user?.username || 'system',
       timestamp: new Date().toISOString(),
       purpose: normalizedPurpose,
+      requestedBy: isBreakdown ? (req.user?.username || '') : '',
+      requestStatus: isBreakdown ? 'pending' : '',
+      resolvedBy: '',
       remarks: typeof req.body.remarks === 'string' ? req.body.remarks : '',
       // Include full item specifications for better analytics
       make: currentItem.make || '',

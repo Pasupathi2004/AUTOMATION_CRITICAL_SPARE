@@ -43,6 +43,9 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
         remarks: t.remarks || '',
         editedBy: t.editedBy || '',
         editedAt: t.editedAt || null,
+        requestedBy: t.requestedBy || '',
+        requestStatus: t.requestStatus || '',
+        resolvedBy: t.resolvedBy || '',
         // Prioritize stored transaction data, fallback to inventory lookup
         make: t.make || item?.make || '',
         model: t.model || item?.model || '',
@@ -110,6 +113,9 @@ router.get('/dashboard', async (req, res) => {
         remarks: t.remarks || '',
         editedBy: t.editedBy || '',
         editedAt: t.editedAt || null,
+        requestedBy: t.requestedBy || '',
+        requestStatus: t.requestStatus || '',
+        resolvedBy: t.resolvedBy || '',
         // Prioritize stored transaction data, fallback to inventory lookup
         make: t.make || item?.make || '',
         model: t.model || item?.model || '',

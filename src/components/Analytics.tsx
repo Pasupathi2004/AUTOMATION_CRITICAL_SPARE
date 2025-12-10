@@ -362,7 +362,7 @@ const Analytics: React.FC = () => {
               [`${monthName} ${year} - Transaction Details`],
               ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
               [''],
-              ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Remarks']
+              ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Requested By', 'Request Status', 'Resolved By', 'Remarks']
             ];
 
             monthTransactions.forEach(transaction => {
@@ -381,6 +381,9 @@ const Analytics: React.FC = () => {
                   transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
                   action,
                   transaction.purpose || 'others',
+                  transaction.requestedBy || '',
+                  transaction.requestStatus || '',
+                  transaction.resolvedBy || '',
                   transaction.remarks || ''
                 ]);
               }
@@ -466,7 +469,7 @@ const Analytics: React.FC = () => {
       // Recent Transactions Sheet (with item details, no Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionsData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Remarks']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Requested By', 'Request Status', 'Resolved By', 'Remarks']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
@@ -485,6 +488,9 @@ const Analytics: React.FC = () => {
                   transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
               action,
               transaction.purpose || 'others',
+              transaction.requestedBy || '',
+              transaction.requestStatus || '',
+              transaction.resolvedBy || '',
               transaction.remarks || ''
             ]);
           }
@@ -1114,6 +1120,30 @@ const Analytics: React.FC = () => {
                                 <User size={14} className="text-gray-400" />
                                 <span>{transaction.user}</span>
                               </div>
+                          {transaction.purpose && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                              <span>Purpose: {transaction.purpose}</span>
+                            </div>
+                          )}
+                          {transaction.requestStatus && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                              <span>Status: {transaction.requestStatus}</span>
+                            </div>
+                          )}
+                          {transaction.requestedBy && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              <span>Requested by: {transaction.requestedBy}</span>
+                            </div>
+                          )}
+                          {transaction.resolvedBy && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                              <span>Resolved by: {transaction.resolvedBy}</span>
+                            </div>
+                          )}
                               <div className="flex items-center gap-2">
                                 <Calendar size={14} className="text-gray-400" />
                                 <span>{safeFormatDate(transaction.timestamp)}</span>
