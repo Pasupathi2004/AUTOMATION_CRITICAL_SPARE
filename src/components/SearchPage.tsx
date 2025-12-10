@@ -19,6 +19,7 @@ const SearchPage: React.FC = () => {
   const recognition = useRef<any>(null);
   const [quantityInputs, setQuantityInputs] = useState<{ [key: string]: string }>({});
   const [remarksInputs, setRemarksInputs] = useState<{ [key: string]: string }>({});
+  const [purposeInputs, setPurposeInputs] = useState<{ [key: string]: 'breakdown' | 'others' }>({});
 
   useEffect(() => {
     fetchInventory();
@@ -140,12 +141,12 @@ const SearchPage: React.FC = () => {
   // Helper to check for valid MongoDB ObjectId
   const isValidObjectId = (id: string) => /^[a-fA-F0-9]{24}$/.test(id);
 
-  const handleQuantityUpdate = async (itemId: string, newQuantity: number) => {
+  const handleQuantityUpdate = async (itemId: string, newQuantity: number, purpose: 'breakdown' | 'others' = 'others', remarksOverride?: string) => {
     if (newQuantity < 0) return;
     if (!isValidObjectId(itemId)) {
       setSuccessMessage('Invalid item ID');
       setTimeout(() => setSuccessMessage(null), 3000);
-      return;
+      return false;
     }
     setUpdatingItems(prev => new Set(prev).add(itemId));
     const item = inventory.find(i => i.id === itemId);
@@ -160,7 +161,8 @@ const SearchPage: React.FC = () => {
           quantity: newQuantity,
           minimumQuantity: item ? item.minimumQuantity : 0,
           updatedBy: user?.username,
-          remarks: remarksInputs[itemId] || ''
+          remarks: remarksOverride !== undefined ? remarksOverride : (remarksInputs[itemId] || ''),
+          purpose
         }),
       });
       const data = await response.json();
@@ -170,10 +172,12 @@ const SearchPage: React.FC = () => {
         // Clear per-item inputs after successful update
         setQuantityInputs(prev => ({ ...prev, [itemId]: '' }));
         setRemarksInputs(prev => ({ ...prev, [itemId]: '' }));
+        setPurposeInputs(prev => ({ ...prev, [itemId]: prev[itemId] || 'breakdown' }));
+        return true;
       } else {
         setSuccessMessage(data.message || 'Failed to update quantity.');
       }
-        setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       setSuccessMessage('Error updating quantity.');
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -184,15 +188,16 @@ const SearchPage: React.FC = () => {
         return newSet;
       });
     }
+    return false;
   };
 
   const handleIncreaseQuantity = (item: InventoryItem) => {
-    handleQuantityUpdate(item.id, item.quantity + 1);
+    handleQuantityUpdate(item.id, item.quantity + 1, 'others');
   };
 
   const handleDecreaseQuantity = (item: InventoryItem) => {
     if (item.quantity > 0) {
-      handleQuantityUpdate(item.id, item.quantity - 1);
+      handleQuantityUpdate(item.id, item.quantity - 1, 'others');
     }
   };
 
@@ -213,10 +218,10 @@ const SearchPage: React.FC = () => {
       setTimeout(() => setSuccessMessage(null), 3000);
       return;
     }
-    handleQuantityUpdate(item.id, newQuantity);
+    handleQuantityUpdate(item.id, newQuantity, purposeInputs[item.id] || 'others');
   };
 
-  const handleTakeQuantity = (item: InventoryItem) => {
+  const handleTakeQuantity = async (item: InventoryItem) => {
     const inputValue = quantityInputs[item.id];
     const takeQty = parseInt(inputValue, 10);
     if (isNaN(takeQty) || takeQty < 1 || takeQty > item.quantity) {
@@ -227,7 +232,42 @@ const SearchPage: React.FC = () => {
       alert('Please enter remarks before updating.');
       return;
     }
-    handleQuantityUpdate(item.id, item.quantity - takeQty);
+    const purpose = purposeInputs[item.id] || 'breakdown';
+    const remarks = remarksInputs[item.id] || '';
+    const updateOk = await handleQuantityUpdate(item.id, item.quantity - takeQty, purpose, remarks);
+    if (updateOk && purpose === 'breakdown') {
+      await createBreakdownRequest(item, takeQty, remarks, purpose);
+    }
+  };
+
+  const createBreakdownRequest = async (item: InventoryItem, quantity: number, remarks: string, purpose: 'breakdown' | 'others') => {
+    if (purpose !== 'breakdown') return;
+    try {
+      const response = await fetch(API_ENDPOINTS.REQUESTS.LIST, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          itemId: item.id,
+          itemName: item.name,
+          quantity,
+          remarks,
+          purpose,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSuccessMessage('Breakdown request sent to admins.');
+      } else {
+        setSuccessMessage(data.message || 'Quantity updated but request not sent.');
+      }
+    } catch (error) {
+      setSuccessMessage('Quantity updated, but failed to notify admins.');
+    } finally {
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
   };
 
   const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
@@ -383,6 +423,14 @@ const SearchPage: React.FC = () => {
                             disabled={updatingItems.has(item.id)}
                             placeholder="Qty to take"
                           />
+                          <select
+                            value={purposeInputs[item.id] || 'breakdown'}
+                            onChange={(e) => setPurposeInputs(prev => ({ ...prev, [item.id]: e.target.value as 'breakdown' | 'others' }))}
+                            className="w-full sm:w-48 px-2 py-1 border border-gray-300 rounded text-left bg-white"
+                          >
+                            <option value="breakdown">Breakdown</option>
+                            <option value="others">Others</option>
+                          </select>
                           <textarea
                             value={remarksInputs[item.id] || ''}
                             onChange={(e) => setRemarksInputs(prev => ({ ...prev, [item.id]: e.target.value }))}

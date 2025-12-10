@@ -23,6 +23,10 @@ export const API_ENDPOINTS = {
       STORAGE: `${API_BASE_URL}/analytics/settings/storage`,
     },
   },
+  REQUESTS: {
+    LIST: `${API_BASE_URL}/requests`,
+    UPDATE: (id: string) => `${API_BASE_URL}/requests/${id}`,
+  },
   USERS: {
     LIST: `${API_BASE_URL}/users`,
     CREATE: `${API_BASE_URL}/users`,

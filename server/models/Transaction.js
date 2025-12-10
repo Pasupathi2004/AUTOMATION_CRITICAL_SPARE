@@ -7,6 +7,8 @@ const TransactionSchema = new mongoose.Schema({
   quantity: { type: Number },
   user: { type: String },
   timestamp: { type: Date },
+  // Purpose of the movement (e.g., breakdown vs routine consumption)
+  purpose: { type: String, enum: ['breakdown', 'others'], default: 'others' },
   remarks: { type: String, default: '' },
   editedBy: { type: String, default: '' },
   editedAt: { type: Date },

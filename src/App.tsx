@@ -9,6 +9,7 @@ import AddItem from './components/AddItem';
 import SparesList from './components/SparesList';
 import Analytics from './components/Analytics';
 import UserManagement from './components/UserManagement';
+import Requests from './components/Requests';
 
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -40,6 +41,8 @@ const AppContent: React.FC = () => {
         return <Analytics />;
       case 'users':
         return <UserManagement />;
+      case 'requests':
+        return <Requests />;
       default:
         return <Dashboard onPageChange={setCurrentPage} />;
     }

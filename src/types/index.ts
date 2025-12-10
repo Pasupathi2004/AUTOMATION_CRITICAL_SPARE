@@ -27,6 +27,7 @@ export interface Transaction {
   itemId?: string;
   itemName: string;
   type: 'added' | 'taken' | 'deleted';
+  purpose?: 'breakdown' | 'others';
   quantity: number;
   user: string;
   timestamp: string;
@@ -40,6 +41,21 @@ export interface Transaction {
   rack?: string;
   bin?: string;
   remarks?: string;
+}
+
+export interface RequestTicket {
+  id: string;
+  itemId?: string;
+  itemName: string;
+  quantity: number;
+  purpose: 'breakdown' | 'others';
+  remarks: string;
+  status: 'pending' | 'approved' | 'rejected';
+  requestedBy: string;
+  resolvedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  resolvedAt?: string | null;
 }
 
 export interface Analytics {

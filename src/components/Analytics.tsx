@@ -30,6 +30,61 @@ const safeFormatDate = (dateValue: any) => {
   return date.toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS);
 };
 
+// Helper function to convert date to IST datetime-local format (YYYY-MM-DDTHH:mm)
+const toISTDateTimeLocal = (dateValue: any): string => {
+  if (!dateValue) return '';
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return '';
+  
+  // Get IST time components
+  const istString = date.toLocaleString('en-US', { 
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  
+  // Parse the IST string and format for datetime-local
+  // Format: "MM/DD/YYYY, HH:mm" or similar
+  const parts = istString.split(', ');
+  if (parts.length !== 2) return '';
+  
+  const datePart = parts[0].split('/');
+  const timePart = parts[1].split(':');
+  
+  if (datePart.length !== 3 || timePart.length !== 2) return '';
+  
+  const month = datePart[0].padStart(2, '0');
+  const day = datePart[1].padStart(2, '0');
+  const year = datePart[2];
+  const hours = timePart[0].padStart(2, '0');
+  const minutes = timePart[1].padStart(2, '0');
+  
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+// Helper function to convert datetime-local value back to ISO string
+// Assumes the datetime-local value represents IST time
+const fromISTDateTimeLocal = (datetimeLocal: string): string => {
+  if (!datetimeLocal) return '';
+  
+  // Parse the datetime-local value (assumed to be in IST)
+  const [datePart, timePart] = datetimeLocal.split('T');
+  if (!datePart || !timePart) return '';
+  
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hours, minutes] = timePart.split(':').map(Number);
+  
+  // Create a date string in IST format and parse it
+  // We'll create it as if it's UTC, then adjust for IST offset
+  const istDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00+05:30`);
+  
+  return istDate.toISOString();
+};
+
 const Analytics: React.FC = () => {
   const { token } = useAuth();
   const { socket, isConnected } = useSocket();
@@ -148,12 +203,12 @@ const Analytics: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          timestamp: editTx.timestamp,
-          remarks: editTx.remarks,
-          quantity: editTx.quantity,
-          specification: editTx.specification,
+          timestamp: editTx.timestamp ? fromISTDateTimeLocal(editTx.timestamp) : undefined,
+          remarks: editTx.remarks || undefined,
+          quantity: editTx.quantity !== undefined ? editTx.quantity : undefined,
+          specification: editTx.specification || undefined,
           // If user picked an explicit editor, send it; else backend will use current user
-          editedBy: editTx.editedBy
+          editedBy: editTx.editedBy || undefined
         })
       });
       const data = await response.json();
@@ -307,7 +362,7 @@ const Analytics: React.FC = () => {
               [`${monthName} ${year} - Transaction Details`],
               ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
               [''],
-              ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
+              ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Remarks']
             ];
 
             monthTransactions.forEach(transaction => {
@@ -325,6 +380,7 @@ const Analytics: React.FC = () => {
                   transaction.user || '',
                   transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
                   action,
+                  transaction.purpose || 'others',
                   transaction.remarks || ''
                 ]);
               }
@@ -410,7 +466,7 @@ const Analytics: React.FC = () => {
       // Recent Transactions Sheet (with item details, no Transaction ID)
       if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
         const transactionsData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Remarks']
+          ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Remarks']
         ];
 
         analytics.recentTransactions.forEach(transaction => {
@@ -428,6 +484,7 @@ const Analytics: React.FC = () => {
               transaction.user || '',
                   transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
               action,
+              transaction.purpose || 'others',
               transaction.remarks || ''
             ]);
           }
@@ -1025,17 +1082,11 @@ const Analytics: React.FC = () => {
                                 <button
                                   onClick={() => setEditTx({
                                     id: transaction.id,
-                                    timestamp: transaction.timestamp ? new Date(transaction.timestamp).toISOString().slice(0,16) : '',
+                                    timestamp: transaction.timestamp ? toISTDateTimeLocal(transaction.timestamp) : '',
                                     remarks: transaction.remarks || '',
                                     quantity: transaction.quantity || 0,
                                     editedBy: transaction.editedBy || '',
-                                    // Include item details and specification for editing
-                                    itemName: transaction.itemName,
-                                    make: transaction.make,
-                                    model: transaction.model,
-                                    specification: transaction.specification || '',
-                                    rack: transaction.rack,
-                                    bin: transaction.bin
+                                    specification: transaction.specification || ''
                                   })}
                                   className="px-2 sm:px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                                 >
@@ -1466,17 +1517,6 @@ const Analytics: React.FC = () => {
               <h3 className="text-lg font-semibold">Edit Transaction</h3>
             </div>
             <div className="p-4 space-y-4">
-              {/* Read-only Item Details Section */}
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500 mb-2 font-semibold">ITEM DETAILS (Read-only)</p>
-                <div className="text-sm space-y-1">
-                  <p><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-600">{editTx.itemName}</span></p>
-                  <p><span className="font-semibold text-gray-700">Make:</span> <span className="text-gray-600">{editTx.make}</span></p>
-                  <p><span className="font-semibold text-gray-700">Model:</span> <span className="text-gray-600">{editTx.model}</span></p>
-                  <p><span className="font-semibold text-gray-700">Location:</span> <span className="text-gray-600">Row {editTx.rack} - Column {editTx.bin}</span></p>
-                </div>
-              </div>
-              
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Specification *</label>
                 <textarea

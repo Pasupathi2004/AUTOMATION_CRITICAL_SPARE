@@ -78,6 +78,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
   if (typeof body.quantity === 'number' && body.quantity !== currentItem.quantity) {
     const change = body.quantity - currentItem.quantity;
     const transactionType = change > 0 ? 'added' : 'taken';
+    const normalizedPurpose = (req.body.purpose || 'others').toString().toLowerCase() === 'breakdown'
+      ? 'breakdown'
+      : 'others';
     const transaction = new Transaction({
       itemId: id,
       itemName: currentItem.name,
@@ -85,6 +88,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       quantity: Math.abs(change),
       user: req.user?.username || 'system',
       timestamp: new Date().toISOString(),
+      purpose: normalizedPurpose,
       remarks: typeof req.body.remarks === 'string' ? req.body.remarks : '',
       // Include full item specifications for better analytics
       make: currentItem.make || '',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Menu, 
   X, 
@@ -10,6 +10,7 @@ import {
   LogOut, 
   Bell,
   Home,
+  ClipboardList,
   Wifi,
   WifiOff
 } from 'lucide-react';
@@ -25,16 +26,13 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) => {
   const { user, logout, token } = useAuth();
-  const { isConnected } = useSocket();
+  const { socket, isConnected } = useSocket();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState(0);
 
-  useEffect(() => {
-    fetchLowStockAlerts();
-  }, []);
-
-  const fetchLowStockAlerts = async () => {
+  const fetchLowStockAlerts = useCallback(async () => {
     try {
       const response = await fetch(API_ENDPOINTS.ANALYTICS.DASHBOARD, {
         headers: {
@@ -49,13 +47,52 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
     } catch (error) {
       console.error('Error fetching alerts:', error);
     }
-  };
+  }, [token]);
+
+  const fetchPendingRequests = useCallback(async () => {
+    if (!token || user?.role !== 'admin') return;
+    try {
+      const response = await fetch(`${API_ENDPOINTS.REQUESTS.LIST}?status=pending`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPendingRequests(data.requests?.length || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+    }
+  }, [token, user]);
+
+  useEffect(() => {
+    fetchLowStockAlerts();
+    fetchPendingRequests();
+  }, [fetchLowStockAlerts, fetchPendingRequests]);
+
+  useEffect(() => {
+    fetchPendingRequests();
+  }, [user, fetchPendingRequests]);
+
+  useEffect(() => {
+    if (!socket || user?.role !== 'admin') return;
+    const refreshRequests = () => fetchPendingRequests();
+    socket.on('requestCreated', refreshRequests);
+    socket.on('requestUpdated', refreshRequests);
+    return () => {
+      socket.off('requestCreated', refreshRequests);
+      socket.off('requestUpdated', refreshRequests);
+    };
+  }, [socket, user, fetchPendingRequests]);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, roles: ['admin', 'user'] },
     { id: 'search', label: 'Search', icon: Search, roles: ['admin', 'user'] },
     { id: 'add-item', label: 'Add Item', icon: Plus, roles: ['admin'] },
     { id: 'spares-list', label: 'Spares List', icon: Package, roles: ['admin', 'user'] },
+    { id: 'requests', label: 'Requests', icon: ClipboardList, roles: ['admin'] },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
     { id: 'users', label: 'User Management', icon: Users, roles: ['admin'] },
   ];
@@ -212,6 +249,11 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                     >
                       <Icon size={20} />
                       <span>{item.label}</span>
+                      {item.id === 'requests' && pendingRequests > 0 && (
+                        <span className="ml-auto px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700">
+                          {pendingRequests}
+                        </span>
+                      )}
                     </button>
                   </li>
                 );

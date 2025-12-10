@@ -13,7 +13,12 @@ import userRoutes from './routes/users.js';
 import inventoryRoutes from './routes/inventory.js';
 import transactionRoutes from './routes/transactions.js';
 import analyticsRoutes from './routes/analytics.js';
+import emailRoutes from './routes/emails.js';
+import requestRoutes from './routes/requests.js';
 import User from './models/User.js';
+
+// Import scheduler
+import { startEmailScheduler } from './scheduler/emailScheduler.js';
 
 // Load environment variables
 dotenv.config();
@@ -70,6 +75,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/emails', emailRoutes);
+app.use('/api/requests', requestRoutes);
 
 // Legacy routes for backward compatibility
 app.post('/api/login', (req, res, next) => {
@@ -90,6 +97,10 @@ const startServer = async () => {
     await connectDB(); // Connect to MongoDB
     await User.ensureDefaultAdmin(); // Ensure default admin user exists
     console.log('Database initialized successfully');
+    
+    // Start email scheduler
+    startEmailScheduler();
+    
     // Start server
     server.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
