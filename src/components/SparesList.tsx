@@ -443,6 +443,14 @@ const SparesList: React.FC = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {validFilteredInventory.map((item) => {
             const stockStatus = getStockStatus(item.quantity, item.minimumQuantity);
+            const numericCost =
+              typeof item.cost === 'number'
+                ? item.cost
+                : item.cost !== undefined && item.cost !== null
+                  ? Number(item.cost)
+                  : undefined;
+            const hasCost = numericCost !== undefined && !isNaN(numericCost);
+            const totalValue = hasCost ? numericCost * item.quantity : undefined;
             return (
               <div key={item.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <div className="p-4 sm:p-6">
@@ -490,22 +498,22 @@ const SparesList: React.FC = () => {
                     </div>
                     
                     {isAdmin && (
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <span className="font-medium text-gray-600">Cost (per item):</span>
-                          <div className="text-gray-900">
-                            {item.cost !== undefined && item.cost !== null && !isNaN(Number(item.cost))
-                              ? Number(item.cost).toFixed(2)
-                              : 'N/A'}
-                          </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex flex-col">
+                          <span className="text-xs font-semibold text-emerald-700 tracking-wide uppercase">
+                            Cost / Item
+                          </span>
+                          <span className="mt-1 text-lg font-bold text-emerald-900">
+                            {hasCost ? numericCost!.toFixed(2) : 'N/A'}
+                          </span>
                         </div>
-                        <div>
-                          <span className="font-medium text-gray-600">Total Value:</span>
-                          <div className="text-gray-900">
-                            {item.cost !== undefined && item.cost !== null && !isNaN(Number(item.cost))
-                              ? (item.quantity * Number(item.cost)).toFixed(2)
-                              : 'N/A'}
-                          </div>
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex flex-col">
+                          <span className="text-xs font-semibold text-amber-700 tracking-wide uppercase">
+                            Total Value
+                          </span>
+                          <span className="mt-1 text-lg font-bold text-amber-900">
+                            {hasCost && totalValue !== undefined ? totalValue.toFixed(2) : 'N/A'}
+                          </span>
                         </div>
                       </div>
                     )}
