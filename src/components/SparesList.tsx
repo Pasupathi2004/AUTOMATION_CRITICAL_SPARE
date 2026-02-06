@@ -47,6 +47,8 @@ const SparesList: React.FC = () => {
     bin: '',
     quantity: '',
     minimumQuantity: '',
+    // Optional cost per single item
+    cost: '',
     category: ''
   });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -160,6 +162,7 @@ const SparesList: React.FC = () => {
       bin: item.bin,
       quantity: item.quantity.toString(),
       minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : '',
+      cost: item.cost !== undefined ? item.cost.toString() : '',
       category: item.category || 'consumable'
     });
     setShowEditModal(true);
@@ -183,6 +186,7 @@ const SparesList: React.FC = () => {
           ...formData,
           quantity: parseInt(formData.quantity),
           minimumQuantity: parseInt(formData.minimumQuantity),
+          cost: formData.cost !== '' ? parseFloat(formData.cost) : '',
           updatedBy: user?.username
         }),
       });
@@ -228,7 +232,7 @@ const SparesList: React.FC = () => {
   const exportToCSV = () => {
     const headers = [
       'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-      'Quantity', 'Minimum Quantity', 'Category', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+      'Quantity', 'Minimum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
     ];
     
     const csvData = inventory.map(item => [
@@ -242,6 +246,7 @@ const SparesList: React.FC = () => {
       item.quantity,
       item.minimumQuantity,
       item.category || 'consumable',
+      item.cost !== undefined ? item.cost : '',
       getStockStatus(item.quantity, item.minimumQuantity).status,
       safeFormatDate(item.createdAt),
       safeFormatDate(item.updatedAt),
@@ -265,7 +270,7 @@ const SparesList: React.FC = () => {
     try {
       const headers = [
         'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-        'Quantity', 'Minimum Quantity', 'Category', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+        'Quantity', 'Minimum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
       ];
       
       const excelData = inventory.map(item => [
@@ -279,6 +284,7 @@ const SparesList: React.FC = () => {
         item.quantity,
         item.minimumQuantity,
         item.category || 'consumable',
+        item.cost !== undefined ? item.cost : '',
         getStockStatus(item.quantity, item.minimumQuantity).status,
         safeFormatDate(item.createdAt),
         safeFormatDate(item.updatedAt),
@@ -483,6 +489,27 @@ const SparesList: React.FC = () => {
                       </div>
                     </div>
                     
+                    {isAdmin && (
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-600">Cost (per item):</span>
+                          <div className="text-gray-900">
+                            {item.cost !== undefined && item.cost !== null && !isNaN(Number(item.cost))
+                              ? Number(item.cost).toFixed(2)
+                              : 'N/A'}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-600">Total Value:</span>
+                          <div className="text-gray-900">
+                            {item.cost !== undefined && item.cost !== null && !isNaN(Number(item.cost))
+                              ? (item.quantity * Number(item.cost)).toFixed(2)
+                              : 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div>
                       <span className="font-medium text-gray-600">Specification:</span>
                       <div className="text-gray-900 text-sm mt-1 line-clamp-2">{item.specification}</div>
@@ -646,6 +673,18 @@ const SparesList: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                     required
                     min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Cost (per item)</label>
+                  <input
+                    type="number"
+                    value={formData.cost}
+                    onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+                    min="0"
+                    step="0.01"
                   />
                 </div>
                 

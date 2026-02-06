@@ -14,6 +14,8 @@ const AddItem: React.FC = () => {
     bin: '',
     quantity: '',
     minimumQuantity: '',
+    // Optional cost per single item
+    cost: '',
     category: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +62,7 @@ const AddItem: React.FC = () => {
           bin: '',
           quantity: '',
           minimumQuantity: '',
+          cost: '',
           category: ''
         });
       } else {
@@ -210,6 +213,23 @@ const AddItem: React.FC = () => {
             </div>
 
             <div>
+              <label htmlFor="cost" className="block text-sm font-medium text-gray-700 mb-2">
+                Cost (per item)
+              </label>
+              <input
+                type="number"
+                id="cost"
+                name="cost"
+                value={formData.cost}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
+                placeholder="Enter cost for a single item"
+              />
+            </div>
+
+            <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
                 Category *
               </label>
@@ -266,6 +286,7 @@ const AddItem: React.FC = () => {
                 bin: '',
                 quantity: '',
                 minimumQuantity: '',
+                cost: '',
                 category: ''
               })}
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

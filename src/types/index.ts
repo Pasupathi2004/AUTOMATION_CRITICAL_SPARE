@@ -16,6 +16,8 @@ export interface InventoryItem {
   bin: string;
   quantity: number;
   minimumQuantity: number;
+   // Optional cost per single item
+  cost?: number;
   category?: 'critical' | 'consumable';
   createdAt: string;
   updatedAt: string;

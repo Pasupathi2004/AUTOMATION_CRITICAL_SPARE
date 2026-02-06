@@ -41,11 +41,21 @@ router.post('/', authenticateToken, async (req, res) => {
   const body = {
     ...req.body,
     quantity: Number(req.body.quantity),
-    minimumQuantity: Number(req.body.minimumQuantity)
+    minimumQuantity: Number(req.body.minimumQuantity),
+    // Parse optional cost per item if provided
+    cost: req.body.cost !== undefined && req.body.cost !== ''
+      ? Number(req.body.cost)
+      : undefined
   };
+
   if (isNaN(body.quantity) || isNaN(body.minimumQuantity)) {
     return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
   }
+
+  if (body.cost !== undefined && (isNaN(body.cost) || body.cost < 0)) {
+    return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
+  }
+
   const item = new Inventory(body);
   await item.save();
   res.json({ success: true, item });
@@ -66,10 +76,19 @@ router.put('/:id', authenticateToken, async (req, res) => {
   const body = {
     ...req.body,
     quantity: Number(req.body.quantity),
-    minimumQuantity: Number(req.body.minimumQuantity)
+    minimumQuantity: Number(req.body.minimumQuantity),
+    // Parse optional cost per item if provided
+    cost: req.body.cost !== undefined && req.body.cost !== ''
+      ? Number(req.body.cost)
+      : currentItem.cost
   };
+
   if (isNaN(body.quantity) || isNaN(body.minimumQuantity)) {
     return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
+  }
+
+  if (body.cost !== undefined && (isNaN(body.cost) || body.cost < 0)) {
+    return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
   }
   // Update the item
   const updatedItem = await Inventory.findByIdAndUpdate(id, body, { new: true });
@@ -176,8 +195,10 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
       const bin = row[5];
       const quantity = row[6];
       const minimumQuantity = row[7];
-      // Category might be at position 8 or later depending on CSV structure
+      // Category is at position 8 in the current template
       let category = row[8];
+      // Optional cost per item at position 9 in the updated template
+      const rawCost = row[9];
       
       // Validate required fields
       if (!name || !make || !model || !specification || !rack || !bin) {
@@ -196,8 +217,18 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
 
       if (isNaN(minimumQuantityNum) || minimumQuantityNum < 0) {
         errors.push(`Row ${i + 1}: Invalid minimum quantity`);
-      continue;
-    }
+        continue;
+      }
+
+      // Validate optional cost field if provided
+      let costNum;
+      if (rawCost !== undefined && rawCost !== '') {
+        costNum = parseFloat(rawCost);
+        if (isNaN(costNum) || costNum < 0) {
+          errors.push(`Row ${i + 1}: Invalid cost (must be a non-negative number)`);
+          continue;
+        }
+      }
 
       // Validate and normalize category
       const categoryStr = category ? category.toString().trim().toLowerCase() : 'consumable';
@@ -214,6 +245,8 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
         bin: bin.toString().trim(),
         quantity: quantityNum,
         minimumQuantity: minimumQuantityNum,
+        // Optional per-item cost from CSV
+        ...(costNum !== undefined ? { cost: costNum } : {}),
         category: validCategory,
         updatedBy: req.user?.username || 'bulk-upload'
       });
