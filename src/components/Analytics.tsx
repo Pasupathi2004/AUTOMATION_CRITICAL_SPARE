@@ -103,6 +103,14 @@ const Analytics: React.FC = () => {
   const [chartMode, setChartMode] = useState<'quantity' | 'cost'>('quantity');
   const isOwner = (useAuth().user?.username || '').toLowerCase() === 'pasu' || (useAuth().user?.role || '').toLowerCase() === 'owner';
 
+  const formatINR = (value: number) =>
+    new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number.isFinite(value) ? value : 0);
+
   useEffect(() => {
     fetchAnalytics();
     checkDataIntegrity();
@@ -691,6 +699,17 @@ const Analytics: React.FC = () => {
       legend: {
         position: 'bottom' as const,
       },
+      tooltip: chartMode === 'cost'
+        ? {
+            callbacks: {
+              label: (ctx: any) => {
+                const raw = Number(ctx?.raw) || 0;
+                const label = ctx?.dataset?.label || ctx?.label || '';
+                return label ? `${label}: ${formatINR(raw)}` : formatINR(raw);
+              }
+            }
+          }
+        : undefined,
     },
   };
 
@@ -1009,14 +1028,14 @@ const Analytics: React.FC = () => {
                     <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
                     <div>
                       <div className="text-xs sm:text-sm font-medium text-gray-900">Cost Added</div>
-                      <div className="text-xs text-gray-600">{(analytics?.costAdded || 0).toFixed(2)}</div>
+                      <div className="text-xs text-gray-600">{formatINR(analytics?.costAdded || 0)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
                     <div>
                       <div className="text-xs sm:text-sm font-medium text-gray-900">Cost Consumed</div>
-                      <div className="text-xs text-gray-600">{(analytics?.costConsumed || 0).toFixed(2)}</div>
+                      <div className="text-xs text-gray-600">{formatINR(analytics?.costConsumed || 0)}</div>
                     </div>
                   </div>
                 </div>
@@ -1067,14 +1086,14 @@ const Analytics: React.FC = () => {
                     <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
                     <div>
                       <div className="text-xs sm:text-sm font-medium text-gray-900">Year Cost Added</div>
-                      <div className="text-xs text-gray-600">{costAddedByMonth.reduce((a, b) => a + b, 0).toFixed(2)}</div>
+                      <div className="text-xs text-gray-600">{formatINR(costAddedByMonth.reduce((a, b) => a + b, 0))}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
                     <div>
                       <div className="text-xs sm:text-sm font-medium text-gray-900">Year Cost Consumed</div>
-                      <div className="text-xs text-gray-600">{costConsumedByMonth.reduce((a, b) => a + b, 0).toFixed(2)}</div>
+                      <div className="text-xs text-gray-600">{formatINR(costConsumedByMonth.reduce((a, b) => a + b, 0))}</div>
                     </div>
                   </div>
                 </div>

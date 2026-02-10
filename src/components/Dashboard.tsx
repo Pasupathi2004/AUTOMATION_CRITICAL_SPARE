@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, TrendingUp, Users, AlertTriangle, Plus, Search } from 'lucide-react';
+import { Package, TrendingUp, Users, AlertTriangle, Plus, Search, IndianRupee } from 'lucide-react';
 import { Analytics } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
@@ -14,6 +14,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
   const { socket, isConnected } = useSocket();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const formatINR = (value: number) =>
+    new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number.isFinite(value) ? value : 0);
 
   useEffect(() => {
     fetchAnalytics();
@@ -112,7 +120,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center">
             <div className="bg-blue-100 rounded-lg p-3">
@@ -157,6 +165,34 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active Users</p>
               <p className="text-2xl font-bold text-gray-900">{analytics?.activeUsers || 0}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center">
+            <div className="bg-red-100 rounded-lg p-3">
+              <IndianRupee className="text-red-600" size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Critical Total Value</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                {formatINR(analytics?.totalValueCritical || 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center">
+            <div className="bg-blue-100 rounded-lg p-3">
+              <IndianRupee className="text-blue-600" size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Consumable Total Value</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                {formatINR(analytics?.totalValueConsumable || 0)}
+              </p>
             </div>
           </div>
         </div>

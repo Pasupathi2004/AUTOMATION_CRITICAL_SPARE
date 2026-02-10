@@ -33,6 +33,17 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const inventoryById = new Map(inventory.map((i) => [i._id?.toString?.(), i]));
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
 
+  const inventoryValueTotals = inventory.reduce((acc, item) => {
+    const unitCost = Number(item?.cost) || 0;
+    const qty = Number(item?.quantity) || 0;
+    const total = unitCost * qty;
+    const category = (item?.category || 'consumable').toString().toLowerCase();
+    if (category === 'critical') acc.critical += total;
+    else acc.consumable += total;
+    acc.all += total;
+    return acc;
+  }, { critical: 0, consumable: 0, all: 0 });
+
   const getUnitCost = (t) => {
     const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName);
     const c = item?.cost;
@@ -110,6 +121,9 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
       added: v.added,
       consumed: v.consumed
     })),
+    totalValueCritical: inventoryValueTotals.critical,
+    totalValueConsumable: inventoryValueTotals.consumable,
+    totalValueAll: inventoryValueTotals.all,
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),
@@ -146,6 +160,17 @@ router.get('/dashboard', async (req, res) => {
   // Build fast lookup for inventory by id (primary) and name (fallback)
   const inventoryById = new Map(inventory.map((i) => [i._id?.toString?.(), i]));
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
+
+  const inventoryValueTotals = inventory.reduce((acc, item) => {
+    const unitCost = Number(item?.cost) || 0;
+    const qty = Number(item?.quantity) || 0;
+    const total = unitCost * qty;
+    const category = (item?.category || 'consumable').toString().toLowerCase();
+    if (category === 'critical') acc.critical += total;
+    else acc.consumable += total;
+    acc.all += total;
+    return acc;
+  }, { critical: 0, consumable: 0, all: 0 });
 
   const getUnitCost = (t) => {
     const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName);
@@ -220,6 +245,9 @@ router.get('/dashboard', async (req, res) => {
       added: v.added,
       consumed: v.consumed
     })),
+    totalValueCritical: inventoryValueTotals.critical,
+    totalValueConsumable: inventoryValueTotals.consumable,
+    totalValueAll: inventoryValueTotals.all,
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),

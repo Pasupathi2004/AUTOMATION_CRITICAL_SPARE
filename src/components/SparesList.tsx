@@ -53,6 +53,14 @@ const SparesList: React.FC = () => {
   });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  const formatINR = (value: number) =>
+    new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number.isFinite(value) ? value : 0);
+
   useEffect(() => {
     fetchInventory();
     // Debug user role
@@ -326,6 +334,21 @@ const SparesList: React.FC = () => {
   const validFilteredInventory = filteredInventory.filter(item => isValidObjectId(item.id));
   const invalidItems = inventory.filter(item => !isValidObjectId(item.id));
 
+  const totalValueByCategory = validInventory.reduce(
+    (acc, item) => {
+      const unitCost = typeof item.cost === 'number' ? item.cost : Number(item.cost);
+      const cost = Number.isFinite(unitCost) ? unitCost : 0;
+      const qty = Number(item.quantity) || 0;
+      const total = cost * qty;
+      const category = (item.category || 'consumable').toString().toLowerCase();
+      if (category === 'critical') acc.critical += total;
+      else acc.consumable += total;
+      acc.all += total;
+      return acc;
+    },
+    { critical: 0, consumable: 0, all: 0 }
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -431,6 +454,17 @@ const SparesList: React.FC = () => {
             Last updated: {getLastUpdated()}
           </div>
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+            <div className="text-xs font-semibold text-red-700 tracking-wide uppercase">Critical Total Value</div>
+            <div className="mt-1 text-lg font-bold text-red-900">{formatINR(totalValueByCategory.critical)}</div>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="text-xs font-semibold text-blue-700 tracking-wide uppercase">Consumable Total Value</div>
+            <div className="mt-1 text-lg font-bold text-blue-900">{formatINR(totalValueByCategory.consumable)}</div>
+          </div>
+        </div>
       </div>
 
       {invalidItems.length > 0 && (
@@ -504,7 +538,7 @@ const SparesList: React.FC = () => {
                             Cost / Item
                           </span>
                           <span className="mt-1 text-lg font-bold text-emerald-900">
-                            {hasCost ? numericCost!.toFixed(2) : 'N/A'}
+                            {hasCost ? formatINR(numericCost!) : 'N/A'}
                           </span>
                         </div>
                         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex flex-col">
@@ -512,7 +546,7 @@ const SparesList: React.FC = () => {
                             Total Value
                           </span>
                           <span className="mt-1 text-lg font-bold text-amber-900">
-                            {hasCost && totalValue !== undefined ? totalValue.toFixed(2) : 'N/A'}
+                            {hasCost && totalValue !== undefined ? formatINR(totalValue) : 'N/A'}
                           </span>
                         </div>
                       </div>
