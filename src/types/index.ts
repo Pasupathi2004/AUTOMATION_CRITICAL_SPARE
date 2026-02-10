@@ -69,6 +69,9 @@ export interface Analytics {
   totalTransactions: number;
   itemsConsumed: number;
   itemsAdded: number;
+  costConsumed?: number;
+  costAdded?: number;
+  monthlyCostSeries?: { month: number; added: number; consumed: number }[];
   activeUsers: number;
   recentTransactions: Transaction[];
   lowStockAlerts: InventoryItem[];

@@ -23,9 +23,47 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
   });
 
+  // All transactions for the selected year (for month-by-month cost charts)
+  const yearlyTransactions = transactions.filter(t => {
+    const date = new Date(t.timestamp);
+    return date.getFullYear() === selectedYear;
+  });
+
   // Build fast lookup for inventory by id (primary) and name (fallback)
   const inventoryById = new Map(inventory.map((i) => [i._id?.toString?.(), i]));
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
+
+  const getUnitCost = (t) => {
+    const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName);
+    const c = item?.cost;
+    const n = typeof c === 'number' ? c : Number(c);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const computeCostTotals = (txs) => {
+    return txs.reduce((acc, t) => {
+      const unitCost = getUnitCost(t);
+      const qty = Number(t.quantity) || 0;
+      const amount = unitCost * qty;
+      if (t.type === 'added') acc.added += amount;
+      if (t.type === 'taken') acc.consumed += amount;
+      return acc;
+    }, { added: 0, consumed: 0 });
+  };
+
+  const monthlyCostTotals = computeCostTotals(monthlyTransactions);
+
+  const monthlyCostSeries = Array.from({ length: 12 }, () => ({ added: 0, consumed: 0 }));
+  yearlyTransactions.forEach((t) => {
+    const d = new Date(t.timestamp);
+    const m = d.getMonth();
+    if (m < 0 || m > 11) return;
+    const unitCost = getUnitCost(t);
+    const qty = Number(t.quantity) || 0;
+    const amount = unitCost * qty;
+    if (t.type === 'added') monthlyCostSeries[m].added += amount;
+    if (t.type === 'taken') monthlyCostSeries[m].consumed += amount;
+  });
 
   // Enrich all monthly transactions with item details
   const enrichedRecentTransactions = monthlyTransactions
@@ -65,6 +103,13 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     itemsAdded: monthlyTransactions
       .filter(t => t.type === 'added')
       .reduce((sum, t) => sum + t.quantity, 0),
+    costConsumed: monthlyCostTotals.consumed,
+    costAdded: monthlyCostTotals.added,
+    monthlyCostSeries: monthlyCostSeries.map((v, idx) => ({
+      month: idx,
+      added: v.added,
+      consumed: v.consumed
+    })),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),
@@ -93,9 +138,46 @@ router.get('/dashboard', async (req, res) => {
     return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
   });
 
+  const yearlyTransactions = transactions.filter(t => {
+    const date = new Date(t.timestamp);
+    return date.getFullYear() === selectedYear;
+  });
+
   // Build fast lookup for inventory by id (primary) and name (fallback)
   const inventoryById = new Map(inventory.map((i) => [i._id?.toString?.(), i]));
   const inventoryByName = new Map(inventory.map((i) => [i.name, i]));
+
+  const getUnitCost = (t) => {
+    const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName);
+    const c = item?.cost;
+    const n = typeof c === 'number' ? c : Number(c);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const computeCostTotals = (txs) => {
+    return txs.reduce((acc, t) => {
+      const unitCost = getUnitCost(t);
+      const qty = Number(t.quantity) || 0;
+      const amount = unitCost * qty;
+      if (t.type === 'added') acc.added += amount;
+      if (t.type === 'taken') acc.consumed += amount;
+      return acc;
+    }, { added: 0, consumed: 0 });
+  };
+
+  const monthlyCostTotals = computeCostTotals(monthlyTransactions);
+
+  const monthlyCostSeries = Array.from({ length: 12 }, () => ({ added: 0, consumed: 0 }));
+  yearlyTransactions.forEach((t) => {
+    const d = new Date(t.timestamp);
+    const m = d.getMonth();
+    if (m < 0 || m > 11) return;
+    const unitCost = getUnitCost(t);
+    const qty = Number(t.quantity) || 0;
+    const amount = unitCost * qty;
+    if (t.type === 'added') monthlyCostSeries[m].added += amount;
+    if (t.type === 'taken') monthlyCostSeries[m].consumed += amount;
+  });
 
   // Enrich all monthly transactions with item details
   const enrichedRecentTransactions = monthlyTransactions
@@ -131,6 +213,13 @@ router.get('/dashboard', async (req, res) => {
     totalTransactions: monthlyTransactions.length,
     itemsConsumed: monthlyTransactions.filter(t => t.type === 'taken').reduce((sum, t) => sum + t.quantity, 0),
     itemsAdded: monthlyTransactions.filter(t => t.type === 'added').reduce((sum, t) => sum + t.quantity, 0),
+    costConsumed: monthlyCostTotals.consumed,
+    costAdded: monthlyCostTotals.added,
+    monthlyCostSeries: monthlyCostSeries.map((v, idx) => ({
+      month: idx,
+      added: v.added,
+      consumed: v.consumed
+    })),
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),

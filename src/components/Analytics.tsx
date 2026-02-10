@@ -93,8 +93,6 @@ const Analytics: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
-  const [storageMB, setStorageMB] = useState<number | null>(null);
   const [integrity, setIntegrity] = useState<any>(null);
   const [storage, setStorage] = useState<any>(null);
   const [showAllTransactions, setShowAllTransactions] = useState(false);
@@ -102,11 +100,11 @@ const Analytics: React.FC = () => {
   const [showActiveUsersModal, setShowActiveUsersModal] = useState(false);
   const [activeUserNames, setActiveUserNames] = useState<string[]>([]);
   const [editTx, setEditTx] = useState<any | null>(null);
+  const [chartMode, setChartMode] = useState<'quantity' | 'cost'>('quantity');
   const isOwner = (useAuth().user?.username || '').toLowerCase() === 'pasu' || (useAuth().user?.role || '').toLowerCase() === 'owner';
 
   useEffect(() => {
     fetchAnalytics();
-    fetchStorageMB();
     checkDataIntegrity();
     checkStorage();
     
@@ -227,21 +225,6 @@ const Analytics: React.FC = () => {
     }
   };
 
-
-  const fetchStorageMB = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.ANALYTICS.SETTINGS.STORAGE, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      if (data.success) setStorageMB(data.storageMB);
-    } catch (error) {
-      setStorageMB(null);
-    }
-  };
 
   const handleDeleteHistory = async () => {
     if (!window.confirm('Are you sure you want to delete all transaction history? This cannot be undone.')) return;
@@ -666,6 +649,42 @@ const Analytics: React.FC = () => {
     ],
   };
 
+  const costSummaryData = {
+    labels: ['Cost Added', 'Cost Consumed'],
+    datasets: [
+      {
+        data: [analytics?.costAdded || 0, analytics?.costConsumed || 0],
+        backgroundColor: ['#059669', '#DC2626'],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const monthlyCostLabels = Array.from({ length: 12 }, (_, m) =>
+    new Date(2000, m).toLocaleString('default', { month: 'short' })
+  );
+  const costSeries = analytics?.monthlyCostSeries || [];
+  const costAddedByMonth = Array.from({ length: 12 }, (_, m) => costSeries.find(v => v.month === m)?.added || 0);
+  const costConsumedByMonth = Array.from({ length: 12 }, (_, m) => costSeries.find(v => v.month === m)?.consumed || 0);
+
+  const monthlyCostData = {
+    labels: monthlyCostLabels,
+    datasets: [
+      {
+        label: 'Cost Added',
+        data: costAddedByMonth,
+        backgroundColor: '#059669',
+        borderRadius: 6,
+      },
+      {
+        label: 'Cost Consumed',
+        data: costConsumedByMonth,
+        backgroundColor: '#DC2626',
+        borderRadius: 6,
+      },
+    ],
+  };
+
   const chartOptions = {
     responsive: true,
     plugins: {
@@ -718,10 +737,10 @@ const Analytics: React.FC = () => {
                   Delete History
                 </button>
                 <button
-                  onClick={() => setShowSettings(s => !s)}
+                  onClick={() => setChartMode(m => (m === 'quantity' ? 'cost' : 'quantity'))}
                   className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30 text-sm sm:text-base"
                 >
-                  Settings
+                  {chartMode === 'quantity' ? 'Cost' : 'Quantity'}
                 </button>
                 <button
                   onClick={generateExcelReport}
@@ -851,13 +870,6 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-      {showSettings && (
-        <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-          <h2 className="text-xl font-semibold mb-4">Settings</h2>
-          <div>Storage Used: {storageMB !== null ? `${storageMB} MB` : '...'}</div>
-        </div>
-      )}
-
       {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {/* Total Items Card */}
@@ -954,7 +966,7 @@ const Analytics: React.FC = () => {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
-          {/* Stock Status Chart */}
+          {/* Left Chart */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50"></div>
             <div className="relative">
@@ -963,33 +975,56 @@ const Analytics: React.FC = () => {
                   <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Stock Status Distribution</h3>
-                  <p className="text-sm sm:text-base text-gray-600">Current inventory levels overview</p>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+                    {chartMode === 'quantity' ? 'Stock Status Distribution' : 'Cost Distribution'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {chartMode === 'quantity' ? 'Current inventory levels overview' : 'Cost added vs consumed (selected month)'}
+                  </p>
                 </div>
               </div>
               <div className="h-60 sm:h-80 flex items-center justify-center">
-            <Doughnut data={stockStatusData} options={chartOptions} />
+                <Doughnut data={chartMode === 'quantity' ? stockStatusData : costSummaryData} options={chartOptions} />
               </div>
-              <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
-                  <div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-900">Out of Stock</div>
-                    <div className="text-xs text-gray-600">{analytics?.lowStockAlerts?.filter(item => item.quantity === 0).length || 0} items</div>
+              {chartMode === 'quantity' ? (
+                <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Out of Stock</div>
+                      <div className="text-xs text-gray-600">{analytics?.lowStockAlerts?.filter(item => item.quantity === 0).length || 0} items</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-orange-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-orange-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Low Stock</div>
+                      <div className="text-xs text-gray-600">{analytics?.lowStockAlerts?.filter(item => item.quantity > 0 && item.quantity <= 5).length || 0} items</div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-orange-50 rounded-xl">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-orange-500 rounded-full"></div>
-                  <div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-900">Low Stock</div>
-                    <div className="text-xs text-gray-600">{analytics?.lowStockAlerts?.filter(item => item.quantity > 0 && item.quantity <= 5).length || 0} items</div>
+              ) : (
+                <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Cost Added</div>
+                      <div className="text-xs text-gray-600">{(analytics?.costAdded || 0).toFixed(2)}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Cost Consumed</div>
+                      <div className="text-xs text-gray-600">{(analytics?.costConsumed || 0).toFixed(2)}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
           </div>
         </div>
 
-          {/* Monthly Activity Chart */}
+          {/* Right Chart */}
           <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-green-50/50"></div>
             <div className="relative">
@@ -998,29 +1033,52 @@ const Analytics: React.FC = () => {
                   <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Monthly Activity</h3>
-                  <p className="text-sm sm:text-base text-gray-600">Items added vs consumed this month</p>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+                    {chartMode === 'quantity' ? 'Monthly Activity' : 'Monthly Cost (Year)'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {chartMode === 'quantity' ? 'Items added vs consumed this month' : 'Cost added vs consumed by month'}
+                  </p>
                 </div>
               </div>
               <div className="h-60 sm:h-80 flex items-center justify-center">
-            <Bar data={activityData} options={chartOptions} />
+                <Bar data={chartMode === 'quantity' ? activityData : monthlyCostData} options={chartOptions} />
               </div>
-              <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
-                  <div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-900">Items Added</div>
-                    <div className="text-xs text-gray-600">{analytics?.itemsAdded || 0} units</div>
+              {chartMode === 'quantity' ? (
+                <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Items Added</div>
+                      <div className="text-xs text-gray-600">{analytics?.itemsAdded || 0} units</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Items Consumed</div>
+                      <div className="text-xs text-gray-600">{analytics?.itemsConsumed || 0} units</div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
-                  <div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-900">Items Consumed</div>
-                    <div className="text-xs text-gray-600">{analytics?.itemsConsumed || 0} units</div>
+              ) : (
+                <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Year Cost Added</div>
+                      <div className="text-xs text-gray-600">{costAddedByMonth.reduce((a, b) => a + b, 0).toFixed(2)}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Year Cost Consumed</div>
+                      <div className="text-xs text-gray-600">{costConsumedByMonth.reduce((a, b) => a + b, 0).toFixed(2)}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
           </div>
         </div>
       </div>
