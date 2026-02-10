@@ -455,7 +455,7 @@ const SparesList: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="bg-red-50 border border-red-200 rounded-lg p-3">
             <div className="text-xs font-semibold text-red-700 tracking-wide uppercase">Critical Total Value</div>
             <div className="mt-1 text-lg font-bold text-red-900">{formatINR(totalValueByCategory.critical)}</div>
@@ -463,6 +463,10 @@ const SparesList: React.FC = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="text-xs font-semibold text-blue-700 tracking-wide uppercase">Consumable Total Value</div>
             <div className="mt-1 text-lg font-bold text-blue-900">{formatINR(totalValueByCategory.consumable)}</div>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <div className="text-xs font-semibold text-amber-700 tracking-wide uppercase">Total Inventory Value</div>
+            <div className="mt-1 text-lg font-bold text-amber-900">{formatINR(totalValueByCategory.all)}</div>
           </div>
         </div>
       </div>

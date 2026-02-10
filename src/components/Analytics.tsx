@@ -657,12 +657,12 @@ const Analytics: React.FC = () => {
     ],
   };
 
-  const costSummaryData = {
-    labels: ['Cost Added', 'Cost Consumed'],
+  const inventoryValueData = {
+    labels: ['Critical', 'Consumable'],
     datasets: [
       {
-        data: [analytics?.costAdded || 0, analytics?.costConsumed || 0],
-        backgroundColor: ['#059669', '#DC2626'],
+        data: [analytics?.totalValueCritical || 0, analytics?.totalValueConsumable || 0],
+        backgroundColor: ['#DC2626', '#2563EB'],
         borderWidth: 0,
       },
     ],
@@ -711,6 +711,15 @@ const Analytics: React.FC = () => {
           }
         : undefined,
     },
+    scales: chartMode === 'cost'
+      ? {
+          y: {
+            ticks: {
+              callback: (value: any) => formatINR(Number(value) || 0),
+            },
+          },
+        }
+      : undefined,
   };
 
   return (
@@ -995,15 +1004,15 @@ const Analytics: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                    {chartMode === 'quantity' ? 'Stock Status Distribution' : 'Cost Distribution'}
+                    {chartMode === 'quantity' ? 'Stock Status Distribution' : 'Total Inventory Value (Cost)'}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600">
-                    {chartMode === 'quantity' ? 'Current inventory levels overview' : 'Cost added vs consumed (selected month)'}
+                    {chartMode === 'quantity' ? 'Current inventory levels overview' : 'Critical vs Consumable (all items)'}
                   </p>
                 </div>
               </div>
               <div className="h-60 sm:h-80 flex items-center justify-center">
-                <Doughnut data={chartMode === 'quantity' ? stockStatusData : costSummaryData} options={chartOptions} />
+                <Doughnut data={chartMode === 'quantity' ? stockStatusData : inventoryValueData} options={chartOptions} />
               </div>
               {chartMode === 'quantity' ? (
                 <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
@@ -1023,19 +1032,26 @@ const Analytics: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-emerald-50 rounded-xl">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
-                    <div>
-                      <div className="text-xs sm:text-sm font-medium text-gray-900">Cost Added</div>
-                      <div className="text-xs text-gray-600">{formatINR(analytics?.costAdded || 0)}</div>
-                    </div>
-                  </div>
+                <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-xl">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
                     <div>
-                      <div className="text-xs sm:text-sm font-medium text-gray-900">Cost Consumed</div>
-                      <div className="text-xs text-gray-600">{formatINR(analytics?.costConsumed || 0)}</div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Critical Total Value</div>
+                      <div className="text-xs text-gray-600">{formatINR(analytics?.totalValueCritical || 0)}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-600 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Consumable Total Value</div>
+                      <div className="text-xs text-gray-600">{formatINR(analytics?.totalValueConsumable || 0)}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-amber-50 rounded-xl">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-amber-600 rounded-full"></div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-900">Total Inventory Value</div>
+                      <div className="text-xs text-gray-600">{formatINR(analytics?.totalValueAll || 0)}</div>
                     </div>
                   </div>
                 </div>
