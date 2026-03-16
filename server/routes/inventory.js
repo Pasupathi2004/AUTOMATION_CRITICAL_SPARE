@@ -38,25 +38,41 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // Add a new item
 router.post('/', authenticateToken, async (req, res) => {
-  const body = {
-    ...req.body,
-    quantity: Number(req.body.quantity),
-    minimumQuantity: Number(req.body.minimumQuantity),
-    // Parse optional cost per item if provided
-    cost: req.body.cost !== undefined && req.body.cost !== ''
-      ? Number(req.body.cost)
-      : undefined
-  };
+  // Parse numeric fields safely, allowing optional maximumQuantity and cost
+  const quantity = Number(req.body.quantity);
+  const minimumQuantity = Number(req.body.minimumQuantity);
 
-  if (isNaN(body.quantity) || isNaN(body.minimumQuantity)) {
+  const rawMax = req.body.maximumQuantity;
+  let maximumQuantity;
+  if (rawMax !== undefined && rawMax !== '') {
+    maximumQuantity = Number(rawMax);
+  }
+
+  const rawCost = req.body.cost;
+  let cost;
+  if (rawCost !== undefined && rawCost !== '') {
+    cost = Number(rawCost);
+  }
+
+  if (isNaN(quantity) || isNaN(minimumQuantity)) {
     return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
   }
 
-  if (body.cost !== undefined && (isNaN(body.cost) || body.cost < 0)) {
+  if (maximumQuantity !== undefined && (isNaN(maximumQuantity) || maximumQuantity < 0)) {
+    return res.status(400).json({ success: false, message: 'maximumQuantity must be a non-negative number when provided.' });
+  }
+
+  if (cost !== undefined && (isNaN(cost) || cost < 0)) {
     return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
   }
 
-  const item = new Inventory(body);
+  const item = new Inventory({
+    ...req.body,
+    quantity,
+    minimumQuantity,
+    ...(maximumQuantity !== undefined ? { maximumQuantity } : {}),
+    ...(cost !== undefined ? { cost } : {})
+  });
   await item.save();
   res.json({ success: true, item });
 });
@@ -73,25 +89,45 @@ router.put('/:id', authenticateToken, async (req, res) => {
     return res.status(404).json({ success: false, message: 'Item not found' });
   }
   // Parse quantity and minimumQuantity as numbers
-  const body = {
-    ...req.body,
-    quantity: Number(req.body.quantity),
-    minimumQuantity: Number(req.body.minimumQuantity),
-    // Parse optional cost per item if provided
-    cost: req.body.cost !== undefined && req.body.cost !== ''
-      ? Number(req.body.cost)
-      : currentItem.cost
-  };
+  const quantity = Number(req.body.quantity);
+  const minimumQuantity = Number(req.body.minimumQuantity);
 
-  if (isNaN(body.quantity) || isNaN(body.minimumQuantity)) {
+  const rawMax = req.body.maximumQuantity;
+  let maximumQuantity;
+  if (rawMax !== undefined && rawMax !== '') {
+    maximumQuantity = Number(rawMax);
+  }
+
+  const rawCost = req.body.cost;
+  let cost = currentItem.cost;
+  if (rawCost !== undefined && rawCost !== '') {
+    cost = Number(rawCost);
+  }
+
+  if (isNaN(quantity) || isNaN(minimumQuantity)) {
     return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
   }
 
-  if (body.cost !== undefined && (isNaN(body.cost) || body.cost < 0)) {
+  if (maximumQuantity !== undefined && (isNaN(maximumQuantity) || maximumQuantity < 0)) {
+    return res.status(400).json({ success: false, message: 'maximumQuantity must be a non-negative number when provided.' });
+  }
+
+  if (cost !== undefined && (isNaN(cost) || cost < 0)) {
     return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
   }
+
   // Update the item
-  const updatedItem = await Inventory.findByIdAndUpdate(id, body, { new: true });
+  const updatedItem = await Inventory.findByIdAndUpdate(
+    id,
+    {
+      ...req.body,
+      quantity,
+      minimumQuantity,
+      ...(maximumQuantity !== undefined ? { maximumQuantity } : {}),
+      ...(cost !== undefined ? { cost } : {})
+    },
+    { new: true }
+  );
 
   // If quantity changed, create a transaction
   if (typeof body.quantity === 'number' && body.quantity !== currentItem.quantity) {
@@ -195,10 +231,12 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
       const bin = row[5];
       const quantity = row[6];
       const minimumQuantity = row[7];
-      // Category is at position 8 in the current template
-      let category = row[8];
-      // Optional cost per item at position 9 in the updated template
-      const rawCost = row[9];
+      // Optional maximum quantity at position 8 in the updated template
+      const rawMaximumQuantity = row[8];
+      // Category is at position 9 in the updated template (or 8 in older files)
+      let category = row.length > 9 ? row[9] : row[8];
+      // Optional cost per item at position 10 in the updated template (or 9 in older files)
+      const rawCost = row.length > 10 ? row[10] : row[9];
       
       // Validate required fields
       if (!name || !make || !model || !specification || !rack || !bin) {
@@ -209,6 +247,10 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
       // Validate numeric fields
       const quantityNum = parseInt(quantity);
       const minimumQuantityNum = parseInt(minimumQuantity);
+      let maximumQuantityNum;
+      if (rawMaximumQuantity !== undefined && rawMaximumQuantity !== '') {
+        maximumQuantityNum = parseInt(rawMaximumQuantity);
+      }
       
       if (isNaN(quantityNum) || quantityNum < 0) {
         errors.push(`Row ${i + 1}: Invalid quantity`);
@@ -217,6 +259,11 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
 
       if (isNaN(minimumQuantityNum) || minimumQuantityNum < 0) {
         errors.push(`Row ${i + 1}: Invalid minimum quantity`);
+        continue;
+      }
+
+      if (maximumQuantityNum !== undefined && (isNaN(maximumQuantityNum) || maximumQuantityNum < 0)) {
+        errors.push(`Row ${i + 1}: Invalid maximum quantity`);
         continue;
       }
 
@@ -245,6 +292,7 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
         bin: bin.toString().trim(),
         quantity: quantityNum,
         minimumQuantity: minimumQuantityNum,
+        ...(maximumQuantityNum !== undefined ? { maximumQuantity: maximumQuantityNum } : {}),
         // Optional per-item cost from CSV
         ...(costNum !== undefined ? { cost: costNum } : {}),
         category: validCategory,

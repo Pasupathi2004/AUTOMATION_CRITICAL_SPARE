@@ -7,6 +7,8 @@ const InventorySchema = new mongoose.Schema({
   specification: String,
   quantity: Number,
   minimumQuantity: Number,
+  // Optional maximum quantity threshold (upper limit for stock)
+  maximumQuantity: Number,
   rack: String,
   bin: String,
   // Optional cost per single item

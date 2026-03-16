@@ -14,6 +14,7 @@ const AddItem: React.FC = () => {
     bin: '',
     quantity: '',
     minimumQuantity: '',
+    maximumQuantity: '',
     // Optional cost per single item
     cost: '',
     category: ''
@@ -62,6 +63,7 @@ const AddItem: React.FC = () => {
           bin: '',
           quantity: '',
           minimumQuantity: '',
+          maximumQuantity: '',
           cost: '',
           category: ''
         });
@@ -209,6 +211,22 @@ const AddItem: React.FC = () => {
                 min="0"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
                 placeholder="Enter minimum quantity"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="maximumQuantity" className="block text-sm font-medium text-gray-700 mb-2">
+                Maximum Quantity
+              </label>
+              <input
+                type="number"
+                id="maximumQuantity"
+                name="maximumQuantity"
+                value={formData.maximumQuantity}
+                onChange={handleChange}
+                min="0"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
+                placeholder="Enter maximum quantity (optional)"
               />
             </div>
 

@@ -3,10 +3,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, BarChart3, X } from 'lucide-react';
 import { Analytics as AnalyticsType } from '../types';
-import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
 import { API_ENDPOINTS } from '../config/api';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -264,7 +264,6 @@ const Analytics: React.FC = () => {
     setSelectedYear(Number(e.target.value));
   };
 
-
   const generateComprehensiveExcelReport = async () => {
     if (!analytics) {
       setSuccessMessage('No analytics data available. Please try again.');
@@ -421,113 +420,6 @@ const Analytics: React.FC = () => {
       
       // Show success message
       setSuccessMessage('Comprehensive Excel report with monthly sheets generated successfully!');
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (error) {
-      console.error('Error generating Excel report:', error);
-      setSuccessMessage('Error generating Excel report. Please try again.');
-      setTimeout(() => setSuccessMessage(null), 3000);
-    }
-  };
-
-  const generateExcelReport = () => {
-    if (!analytics) {
-      setSuccessMessage('No analytics data available. Please try again.');
-      setTimeout(() => setSuccessMessage(null), 3000);
-      return;
-    }
-
-    try {
-      const workbook = XLSX.utils.book_new();
-      const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm');
-
-      // Summary Sheet
-      const summaryData = [
-        ['Inventory Management System - Analytics Report'],
-        ['Generated At:', new Date().toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS)],
-        [''],
-        ['Metric', 'Value'],
-        ['Total Items', (analytics.totalItems || 0).toString()],
-        ['Low Stock Items', (analytics.lowStockItems || 0).toString()],
-        ['Total Transactions', (analytics.totalTransactions || 0).toString()],
-        ['Items Consumed', (analytics.itemsConsumed || 0).toString()],
-        ['Items Added', (analytics.itemsAdded || 0).toString()],
-        ['Active Users', (analytics.activeUsers || 0).toString()]
-      ];
-
-      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-
-      // Recent Transactions Sheet (with item details, no Transaction ID)
-      if (analytics.recentTransactions && analytics.recentTransactions.length > 0) {
-        const transactionsData = [
-          ['Item Name', 'Specification', 'Make', 'Model', 'Location (Row-Column)', 'Transaction Type', 'Quantity Changed', 'User', 'Date & Time', 'Action', 'Purpose', 'Requested By', 'Request Status', 'Resolved By', 'Remarks']
-        ];
-
-        analytics.recentTransactions.forEach(transaction => {
-          if (transaction) {
-            const action = transaction.type === 'added' ? 'Stock Added' : 
-                          transaction.type === 'taken' ? 'Stock Taken' : 'Stock Deleted';
-            transactionsData.push([
-              transaction.itemName || '',
-              transaction.specification || '',
-              transaction.make || '',
-              transaction.model || '',
-              `Row ${transaction.rack || ''} - Column ${transaction.bin || ''}`,
-              (transaction.type || '').toUpperCase(),
-              (transaction.quantity || 0).toString(),
-              transaction.user || '',
-                  transaction.timestamp ? new Date(transaction.timestamp).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
-              action,
-              transaction.purpose || 'others',
-              transaction.requestedBy || '',
-              transaction.requestStatus || '',
-              transaction.resolvedBy || '',
-              transaction.remarks || ''
-            ]);
-          }
-        });
-
-        if (transactionsData.length > 1) { // Only add sheet if there's data
-          const transactionsSheet = XLSX.utils.aoa_to_sheet(transactionsData);
-          XLSX.utils.book_append_sheet(workbook, transactionsSheet, 'Recent Transactions');
-        }
-      }
-
-      // Low Stock Alerts Sheet
-      if (analytics.lowStockAlerts && analytics.lowStockAlerts.length > 0) {
-        const lowStockData = [
-          ['Item ID', 'Item Name', 'Make', 'Model', 'Specification', 'Current Quantity', 'Location', 'Last Updated', 'Updated By', 'Status']
-        ];
-
-        analytics.lowStockAlerts.forEach(item => {
-          if (item && item.id) {
-            const status = item.quantity === 0 ? 'Out of Stock' : 'Low Stock';
-            lowStockData.push([
-              item.id.toString() || '',
-              item.name || '',
-              item.make || '',
-              item.model || '',
-              item.specification || '',
-              (item.quantity || 0).toString(),
-              `Row ${item.rack || ''} - Column ${item.bin || ''}`,
-              item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-IN', INDIAN_12H_DATE_OPTIONS) : '',
-              item.updatedBy || '',
-              status
-            ]);
-          }
-        });
-
-        if (lowStockData.length > 1) { // Only add sheet if there's data
-          const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData);
-          XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Low Stock Alerts');
-        }
-      }
-
-      // Export the workbook
-      XLSX.writeFile(workbook, `inventory_report_${timestamp}.xlsx`);
-      
-      // Show success message
-      setSuccessMessage('Excel report generated successfully!');
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error('Error generating Excel report:', error);
@@ -744,7 +636,7 @@ const Analytics: React.FC = () => {
                     </p>
           </div>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-sm">
                   <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
                     <Calendar className="w-4 h-4" />
                     <span>{new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
@@ -769,13 +661,6 @@ const Analytics: React.FC = () => {
                   className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30 text-sm sm:text-base"
                 >
                   {chartMode === 'quantity' ? 'Cost' : 'Quantity'}
-                </button>
-                <button
-                  onClick={generateExcelReport}
-                  className="inline-flex items-center justify-center space-x-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30 text-sm sm:text-base"
-                >
-                  <FileSpreadsheet size={16} />
-                  <span>Excel Report</span>
                 </button>
                 <button
                   onClick={generateComprehensiveExcelReport}

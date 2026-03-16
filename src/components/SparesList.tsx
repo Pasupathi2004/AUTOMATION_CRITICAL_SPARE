@@ -47,6 +47,7 @@ const SparesList: React.FC = () => {
     bin: '',
     quantity: '',
     minimumQuantity: '',
+    maximumQuantity: '',
     // Optional cost per single item
     cost: '',
     category: ''
@@ -170,6 +171,7 @@ const SparesList: React.FC = () => {
       bin: item.bin,
       quantity: item.quantity.toString(),
       minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : '',
+      maximumQuantity: item.maximumQuantity !== undefined ? item.maximumQuantity.toString() : '',
       cost: item.cost !== undefined ? item.cost.toString() : '',
       category: item.category || 'consumable'
     });
@@ -194,6 +196,7 @@ const SparesList: React.FC = () => {
           ...formData,
           quantity: parseInt(formData.quantity),
           minimumQuantity: parseInt(formData.minimumQuantity),
+          // maximumQuantity is optional; backend will ignore empty string
           cost: formData.cost !== '' ? parseFloat(formData.cost) : '',
           updatedBy: user?.username
         }),
@@ -240,7 +243,7 @@ const SparesList: React.FC = () => {
   const exportToCSV = () => {
     const headers = [
       'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-      'Quantity', 'Minimum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+      'Quantity', 'Minimum Quantity', 'Maximum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
     ];
     
     const csvData = inventory.map(item => [
@@ -253,6 +256,7 @@ const SparesList: React.FC = () => {
       item.bin,
       item.quantity,
       item.minimumQuantity,
+      item.maximumQuantity !== undefined ? item.maximumQuantity : '',
       item.category || 'consumable',
       item.cost !== undefined ? item.cost : '',
       getStockStatus(item.quantity, item.minimumQuantity).status,
@@ -278,7 +282,7 @@ const SparesList: React.FC = () => {
     try {
       const headers = [
         'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-        'Quantity', 'Minimum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+        'Quantity', 'Minimum Quantity', 'Maximum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
       ];
       
       const excelData = inventory.map(item => [
@@ -291,6 +295,7 @@ const SparesList: React.FC = () => {
         item.bin,
         item.quantity,
         item.minimumQuantity,
+        item.maximumQuantity !== undefined ? item.maximumQuantity : '',
         item.category || 'consumable',
         item.cost !== undefined ? item.cost : '',
         getStockStatus(item.quantity, item.minimumQuantity).status,
@@ -519,6 +524,10 @@ const SparesList: React.FC = () => {
                     <div className="text-right">
                       <div className="text-2xl font-bold text-gray-900">{item.quantity}</div>
                       <div className="text-sm text-gray-600">in stock</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Min: {item.minimumQuantity}{' '}
+                        {typeof item.maximumQuantity === 'number' ? `| Max: ${item.maximumQuantity}` : ''}
+                      </div>
                     </div>
                   </div>
 
@@ -718,6 +727,17 @@ const SparesList: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, minimumQuantity: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                     required
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Maximum Quantity</label>
+                  <input
+                    type="number"
+                    value={formData.maximumQuantity}
+                    onChange={(e) => setFormData({ ...formData, maximumQuantity: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                     min="0"
                   />
                 </div>
