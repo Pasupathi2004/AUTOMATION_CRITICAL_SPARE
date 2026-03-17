@@ -132,8 +132,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
   );
 
   // If quantity changed, create a transaction
-  if (typeof body.quantity === 'number' && body.quantity !== currentItem.quantity) {
-    const change = body.quantity - currentItem.quantity;
+  if (typeof quantity === 'number' && quantity !== currentItem.quantity) {
+    const change = quantity - currentItem.quantity;
     const transactionType = change > 0 ? 'added' : 'taken';
     const normalizedPurpose = (req.body.purpose || 'others').toString().toLowerCase() === 'breakdown'
       ? 'breakdown'
@@ -161,12 +161,14 @@ router.put('/:id', authenticateToken, async (req, res) => {
     await transaction.save();
     // Emit socket event for real-time updates
     if (req.app.get('io')) {
-      req.app.get('io').emit('inventoryUpdated', updatedItem);
+      const payload = { ...updatedItem.toObject(), id: updatedItem._id.toString() };
+      req.app.get('io').emit('inventoryUpdated', payload);
       req.app.get('io').emit('transactionCreated', transaction);
     }
   }
 
-  res.json({ success: true, item: updatedItem });
+  const itemPayload = { ...updatedItem.toObject(), id: updatedItem._id.toString() };
+  res.json({ success: true, item: itemPayload });
 });
 
 // Delete an item

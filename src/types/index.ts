@@ -47,6 +47,7 @@ export interface Transaction {
   specification?: string;
   rack?: string;
   bin?: string;
+  category?: 'critical' | 'consumable';
   remarks?: string;
 }
 
@@ -91,5 +92,6 @@ export interface Analytics {
     specification?: string;
     rack?: string;
     bin?: string;
+    category?: string;
   }[];
 }

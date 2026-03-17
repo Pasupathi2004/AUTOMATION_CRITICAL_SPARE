@@ -265,6 +265,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                     <thead>
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                        <th className="text-left py-2 pr-2 font-semibold text-gray-700">Category</th>
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
                         <th className="text-right py-2 pr-2 font-semibold text-gray-700">Qty</th>
@@ -273,12 +274,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                     </thead>
                     <tbody>
                       {maxLevelItems.map((item) => (
-                        <tr key={item.id} className="border-b last:border-b-0">
+                        <tr key={item.id || (item as any)._id} className="border-b last:border-b-0">
                           <td className="py-2 pr-4">
                             <div className="font-medium text-gray-900">{item.name}</div>
                             <div className="text-xs text-gray-600">
                               {item.make} {item.model}
                             </div>
+                          </td>
+                          <td className="py-2 pr-2">
+                            <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${(item.category || 'consumable').toLowerCase() === 'critical' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}`}>
+                              {(item.category || 'consumable').charAt(0).toUpperCase() + (item.category || 'consumable').slice(1)}
+                            </span>
                           </td>
                           <td className="py-2 pr-4 text-gray-700">
                             <div className="max-w-xs truncate" title={item.specification}>
@@ -329,6 +335,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                     <thead>
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                        <th className="text-left py-2 pr-2 font-semibold text-gray-700">Category</th>
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
                         <th className="text-right py-2 pr-2 font-semibold text-gray-700">Qty</th>
@@ -337,12 +344,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                     </thead>
                     <tbody>
                       {lowStockItems.map((item) => (
-                        <tr key={item.id} className="border-b last:border-b-0">
+                        <tr key={item.id || (item as any)._id} className="border-b last:border-b-0">
                           <td className="py-2 pr-4">
                             <div className="font-medium text-gray-900">{item.name}</div>
                             <div className="text-xs text-gray-600">
                               {item.make} {item.model}
                             </div>
+                          </td>
+                          <td className="py-2 pr-2">
+                            <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${(item.category || 'consumable').toLowerCase() === 'critical' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}`}>
+                              {(item.category || 'consumable').charAt(0).toUpperCase() + (item.category || 'consumable').slice(1)}
+                            </span>
                           </td>
                           <td className="py-2 pr-4 text-gray-700">
                             <div className="max-w-xs truncate" title={item.specification}>

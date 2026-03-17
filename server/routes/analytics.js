@@ -100,7 +100,8 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
         model: t.model || item?.model || '',
         specification: t.specification || item?.specification || '',
         rack: t.rack || item?.rack || '',
-        bin: t.bin || item?.bin || ''
+        bin: t.bin || item?.bin || '',
+        category: item?.category || 'consumable'
       };
     });
 
@@ -140,7 +141,8 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
         model: item?.model || '',
         specification: item?.specification || '',
         rack: item?.rack || '',
-        bin: item?.bin || ''
+        bin: item?.bin || '',
+        category: item?.category || 'consumable'
       };
     });
 
@@ -270,7 +272,8 @@ router.get('/dashboard', async (req, res) => {
         model: t.model || item?.model || '',
         specification: t.specification || item?.specification || '',
         rack: t.rack || item?.rack || '',
-        bin: t.bin || item?.bin || ''
+        bin: t.bin || item?.bin || '',
+        category: item?.category || 'consumable'
       };
     });
 
@@ -310,7 +313,8 @@ router.get('/dashboard', async (req, res) => {
         model: item?.model || '',
         specification: item?.specification || '',
         rack: item?.rack || '',
-        bin: item?.bin || ''
+        bin: item?.bin || '',
+        category: item?.category || 'consumable'
       };
     });
 

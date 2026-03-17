@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { TrendingUp, Package, Users, Activity, Calendar, User, FileSpreadsheet, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, BarChart3, X } from 'lucide-react';
-import { Analytics as AnalyticsType } from '../types';
+import { Analytics as AnalyticsType, Transaction } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import * as XLSX from 'xlsx';
@@ -497,12 +497,13 @@ const Analytics: React.FC = () => {
     specification?: string;
     rack?: string;
     bin?: string;
+    category?: string;
   }[] => {
     if (!analytics?.recentTransactions || analytics.recentTransactions.length === 0) {
       return [];
     }
 
-    const counts = new Map<string, { quantity: number; make?: string; model?: string; specification?: string; rack?: string; bin?: string }>();
+    const counts = new Map<string, { quantity: number; make?: string; model?: string; specification?: string; rack?: string; bin?: string; category?: string }>();
 
     analytics.recentTransactions.forEach((t) => {
       if (!t || t.type !== 'taken' || !t.timestamp) return;
@@ -517,6 +518,7 @@ const Analytics: React.FC = () => {
         specification: t.specification,
         rack: t.rack,
         bin: t.bin,
+        category: t.category || 'consumable',
       };
       existing.quantity += t.quantity || 0;
       existing.make = existing.make || t.make;
@@ -524,6 +526,7 @@ const Analytics: React.FC = () => {
       existing.specification = existing.specification || t.specification;
       existing.rack = existing.rack || t.rack;
       existing.bin = existing.bin || t.bin;
+      existing.category = existing.category || t.category || 'consumable';
       counts.set(key, existing);
     });
 
@@ -536,6 +539,7 @@ const Analytics: React.FC = () => {
         specification: info.specification,
         rack: info.rack,
         bin: info.bin,
+        category: info.category || 'consumable',
       }))
       .filter((i) => i.quantity > 0)
       .sort((a, b) => b.quantity - a.quantity);
@@ -668,13 +672,21 @@ const Analytics: React.FC = () => {
     ],
   };
 
+  const topConsumedSource = topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems;
   const topConsumedChartData = {
-    labels: (topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((i) => i.name),
+    labels: topConsumedSource.map((i) => {
+      const cat = (i as { category?: string }).category || 'consumable';
+      return `${i.name} (${cat.charAt(0).toUpperCase() + cat.slice(1)})`;
+    }),
     datasets: [
       {
         label: 'Quantity Consumed',
-        data: (topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((i) => i.quantity),
-        backgroundColor: '#DC2626',
+        data: topConsumedSource.map((i) => i.quantity),
+        backgroundColor: topConsumedSource.map((i) =>
+          ((i as { category?: string }).category || 'consumable') === 'critical'
+            ? 'rgba(217, 119, 6, 0.8)'
+            : 'rgba(100, 116, 139, 0.8)'
+        ),
         borderRadius: 6,
       },
     ],
@@ -1167,19 +1179,27 @@ const Analytics: React.FC = () => {
                     <thead>
                       <tr className="border-b">
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                        <th className="text-left py-2 pr-2 font-semibold text-gray-700">Category</th>
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
                         <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
                         <th className="text-right py-2 pr-2 font-semibold text-gray-700">Total Consumed</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((item, idx) => (
+                      {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((item, idx) => {
+                        const cat = (item as { category?: string }).category || 'consumable';
+                        return (
                         <tr key={`${item.name}-${idx}`} className="border-b last:border-b-0">
                           <td className="py-2 pr-4">
                             <div className="font-medium text-gray-900">{item.name}</div>
                             <div className="text-[11px] sm:text-xs text-gray-600">
                               {item.make} {item.model}
                             </div>
+                          </td>
+                          <td className="py-2 pr-2">
+                            <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${cat === 'critical' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}`}>
+                              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </span>
                           </td>
                           <td className="py-2 pr-4 text-gray-700">
                             <div className="max-w-xs truncate" title={item.specification}>
@@ -1193,7 +1213,7 @@ const Analytics: React.FC = () => {
                             {item.quantity}
                           </td>
                         </tr>
-                      ))}
+                      );})}
                     </tbody>
                   </table>
                 </div>
