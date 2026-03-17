@@ -204,7 +204,10 @@ const SparesList: React.FC = () => {
       const data = await response.json();
       if (response.ok && data.success) {
         setMessage({ type: 'success', text: 'Item updated successfully!' });
-        fetchInventory();
+        // Optimistically update local state instead of refetching entire inventory
+        if (data.item && data.item.id) {
+          setInventory(prev => prev.map(item => (item.id === data.item.id ? data.item : item)));
+        }
         setShowEditModal(false);
         setEditingItem(null);
       } else {
