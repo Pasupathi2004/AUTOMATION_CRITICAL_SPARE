@@ -344,6 +344,30 @@ const Analytics: React.FC = () => {
               ]);
             });
 
+            // Top consumed items for this month
+            const itemConsumption = new Map();
+            monthTransactions.forEach(transaction => {
+              if (!transaction || transaction.type !== 'taken') return;
+              const key = transaction.itemName || 'Unknown';
+              const current = itemConsumption.get(key) || 0;
+              itemConsumption.set(key, current + (transaction.quantity || 0));
+            });
+
+            const topItems = Array.from(itemConsumption.entries())
+              .map(([name, qty]) => ({ name, qty }))
+              .filter((i) => i.qty > 0)
+              .sort((a, b) => b.qty - a.qty)
+              .slice(0, 5);
+
+            if (topItems.length > 0) {
+              monthlySummaryData.push([]);
+              monthlySummaryData.push(['Top Consumed Items']);
+              monthlySummaryData.push(['Item Name', 'Total Quantity Taken']);
+              topItems.forEach((item) => {
+                monthlySummaryData.push([item.name, item.qty.toString()]);
+              });
+            }
+
             const monthlySummarySheet = XLSX.utils.aoa_to_sheet(monthlySummaryData);
             XLSX.utils.book_append_sheet(workbook, monthlySummarySheet, `${monthName} ${year} Summary`);
 
@@ -462,6 +486,40 @@ const Analytics: React.FC = () => {
     }
   };
 
+  // Compute top consumed items for the currently selected month/year
+  const topConsumedItems = React.useMemo(() => {
+    if (!analytics?.recentTransactions || analytics.recentTransactions.length === 0) {
+      return [];
+    }
+
+    const counts = new Map<string, { quantity: number; make?: string; model?: string }>();
+
+    analytics.recentTransactions.forEach((t) => {
+      if (!t || t.type !== 'taken' || !t.timestamp) return;
+      const d = new Date(t.timestamp);
+      if (d.getMonth() !== selectedMonth || d.getFullYear() !== selectedYear) return;
+
+      const key = t.itemName || 'Unknown';
+      const existing = counts.get(key) || { quantity: 0, make: t.make, model: t.model };
+      existing.quantity += t.quantity || 0;
+      existing.make = existing.make || t.make;
+      existing.model = existing.model || t.model;
+      counts.set(key, existing);
+    });
+
+    const items = Array.from(counts.entries())
+      .map(([name, info]) => ({
+        name,
+        quantity: info.quantity,
+        make: info.make,
+        model: info.model,
+      }))
+      .filter((i) => i.quantity > 0)
+      .sort((a, b) => b.quantity - a.quantity);
+
+    return items.slice(0, 5);
+  }, [analytics, selectedMonth, selectedYear]);
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -579,6 +637,18 @@ const Analytics: React.FC = () => {
       {
         label: 'Cost Consumed',
         data: costConsumedByMonth,
+        backgroundColor: '#DC2626',
+        borderRadius: 6,
+      },
+    ],
+  };
+
+  const topConsumedChartData = {
+    labels: topConsumedItems.map((i) => i.name),
+    datasets: [
+      {
+        label: 'Quantity Consumed',
+        data: topConsumedItems.map((i) => i.quantity),
         backgroundColor: '#DC2626',
         borderRadius: 6,
       },
@@ -999,6 +1069,35 @@ const Analytics: React.FC = () => {
                   </div>
                 </div>
               )}
+          </div>
+        </div>
+
+        {/* Top Consumed Items Chart */}
+        <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-50/60 to-red-50/60"></div>
+          <div className="relative">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+                  Top Consumed Items ({new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'short', year: 'numeric' })})
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600">
+                  Items with highest quantity taken this month
+                </p>
+              </div>
+            </div>
+            {topConsumedItems.length > 0 ? (
+              <div className="h-60 sm:h-72 flex items-center justify-center">
+                <Bar data={topConsumedChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' as const } } }} />
+              </div>
+            ) : (
+              <div className="py-10 text-center text-sm text-gray-500">
+                No consumption data for the selected month.
+              </div>
+            )}
           </div>
         </div>
       </div>
