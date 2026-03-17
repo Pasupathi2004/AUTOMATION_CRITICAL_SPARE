@@ -80,4 +80,16 @@ export interface Analytics {
   activeUsers: number;
   recentTransactions: Transaction[];
   lowStockAlerts: InventoryItem[];
+  // Items where quantity has reached or exceeded maximumQuantity
+  maxLevelItems?: InventoryItem[];
+  // Top consumed items for the selected year
+  topConsumedYear?: {
+    name: string;
+    quantity: number;
+    make?: string;
+    model?: string;
+    specification?: string;
+    rack?: string;
+    bin?: string;
+  }[];
 }

@@ -104,6 +104,46 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
       };
     });
 
+  // Items at or above maximum level (only where maximumQuantity is defined)
+  const maxLevelItems = inventory.filter(i =>
+    typeof i.maximumQuantity === 'number' &&
+    i.maximumQuantity >= 0 &&
+    i.quantity >= i.maximumQuantity
+  );
+
+  // Top consumed items for the selected year (by quantity taken)
+  const yearlyConsumedByItem = new Map();
+  yearlyTransactions
+    .filter(t => t.type === 'taken')
+    .forEach((t) => {
+      const key = t.itemId?.toString?.() || t.itemName;
+      if (!key) return;
+      const current = yearlyConsumedByItem.get(key) || { quantity: 0, item: null };
+      current.quantity += Number(t.quantity) || 0;
+      if (!current.item) {
+        const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName) || null;
+        current.item = item;
+      }
+      yearlyConsumedByItem.set(key, current);
+    });
+
+  const topConsumedYear = Array.from(yearlyConsumedByItem.values())
+    .filter((entry) => entry.quantity > 0)
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 10)
+    .map((entry) => {
+      const item = entry.item;
+      return {
+        name: item?.name || '',
+        quantity: entry.quantity,
+        make: item?.make || '',
+        model: item?.model || '',
+        specification: item?.specification || '',
+        rack: item?.rack || '',
+        bin: item?.bin || ''
+      };
+    });
+
   const analytics = {
     totalItems: inventory.length,
     lowStockItems: inventory.filter(i => i.quantity <= i.minimumQuantity).length,
@@ -127,6 +167,8 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),
+    maxLevelItems,
+    topConsumedYear,
     selectedMonth,
     selectedYear
   };
@@ -232,6 +274,46 @@ router.get('/dashboard', async (req, res) => {
       };
     });
 
+  // Items at or above maximum level (only where maximumQuantity is defined)
+  const maxLevelItems = inventory.filter(i =>
+    typeof i.maximumQuantity === 'number' &&
+    i.maximumQuantity >= 0 &&
+    i.quantity >= i.maximumQuantity
+  );
+
+  // Top consumed items for the selected year (by quantity taken)
+  const yearlyConsumedByItem = new Map();
+  yearlyTransactions
+    .filter(t => t.type === 'taken')
+    .forEach((t) => {
+      const key = t.itemId?.toString?.() || t.itemName;
+      if (!key) return;
+      const current = yearlyConsumedByItem.get(key) || { quantity: 0, item: null };
+      current.quantity += Number(t.quantity) || 0;
+      if (!current.item) {
+        const item = inventoryById.get(t.itemId) || inventoryByName.get(t.itemName) || null;
+        current.item = item;
+      }
+      yearlyConsumedByItem.set(key, current);
+    });
+
+  const topConsumedYear = Array.from(yearlyConsumedByItem.values())
+    .filter((entry) => entry.quantity > 0)
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 10)
+    .map((entry) => {
+      const item = entry.item;
+      return {
+        name: item?.name || '',
+        quantity: entry.quantity,
+        make: item?.make || '',
+        model: item?.model || '',
+        specification: item?.specification || '',
+        rack: item?.rack || '',
+        bin: item?.bin || ''
+      };
+    });
+
   const analytics = {
     totalItems: inventory.length,
     lowStockItems: inventory.filter(i => i.quantity <= i.minimumQuantity).length,
@@ -251,6 +333,8 @@ router.get('/dashboard', async (req, res) => {
     activeUsers: [...new Set(monthlyTransactions.map(t => t.user))].length,
     recentTransactions: enrichedRecentTransactions,
     lowStockAlerts: inventory.filter(i => i.quantity <= i.minimumQuantity),
+    maxLevelItems,
+    topConsumedYear,
     selectedMonth,
     selectedYear
   };

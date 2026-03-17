@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, TrendingUp, Users, AlertTriangle, Plus, Search, IndianRupee } from 'lucide-react';
-import { Analytics } from '../types';
+import { Analytics, InventoryItem } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { API_ENDPOINTS } from '../config/api';
@@ -14,6 +14,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
   const { socket, isConnected } = useSocket();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showMaxLevelModal, setShowMaxLevelModal] = useState(false);
 
   const formatINR = (value: number) =>
     new Intl.NumberFormat('en-IN', {
@@ -76,6 +77,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       </div>
     );
   }
+
+  const maxLevelItems: InventoryItem[] = analytics?.maxLevelItems || [];
 
   const quickActions = [
     {
@@ -141,6 +144,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Low Stock</p>
               <p className="text-2xl font-bold text-gray-900">{analytics?.lowStockItems || 0}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 cursor-pointer" onClick={() => maxLevelItems.length > 0 && setShowMaxLevelModal(true)}>
+          <div className="flex items-center">
+            <div className="bg-orange-100 rounded-lg p-3">
+              <TrendingUp className="text-orange-600" size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Max Level Reached</p>
+              <p className="text-2xl font-bold text-gray-900">{maxLevelItems.length}</p>
             </div>
           </div>
         </div>
@@ -221,45 +236,66 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
         </div>
       </div>
 
-      {/* Recent Activity */}
-      {analytics?.recentTransactions && analytics.recentTransactions.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-4">Recent Activity</h2>
-          <div className="space-y-2 sm:space-y-3">
-            {analytics.recentTransactions.slice(0, 5).map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                <div>
-                  <p className="font-medium text-gray-900 text-sm sm:text-base">{transaction.itemName}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    {transaction.type} {transaction.quantity} units by {transaction.user}
-                  </p>
+      {/* Max Level Items Modal */}
+      {showMaxLevelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                Max Level Reached Items ({maxLevelItems.length})
+              </h2>
+              <button
+                onClick={() => setShowMaxLevelModal(false)}
+                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-4 sm:p-6">
+              {maxLevelItems.length === 0 ? (
+                <p className="text-sm text-gray-600">No items have reached their maximum quantity.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
+                        <th className="text-right py-2 pr-2 font-semibold text-gray-700">Qty</th>
+                        <th className="text-right py-2 pr-2 font-semibold text-gray-700">Max Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {maxLevelItems.map((item) => (
+                        <tr key={item.id} className="border-b last:border-b-0">
+                          <td className="py-2 pr-4">
+                            <div className="font-medium text-gray-900">{item.name}</div>
+                            <div className="text-xs text-gray-600">
+                              {item.make} {item.model}
+                            </div>
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            <div className="max-w-xs truncate" title={item.specification}>
+                              {item.specification}
+                            </div>
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            Row {item.rack}, Col {item.bin}
+                          </td>
+                          <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
+                            {item.quantity}
+                          </td>
+                          <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
+                            {item.maximumQuantity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs sm:text-sm text-gray-500">
-                    {new Date(transaction.timestamp).toLocaleString('en-IN', { 
-                      timeZone: 'Asia/Kolkata',
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true
-                    })}
-                  </p>
-                  {transaction.editedAt && (
-                    <p className="text-[10px] sm:text-xs text-gray-400">Updated {new Date(transaction.editedAt as any).toLocaleString('en-IN', { 
-                      timeZone: 'Asia/Kolkata',
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true
-                    })}{transaction.editedBy ? ` by ${transaction.editedBy}` : ''}</p>
-                  )}
-                </div>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -101,6 +101,7 @@ const Analytics: React.FC = () => {
   const [activeUserNames, setActiveUserNames] = useState<string[]>([]);
   const [editTx, setEditTx] = useState<any | null>(null);
   const [chartMode, setChartMode] = useState<'quantity' | 'cost'>('quantity');
+  const [topConsumedMode, setTopConsumedMode] = useState<'month' | 'year'>('month');
   const isOwner = (useAuth().user?.username || '').toLowerCase() === 'pasu' || (useAuth().user?.role || '').toLowerCase() === 'owner';
 
   const formatINR = (value: number) =>
@@ -487,12 +488,20 @@ const Analytics: React.FC = () => {
   };
 
   // Compute top consumed items for the currently selected month/year
-  const topConsumedItems = React.useMemo(() => {
+  const topConsumedItems = React.useMemo((): {
+    name: string;
+    quantity: number;
+    make?: string;
+    model?: string;
+    specification?: string;
+    rack?: string;
+    bin?: string;
+  }[] => {
     if (!analytics?.recentTransactions || analytics.recentTransactions.length === 0) {
       return [];
     }
 
-    const counts = new Map<string, { quantity: number; make?: string; model?: string }>();
+    const counts = new Map<string, { quantity: number; make?: string; model?: string; specification?: string; rack?: string; bin?: string }>();
 
     analytics.recentTransactions.forEach((t) => {
       if (!t || t.type !== 'taken' || !t.timestamp) return;
@@ -500,10 +509,20 @@ const Analytics: React.FC = () => {
       if (d.getMonth() !== selectedMonth || d.getFullYear() !== selectedYear) return;
 
       const key = t.itemName || 'Unknown';
-      const existing = counts.get(key) || { quantity: 0, make: t.make, model: t.model };
+      const existing = counts.get(key) || {
+        quantity: 0,
+        make: t.make,
+        model: t.model,
+        specification: t.specification,
+        rack: t.rack,
+        bin: t.bin,
+      };
       existing.quantity += t.quantity || 0;
       existing.make = existing.make || t.make;
       existing.model = existing.model || t.model;
+      existing.specification = existing.specification || t.specification;
+      existing.rack = existing.rack || t.rack;
+      existing.bin = existing.bin || t.bin;
       counts.set(key, existing);
     });
 
@@ -513,12 +532,17 @@ const Analytics: React.FC = () => {
         quantity: info.quantity,
         make: info.make,
         model: info.model,
+        specification: info.specification,
+        rack: info.rack,
+        bin: info.bin,
       }))
       .filter((i) => i.quantity > 0)
       .sort((a, b) => b.quantity - a.quantity);
 
     return items.slice(0, 5);
   }, [analytics, selectedMonth, selectedYear]);
+
+  const topConsumedYearItems = analytics?.topConsumedYear || [];
 
   if (isLoading) {
     return (
@@ -644,11 +668,11 @@ const Analytics: React.FC = () => {
   };
 
   const topConsumedChartData = {
-    labels: topConsumedItems.map((i) => i.name),
+    labels: (topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((i) => i.name),
     datasets: [
       {
         label: 'Quantity Consumed',
-        data: topConsumedItems.map((i) => i.quantity),
+        data: (topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((i) => i.quantity),
         backgroundColor: '#DC2626',
         borderRadius: 6,
       },
@@ -1082,20 +1106,88 @@ const Analytics: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                  Top Consumed Items ({new Date(selectedYear, selectedMonth).toLocaleString('default', { month: 'short', year: 'numeric' })})
+                  Top Consumed Items{' '}
+                  {topConsumedMode === 'month'
+                    ? `(${new Date(selectedYear, selectedMonth).toLocaleString('default', {
+                        month: 'short',
+                        year: 'numeric',
+                      })})`
+                    : `(Year ${selectedYear})`}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Items with highest quantity taken this month
+                  {topConsumedMode === 'month'
+                    ? 'Items with highest quantity taken this month'
+                    : 'Items with highest quantity taken this year'}
                 </p>
               </div>
+              <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                <button
+                  onClick={() => setTopConsumedMode('month')}
+                  className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
+                    topConsumedMode === 'month'
+                      ? 'bg-red-500 text-white border-red-500'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  This Month
+                </button>
+                <button
+                  onClick={() => setTopConsumedMode('year')}
+                  className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
+                    topConsumedMode === 'year'
+                      ? 'bg-red-500 text-white border-red-500'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  This Year
+                </button>
+              </div>
             </div>
-            {topConsumedItems.length > 0 ? (
+            {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).length > 0 ? (
               <div className="h-60 sm:h-72 flex items-center justify-center">
                 <Bar data={topConsumedChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' as const } } }} />
               </div>
             ) : (
               <div className="py-10 text-center text-sm text-gray-500">
-                No consumption data for the selected month.
+                No consumption data for the selected period.
+              </div>
+            )}
+
+            {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).length > 0 && (
+              <div className="mt-6 overflow-x-auto">
+                <table className="min-w-full text-xs sm:text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                      <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
+                      <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
+                      <th className="text-right py-2 pr-2 font-semibold text-gray-700">Total Consumed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((item, idx) => (
+                      <tr key={`${item.name}-${idx}`} className="border-b last:border-b-0">
+                        <td className="py-2 pr-4">
+                          <div className="font-medium text-gray-900">{item.name}</div>
+                          <div className="text-[11px] sm:text-xs text-gray-600">
+                            {item.make} {item.model}
+                          </div>
+                        </td>
+                        <td className="py-2 pr-4 text-gray-700">
+                          <div className="max-w-xs truncate" title={item.specification}>
+                            {item.specification}
+                          </div>
+                        </td>
+                        <td className="py-2 pr-4 text-gray-700">
+                          {item.rack || item.bin ? `Row ${item.rack || '-'}, Col ${item.bin || '-'}` : 'N/A'}
+                        </td>
+                        <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
+                          {item.quantity}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
