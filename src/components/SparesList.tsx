@@ -196,7 +196,7 @@ const SparesList: React.FC = () => {
           ...formData,
           quantity: parseInt(formData.quantity),
           minimumQuantity: parseInt(formData.minimumQuantity),
-          // maximumQuantity is optional; backend will ignore empty string
+          maximumQuantity: formData.maximumQuantity !== '' ? parseInt(formData.maximumQuantity) : '',
           cost: formData.cost !== '' ? parseFloat(formData.cost) : '',
           updatedBy: user?.username
         }),

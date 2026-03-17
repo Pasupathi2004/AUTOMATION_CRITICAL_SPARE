@@ -38,6 +38,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // Add a new item
 router.post('/', authenticateToken, async (req, res) => {
+  const { maximumQuantity: _rawMaxIgnored, cost: _rawCostIgnored, ...restBody } = req.body;
   // Parse numeric fields safely, allowing optional maximumQuantity and cost
   const quantity = Number(req.body.quantity);
   const minimumQuantity = Number(req.body.minimumQuantity);
@@ -67,7 +68,7 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 
   const item = new Inventory({
-    ...req.body,
+    ...restBody,
     quantity,
     minimumQuantity,
     ...(maximumQuantity !== undefined ? { maximumQuantity } : {}),
@@ -79,6 +80,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
 // Update an item
 router.put('/:id', authenticateToken, async (req, res) => {
+  const { maximumQuantity: _rawMaxIgnored2, cost: _rawCostIgnored2, ...restBody } = req.body;
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
@@ -120,7 +122,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
   const updatedItem = await Inventory.findByIdAndUpdate(
     id,
     {
-      ...req.body,
+      ...restBody,
       quantity,
       minimumQuantity,
       ...(maximumQuantity !== undefined ? { maximumQuantity } : {}),
