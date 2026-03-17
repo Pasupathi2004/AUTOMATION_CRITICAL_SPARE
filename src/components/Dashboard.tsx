@@ -15,6 +15,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showMaxLevelModal, setShowMaxLevelModal] = useState(false);
+  const [showLowStockModal, setShowLowStockModal] = useState(false);
 
   const formatINR = (value: number) =>
     new Intl.NumberFormat('en-IN', {
@@ -79,6 +80,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
   }
 
   const maxLevelItems: InventoryItem[] = analytics?.maxLevelItems || [];
+  const lowStockItems: InventoryItem[] = analytics?.lowStockAlerts || [];
 
   const quickActions = [
     {
@@ -136,7 +138,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div
+          className="bg-white rounded-lg shadow-md p-6 cursor-pointer"
+          onClick={() => lowStockItems.length > 0 && setShowLowStockModal(true)}
+        >
           <div className="flex items-center">
             <div className="bg-red-100 rounded-lg p-3">
               <AlertTriangle className="text-red-600" size={24} />
@@ -288,6 +293,70 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                           </td>
                           <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
                             {item.maximumQuantity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Low Stock Items Modal */}
+      {showLowStockModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                Low Stock Items ({lowStockItems.length})
+              </h2>
+              <button
+                onClick={() => setShowLowStockModal(false)}
+                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-4 sm:p-6">
+              {lowStockItems.length === 0 ? (
+                <p className="text-sm text-gray-600">No low stock items.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
+                        <th className="text-right py-2 pr-2 font-semibold text-gray-700">Qty</th>
+                        <th className="text-right py-2 pr-2 font-semibold text-gray-700">Min Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lowStockItems.map((item) => (
+                        <tr key={item.id} className="border-b last:border-b-0">
+                          <td className="py-2 pr-4">
+                            <div className="font-medium text-gray-900">{item.name}</div>
+                            <div className="text-xs text-gray-600">
+                              {item.make} {item.model}
+                            </div>
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            <div className="max-w-xs truncate" title={item.specification}>
+                              {item.specification}
+                            </div>
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            Row {item.rack}, Col {item.bin}
+                          </td>
+                          <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
+                            {item.quantity}
+                          </td>
+                          <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
+                            {item.minimumQuantity}
                           </td>
                         </tr>
                       ))}

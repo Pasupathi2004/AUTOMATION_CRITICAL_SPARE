@@ -102,6 +102,7 @@ const Analytics: React.FC = () => {
   const [editTx, setEditTx] = useState<any | null>(null);
   const [chartMode, setChartMode] = useState<'quantity' | 'cost'>('quantity');
   const [topConsumedMode, setTopConsumedMode] = useState<'month' | 'year'>('month');
+  const [showTopConsumed, setShowTopConsumed] = useState(false);
   const isOwner = (useAuth().user?.username || '').toLowerCase() === 'pasu' || (useAuth().user?.role || '').toLowerCase() === 'owner';
 
   const formatINR = (value: number) =>
@@ -751,6 +752,12 @@ const Analytics: React.FC = () => {
                   Delete History
                 </button>
                 <button
+                  onClick={() => setShowTopConsumed((v) => !v)}
+                  className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30 text-sm sm:text-base"
+                >
+                  {showTopConsumed ? 'Hide Top Consumed' : 'Show Top Consumed'}
+                </button>
+                <button
                   onClick={() => setChartMode(m => (m === 'quantity' ? 'cost' : 'quantity'))}
                   className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/30 text-sm sm:text-base"
                 >
@@ -1096,102 +1103,104 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        {/* Top Consumed Items Chart */}
-        <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-rose-50/60 to-red-50/60"></div>
-          <div className="relative">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        {/* Top Consumed Items (toggle) */}
+        {showTopConsumed && (
+          <div className="group relative overflow-hidden bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8 hover:shadow-2xl transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-rose-50/60 to-red-50/60"></div>
+            <div className="relative">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+                    Top Consumed Items{' '}
+                    {topConsumedMode === 'month'
+                      ? `(${new Date(selectedYear, selectedMonth).toLocaleString('default', {
+                          month: 'short',
+                          year: 'numeric',
+                        })})`
+                      : `(Year ${selectedYear})`}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {topConsumedMode === 'month'
+                      ? 'Items with highest quantity taken this month'
+                      : 'Items with highest quantity taken this year'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                  <button
+                    onClick={() => setTopConsumedMode('month')}
+                    className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
+                      topConsumedMode === 'month'
+                        ? 'bg-red-500 text-white border-red-500'
+                        : 'bg-white text-gray-700 border-gray-300'
+                    }`}
+                  >
+                    This Month
+                  </button>
+                  <button
+                    onClick={() => setTopConsumedMode('year')}
+                    className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
+                      topConsumedMode === 'year'
+                        ? 'bg-red-500 text-white border-red-500'
+                        : 'bg-white text-gray-700 border-gray-300'
+                    }`}
+                  >
+                    This Year
+                  </button>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                  Top Consumed Items{' '}
-                  {topConsumedMode === 'month'
-                    ? `(${new Date(selectedYear, selectedMonth).toLocaleString('default', {
-                        month: 'short',
-                        year: 'numeric',
-                      })})`
-                    : `(Year ${selectedYear})`}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-600">
-                  {topConsumedMode === 'month'
-                    ? 'Items with highest quantity taken this month'
-                    : 'Items with highest quantity taken this year'}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                <button
-                  onClick={() => setTopConsumedMode('month')}
-                  className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
-                    topConsumedMode === 'month'
-                      ? 'bg-red-500 text-white border-red-500'
-                      : 'bg-white text-gray-700 border-gray-300'
-                  }`}
-                >
-                  This Month
-                </button>
-                <button
-                  onClick={() => setTopConsumedMode('year')}
-                  className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
-                    topConsumedMode === 'year'
-                      ? 'bg-red-500 text-white border-red-500'
-                      : 'bg-white text-gray-700 border-gray-300'
-                  }`}
-                >
-                  This Year
-                </button>
-              </div>
-            </div>
-            {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).length > 0 ? (
-              <div className="h-60 sm:h-72 flex items-center justify-center">
-                <Bar data={topConsumedChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' as const } } }} />
-              </div>
-            ) : (
-              <div className="py-10 text-center text-sm text-gray-500">
-                No consumption data for the selected period.
-              </div>
-            )}
+              {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).length > 0 ? (
+                <div className="h-60 sm:h-72 flex items-center justify-center">
+                  <Bar data={topConsumedChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' as const } } }} />
+                </div>
+              ) : (
+                <div className="py-10 text-center text-sm text-gray-500">
+                  No consumption data for the selected period.
+                </div>
+              )}
 
-            {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).length > 0 && (
-              <div className="mt-6 overflow-x-auto">
-                <table className="min-w-full text-xs sm:text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
-                      <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
-                      <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
-                      <th className="text-right py-2 pr-2 font-semibold text-gray-700">Total Consumed</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((item, idx) => (
-                      <tr key={`${item.name}-${idx}`} className="border-b last:border-b-0">
-                        <td className="py-2 pr-4">
-                          <div className="font-medium text-gray-900">{item.name}</div>
-                          <div className="text-[11px] sm:text-xs text-gray-600">
-                            {item.make} {item.model}
-                          </div>
-                        </td>
-                        <td className="py-2 pr-4 text-gray-700">
-                          <div className="max-w-xs truncate" title={item.specification}>
-                            {item.specification}
-                          </div>
-                        </td>
-                        <td className="py-2 pr-4 text-gray-700">
-                          {item.rack || item.bin ? `Row ${item.rack || '-'}, Col ${item.bin || '-'}` : 'N/A'}
-                        </td>
-                        <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
-                          {item.quantity}
-                        </td>
+              {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).length > 0 && (
+                <div className="mt-6 overflow-x-auto">
+                  <table className="min-w-full text-xs sm:text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Item</th>
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Specification</th>
+                        <th className="text-left py-2 pr-4 font-semibold text-gray-700">Location</th>
+                        <th className="text-right py-2 pr-2 font-semibold text-gray-700">Total Consumed</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    </thead>
+                    <tbody>
+                      {(topConsumedMode === 'month' ? topConsumedItems : topConsumedYearItems).map((item, idx) => (
+                        <tr key={`${item.name}-${idx}`} className="border-b last:border-b-0">
+                          <td className="py-2 pr-4">
+                            <div className="font-medium text-gray-900">{item.name}</div>
+                            <div className="text-[11px] sm:text-xs text-gray-600">
+                              {item.make} {item.model}
+                            </div>
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            <div className="max-w-xs truncate" title={item.specification}>
+                              {item.specification}
+                            </div>
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            {item.rack || item.bin ? `Row ${item.rack || '-'}, Col ${item.bin || '-'}` : 'N/A'}
+                          </td>
+                          <td className="py-2 pr-2 text-right text-gray-900 font-semibold">
+                            {item.quantity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Recent Transactions */}

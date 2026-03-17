@@ -104,11 +104,11 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
       };
     });
 
-  // Items at or above maximum level (only where maximumQuantity is defined)
+  // Items above maximum level (only where maximumQuantity is defined)
   const maxLevelItems = inventory.filter(i =>
     typeof i.maximumQuantity === 'number' &&
     i.maximumQuantity >= 0 &&
-    i.quantity >= i.maximumQuantity
+    i.quantity > i.maximumQuantity
   );
 
   // Top consumed items for the selected year (by quantity taken)
@@ -274,11 +274,11 @@ router.get('/dashboard', async (req, res) => {
       };
     });
 
-  // Items at or above maximum level (only where maximumQuantity is defined)
+  // Items above maximum level (only where maximumQuantity is defined)
   const maxLevelItems = inventory.filter(i =>
     typeof i.maximumQuantity === 'number' &&
     i.maximumQuantity >= 0 &&
-    i.quantity >= i.maximumQuantity
+    i.quantity > i.maximumQuantity
   );
 
   // Top consumed items for the selected year (by quantity taken)
