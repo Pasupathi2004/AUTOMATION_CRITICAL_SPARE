@@ -20,6 +20,8 @@ export interface InventoryItem {
   maximumQuantity?: number;
    // Optional cost per single item
   cost?: number;
+  // Optional free-form note shown in Spares List and included in exports.
+  remarks?: string;
   category?: 'critical' | 'consumable';
   createdAt: string;
   updatedAt: string;

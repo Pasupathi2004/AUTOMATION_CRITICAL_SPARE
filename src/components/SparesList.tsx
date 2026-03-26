@@ -48,6 +48,8 @@ const SparesList: React.FC = () => {
     quantity: '',
     minimumQuantity: '',
     maximumQuantity: '',
+    // Optional free-form note for this inventory item
+    remarks: '',
     // Optional cost per single item
     cost: '',
     category: ''
@@ -91,6 +93,7 @@ const SparesList: React.FC = () => {
         item.bin.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.quantity.toString().includes(searchTerm) ||
         (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.remarks && item.remarks.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (item.updatedBy && item.updatedBy.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
@@ -173,6 +176,7 @@ const SparesList: React.FC = () => {
       minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : '',
       maximumQuantity: item.maximumQuantity !== undefined ? item.maximumQuantity.toString() : '',
       cost: item.cost !== undefined ? item.cost.toString() : '',
+      remarks: item.remarks || '',
       category: item.category || 'consumable'
     });
     setShowEditModal(true);
@@ -246,7 +250,7 @@ const SparesList: React.FC = () => {
   const exportToCSV = () => {
     const headers = [
       'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-      'Quantity', 'Minimum Quantity', 'Maximum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+      'Quantity', 'Minimum Quantity', 'Maximum Quantity', 'Category', 'Cost (per item)', 'Remarks', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
     ];
     
     const csvData = inventory.map(item => [
@@ -262,6 +266,7 @@ const SparesList: React.FC = () => {
       item.maximumQuantity !== undefined ? item.maximumQuantity : '',
       item.category || 'consumable',
       item.cost !== undefined ? item.cost : '',
+      item.remarks || '',
       getStockStatus(item.quantity, item.minimumQuantity).status,
       safeFormatDate(item.createdAt),
       safeFormatDate(item.updatedAt),
@@ -285,7 +290,7 @@ const SparesList: React.FC = () => {
     try {
       const headers = [
         'ID', 'Name', 'Make', 'Model', 'Specification', 'Row', 'Column', 
-        'Quantity', 'Minimum Quantity', 'Maximum Quantity', 'Category', 'Cost (per item)', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
+        'Quantity', 'Minimum Quantity', 'Maximum Quantity', 'Category', 'Cost (per item)', 'Remarks', 'Stock Status', 'Created At', 'Updated At', 'Updated By'
       ];
       
       const excelData = inventory.map(item => [
@@ -301,6 +306,7 @@ const SparesList: React.FC = () => {
         item.maximumQuantity !== undefined ? item.maximumQuantity : '',
         item.category || 'consumable',
         item.cost !== undefined ? item.cost : '',
+        item.remarks || '',
         getStockStatus(item.quantity, item.minimumQuantity).status,
         safeFormatDate(item.createdAt),
         safeFormatDate(item.updatedAt),
@@ -386,7 +392,7 @@ const SparesList: React.FC = () => {
           </div>
           <input
             type="text"
-            placeholder="Search by name, make, model, specification, row, column, quantity, category, or user..."
+            placeholder="Search by name, make, model, specification, row, column, quantity, category, remarks, or user..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent bg-white"
@@ -571,6 +577,11 @@ const SparesList: React.FC = () => {
                     <div>
                       <span className="font-medium text-gray-600">Specification:</span>
                       <div className="text-gray-900 text-sm mt-1 line-clamp-2">{item.specification}</div>
+                    </div>
+
+                    <div>
+                      <span className="font-medium text-gray-600">Remarks:</span>
+                      <div className="text-gray-900 text-sm mt-1 line-clamp-2">{item.remarks || '—'}</div>
                     </div>
                   </div>
 
@@ -802,6 +813,17 @@ const SparesList: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                   rows={3}
                   required
+                />
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Remarks (optional)</label>
+                <textarea
+                  value={formData.remarks}
+                  onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent resize-none"
+                  rows={3}
+                  placeholder="Add any notes for this item (optional)"
                 />
               </div>
               

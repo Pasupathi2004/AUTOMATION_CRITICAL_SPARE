@@ -15,6 +15,8 @@ const AddItem: React.FC = () => {
     quantity: '',
     minimumQuantity: '',
     maximumQuantity: '',
+    // Optional free-form note for this inventory item
+    remarks: '',
     // Optional cost per single item
     cost: '',
     category: ''
@@ -64,6 +66,7 @@ const AddItem: React.FC = () => {
           quantity: '',
           minimumQuantity: '',
           maximumQuantity: '',
+          remarks: '',
           cost: '',
           category: ''
         });
@@ -264,6 +267,21 @@ const AddItem: React.FC = () => {
                 <option value="consumable">Consumable</option>
               </select>
             </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="remarks" className="block text-sm font-medium text-gray-700 mb-2">
+                Remarks (optional)
+              </label>
+              <textarea
+                id="remarks"
+                name="remarks"
+                value={formData.remarks}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none resize-none"
+                placeholder="Add any notes for this item (optional)"
+              />
+            </div>
           </div>
 
           <div className="mt-6">
@@ -304,8 +322,10 @@ const AddItem: React.FC = () => {
                 bin: '',
                 quantity: '',
                 minimumQuantity: '',
+                maximumQuantity: '',
                 cost: '',
-                category: ''
+                category: '',
+                remarks: ''
               })}
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
