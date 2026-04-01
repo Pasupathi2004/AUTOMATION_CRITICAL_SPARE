@@ -9,6 +9,8 @@ const InventorySchema = new mongoose.Schema({
   remarks: { type: String, default: '' },
   quantity: Number,
   minimumQuantity: Number,
+  // Optional reorder quantity threshold
+  roq: Number,
   // Optional maximum quantity threshold (upper limit for stock)
   maximumQuantity: Number,
   rack: String,

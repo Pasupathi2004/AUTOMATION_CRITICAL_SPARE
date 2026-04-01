@@ -16,6 +16,8 @@ export interface InventoryItem {
   bin: string;
   quantity: number;
   minimumQuantity: number;
+  // Optional reorder quantity threshold
+  roq?: number;
   // Optional maximum quantity threshold
   maximumQuantity?: number;
    // Optional cost per single item

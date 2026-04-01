@@ -47,6 +47,7 @@ const SparesList: React.FC = () => {
     bin: '',
     quantity: '',
     minimumQuantity: '',
+    roq: '',
     maximumQuantity: '',
     // Optional free-form note for this inventory item
     remarks: '',
@@ -174,6 +175,7 @@ const SparesList: React.FC = () => {
       bin: item.bin,
       quantity: item.quantity.toString(),
       minimumQuantity: item.minimumQuantity !== undefined ? item.minimumQuantity.toString() : '',
+      roq: item.roq !== undefined ? item.roq.toString() : '',
       maximumQuantity: item.maximumQuantity !== undefined ? item.maximumQuantity.toString() : '',
       cost: item.cost !== undefined ? item.cost.toString() : '',
       remarks: item.remarks || '',
@@ -200,6 +202,7 @@ const SparesList: React.FC = () => {
           ...formData,
           quantity: parseInt(formData.quantity),
           minimumQuantity: parseInt(formData.minimumQuantity),
+          roq: formData.roq !== '' ? parseInt(formData.roq) : '',
           maximumQuantity: formData.maximumQuantity !== '' ? parseInt(formData.maximumQuantity) : '',
           cost: formData.cost !== '' ? parseFloat(formData.cost) : '',
           updatedBy: user?.username
@@ -535,6 +538,7 @@ const SparesList: React.FC = () => {
                       <div className="text-sm text-gray-600">in stock</div>
                       <div className="mt-1 text-xs text-gray-500">
                         Min: {item.minimumQuantity}{' '}
+                        {typeof item.roq === 'number' ? `| ROQ: ${item.roq} ` : ''}
                         {typeof item.maximumQuantity === 'number' ? `| Max: ${item.maximumQuantity}` : ''}
                       </div>
                     </div>
@@ -741,6 +745,17 @@ const SparesList: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, minimumQuantity: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                     required
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ROQ (Reorder Quantity)</label>
+                  <input
+                    type="number"
+                    value={formData.roq}
+                    onChange={(e) => setFormData({ ...formData, roq: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
                     min="0"
                   />
                 </div>

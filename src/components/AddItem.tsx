@@ -14,6 +14,7 @@ const AddItem: React.FC = () => {
     bin: '',
     quantity: '',
     minimumQuantity: '',
+    roq: '',
     maximumQuantity: '',
     // Optional free-form note for this inventory item
     remarks: '',
@@ -65,6 +66,7 @@ const AddItem: React.FC = () => {
           bin: '',
           quantity: '',
           minimumQuantity: '',
+          roq: '',
           maximumQuantity: '',
           remarks: '',
           cost: '',
@@ -218,6 +220,22 @@ const AddItem: React.FC = () => {
             </div>
 
             <div>
+              <label htmlFor="roq" className="block text-sm font-medium text-gray-700 mb-2">
+                ROQ (Reorder Quantity)
+              </label>
+              <input
+                type="number"
+                id="roq"
+                name="roq"
+                value={formData.roq}
+                onChange={handleChange}
+                min="0"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none"
+                placeholder="Enter ROQ (optional)"
+              />
+            </div>
+
+            <div>
               <label htmlFor="maximumQuantity" className="block text-sm font-medium text-gray-700 mb-2">
                 Maximum Quantity
               </label>
@@ -322,6 +340,7 @@ const AddItem: React.FC = () => {
                 bin: '',
                 quantity: '',
                 minimumQuantity: '',
+                roq: '',
                 maximumQuantity: '',
                 cost: '',
                 category: '',

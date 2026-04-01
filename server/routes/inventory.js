@@ -38,10 +38,15 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // Add a new item
 router.post('/', authenticateToken, async (req, res) => {
-  const { maximumQuantity: _rawMaxIgnored, cost: _rawCostIgnored, ...restBody } = req.body;
-  // Parse numeric fields safely, allowing optional maximumQuantity and cost
+  const { maximumQuantity: _rawMaxIgnored, cost: _rawCostIgnored, roq: _rawRoqIgnored, ...restBody } = req.body;
+  // Parse numeric fields safely, allowing optional roq, maximumQuantity and cost
   const quantity = Number(req.body.quantity);
   const minimumQuantity = Number(req.body.minimumQuantity);
+  const rawRoq = req.body.roq;
+  let roq;
+  if (rawRoq !== undefined && rawRoq !== '') {
+    roq = Number(rawRoq);
+  }
 
   const rawMax = req.body.maximumQuantity;
   let maximumQuantity;
@@ -62,6 +67,9 @@ router.post('/', authenticateToken, async (req, res) => {
   if (maximumQuantity !== undefined && (isNaN(maximumQuantity) || maximumQuantity < 0)) {
     return res.status(400).json({ success: false, message: 'maximumQuantity must be a non-negative number when provided.' });
   }
+  if (roq !== undefined && (isNaN(roq) || roq < 0)) {
+    return res.status(400).json({ success: false, message: 'ROQ must be a non-negative number when provided.' });
+  }
 
   if (cost !== undefined && (isNaN(cost) || cost < 0)) {
     return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
@@ -71,6 +79,7 @@ router.post('/', authenticateToken, async (req, res) => {
     ...restBody,
     quantity,
     minimumQuantity,
+    ...(roq !== undefined ? { roq } : {}),
     ...(maximumQuantity !== undefined ? { maximumQuantity } : {}),
     ...(cost !== undefined ? { cost } : {})
   });
@@ -80,7 +89,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
 // Update an item
 router.put('/:id', authenticateToken, async (req, res) => {
-  const { maximumQuantity: _rawMaxIgnored2, cost: _rawCostIgnored2, ...restBody } = req.body;
+  const { maximumQuantity: _rawMaxIgnored2, cost: _rawCostIgnored2, roq: _rawRoqIgnored2, ...restBody } = req.body;
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
@@ -93,6 +102,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
   // Parse quantity and minimumQuantity as numbers
   const quantity = Number(req.body.quantity);
   const minimumQuantity = Number(req.body.minimumQuantity);
+  const rawRoq = req.body.roq;
+  let roq;
+  if (rawRoq !== undefined && rawRoq !== '') {
+    roq = Number(rawRoq);
+  }
 
   const rawMax = req.body.maximumQuantity;
   let maximumQuantity;
@@ -113,6 +127,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
   if (maximumQuantity !== undefined && (isNaN(maximumQuantity) || maximumQuantity < 0)) {
     return res.status(400).json({ success: false, message: 'maximumQuantity must be a non-negative number when provided.' });
   }
+  if (roq !== undefined && (isNaN(roq) || roq < 0)) {
+    return res.status(400).json({ success: false, message: 'ROQ must be a non-negative number when provided.' });
+  }
 
   if (cost !== undefined && (isNaN(cost) || cost < 0)) {
     return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
@@ -125,6 +142,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       ...restBody,
       quantity,
       minimumQuantity,
+      ...(roq !== undefined ? { roq } : {}),
       ...(maximumQuantity !== undefined ? { maximumQuantity } : {}),
       ...(cost !== undefined ? { cost } : {})
     },
