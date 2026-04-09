@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, History, Calendar, Package } from 'lucide-react';
+import { Search, History, Calendar, Package, X } from 'lucide-react';
 import { API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { Transaction } from '../types';
@@ -89,6 +89,11 @@ const ItemHistory: React.FC = () => {
     return grouped;
   }, [filteredLastYearTransactions]);
 
+  const displayedMonths = useMemo(() => {
+    // Show only months that have matching records, similar to filtered list behavior.
+    return months.filter((m) => (groupedByMonth[m.key] || []).length > 0);
+  }, [months, groupedByMonth]);
+
   if ((user?.role || '').toLowerCase() !== 'admin') {
     return (
       <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-700">
@@ -124,22 +129,58 @@ const ItemHistory: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search spare item by name, make, model, specification, or remarks..."
-            className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
           />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+            </button>
+          )}
         </div>
         <p className="text-sm text-gray-600 mt-3">
-          Showing last 12 months month-wise history. Includes taken, deleted and other quantity updates with remarks.
+          Search an item name to see last 12 months month-wise history.
         </p>
+        {searchTerm && (
+          <div className="text-sm text-gray-600 mt-2">
+            Found {filteredLastYearTransactions.length} matching record(s) for "{searchTerm}".
+          </div>
+        )}
       </div>
 
-      {months.map((m) => {
+      {!searchTerm.trim() ? (
+        <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-600">
+          Enter an item in search box to view history.
+        </div>
+      ) : displayedMonths.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-600">
+          No item history found for the selected search in last 12 months.
+        </div>
+      ) : displayedMonths.map((m) => {
         const monthTx = groupedByMonth[m.key] || [];
+        const addedCount = monthTx.filter((tx) => tx.type === 'added').length;
+        const takenCount = monthTx.filter((tx) => tx.type === 'taken').length;
+        const addedQty = monthTx
+          .filter((tx) => tx.type === 'added')
+          .reduce((sum, tx) => sum + (Number(tx.quantity) || 0), 0);
+        const takenQty = monthTx
+          .filter((tx) => tx.type === 'taken')
+          .reduce((sum, tx) => sum + (Number(tx.quantity) || 0), 0);
+
         return (
           <div key={m.key} className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="px-4 sm:px-6 py-4 border-b bg-gray-50 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-gray-900 font-semibold">
-                <Calendar size={16} className="text-[#2E8B57]" />
-                <span>{m.label}</span>
+              <div>
+                <div className="flex items-center gap-2 text-gray-900 font-semibold">
+                  <Calendar size={16} className="text-[#2E8B57]" />
+                  <span>{m.label}</span>
+                </div>
+                <div className="mt-1 text-xs text-gray-600 flex flex-wrap gap-3">
+                  <span>Added: {addedCount} ({addedQty})</span>
+                  <span>Taken: {takenCount} ({takenQty})</span>
+                </div>
               </div>
               <span className="text-sm text-gray-600">{monthTx.length} record(s)</span>
             </div>
@@ -189,7 +230,9 @@ const ItemHistory: React.FC = () => {
 
                     <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                       <div className="p-3 rounded-lg bg-gray-50">
-                        <span className="font-medium text-gray-700">History Remarks:</span>{' '}
+                        <span className="font-medium text-gray-700">
+                          {tx.type === 'taken' ? 'Taken Remarks:' : 'History Remarks:'}
+                        </span>{' '}
                         <span className="text-gray-800">{tx.remarks || '—'}</span>
                       </div>
                       <div className="p-3 rounded-lg bg-gray-50">
