@@ -10,6 +10,7 @@ import SparesList from './components/SparesList';
 import Analytics from './components/Analytics';
 import UserManagement from './components/UserManagement';
 import Requests from './components/Requests';
+import ItemHistory from './components/ItemHistory';
 
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -43,6 +44,8 @@ const AppContent: React.FC = () => {
         return <UserManagement />;
       case 'requests':
         return <Requests />;
+      case 'item-history':
+        return <ItemHistory />;
       default:
         return <Dashboard onPageChange={setCurrentPage} />;
     }

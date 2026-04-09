@@ -11,6 +11,7 @@ import {
   Bell,
   Home,
   ClipboardList,
+  History,
   Wifi,
   WifiOff
 } from 'lucide-react';
@@ -93,6 +94,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
     { id: 'add-item', label: 'Add Item', icon: Plus, roles: ['admin'] },
     { id: 'spares-list', label: 'Spares List', icon: Package, roles: ['admin', 'user'] },
     { id: 'requests', label: 'Requests', icon: ClipboardList, roles: ['admin', 'user'] },
+    { id: 'item-history', label: 'Item History', icon: History, roles: ['admin'] },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
     { id: 'users', label: 'User Management', icon: Users, roles: ['admin'] },
   ];
