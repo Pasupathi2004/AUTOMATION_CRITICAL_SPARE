@@ -17,7 +17,7 @@ const AddItem: React.FC = () => {
     roq: '',
     maximumQuantity: '',
     // Optional free-form note for this inventory item
-    remarks: '',
+    itemRemarks: '',
     // Optional cost per single item
     cost: '',
     category: ''
@@ -49,6 +49,8 @@ const AddItem: React.FC = () => {
         },
         body: JSON.stringify({
           ...formData,
+          // Backward compatibility: persist to Inventory.remarks on server
+          itemRemarks: formData.itemRemarks,
           updatedBy: user?.username
         }),
       });
@@ -68,7 +70,7 @@ const AddItem: React.FC = () => {
           minimumQuantity: '',
           roq: '',
           maximumQuantity: '',
-          remarks: '',
+          itemRemarks: '',
           cost: '',
           category: ''
         });
@@ -287,13 +289,13 @@ const AddItem: React.FC = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="remarks" className="block text-sm font-medium text-gray-700 mb-2">
-                Remarks (optional)
+              <label htmlFor="itemRemarks" className="block text-sm font-medium text-gray-700 mb-2">
+                Item remarks (optional)
               </label>
               <textarea
-                id="remarks"
-                name="remarks"
-                value={formData.remarks}
+                id="itemRemarks"
+                name="itemRemarks"
+                value={formData.itemRemarks}
                 onChange={handleChange}
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent outline-none resize-none"
@@ -344,7 +346,7 @@ const AddItem: React.FC = () => {
                 maximumQuantity: '',
                 cost: '',
                 category: '',
-                remarks: ''
+                itemRemarks: ''
               })}
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >

@@ -161,7 +161,7 @@ const SearchPage: React.FC = () => {
           quantity: newQuantity,
           minimumQuantity: item ? item.minimumQuantity : 0,
           updatedBy: user?.username,
-          remarks: remarksOverride !== undefined ? remarksOverride : (remarksInputs[itemId] || ''),
+          transactionRemarks: remarksOverride !== undefined ? remarksOverride : (remarksInputs[itemId] || ''),
           purpose
         }),
       });
@@ -435,7 +435,7 @@ const SearchPage: React.FC = () => {
                             value={remarksInputs[item.id] || ''}
                             onChange={(e) => setRemarksInputs(prev => ({ ...prev, [item.id]: e.target.value }))}
                             className="w-full sm:w-48 px-2 py-1 border border-gray-300 rounded text-left"
-                            placeholder="Remarks (required)"
+                            placeholder="Usage remarks (this take only; not spare card)"
                             rows={2}
                           />
                           <button

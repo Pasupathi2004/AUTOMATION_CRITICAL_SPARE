@@ -38,7 +38,16 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // Add a new item
 router.post('/', authenticateToken, async (req, res) => {
-  const { maximumQuantity: _rawMaxIgnored, cost: _rawCostIgnored, roq: _rawRoqIgnored, ...restBody } = req.body;
+  const {
+    maximumQuantity: _rawMaxIgnored,
+    cost: _rawCostIgnored,
+    roq: _rawRoqIgnored,
+    // Keep item-level remarks separate from transaction remarks
+    itemRemarks: _itemRemarksIgnored,
+    transactionRemarks: _txRemarksIgnored,
+    remarks: _legacyRemarksIgnored,
+    ...restBody
+  } = req.body;
   // Parse numeric fields safely, allowing optional roq, maximumQuantity and cost
   const quantity = Number(req.body.quantity);
   const minimumQuantity = Number(req.body.minimumQuantity);
@@ -60,6 +69,8 @@ router.post('/', authenticateToken, async (req, res) => {
     cost = Number(rawCost);
   }
 
+  const itemRemarks = typeof req.body.itemRemarks === 'string' ? req.body.itemRemarks : '';
+
   if (isNaN(quantity) || isNaN(minimumQuantity)) {
     return res.status(400).json({ success: false, message: 'Quantity and minimumQuantity must be numbers.' });
   }
@@ -77,6 +88,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
   const item = new Inventory({
     ...restBody,
+    remarks: itemRemarks,
     quantity,
     minimumQuantity,
     ...(roq !== undefined ? { roq } : {}),
@@ -89,7 +101,16 @@ router.post('/', authenticateToken, async (req, res) => {
 
 // Update an item
 router.put('/:id', authenticateToken, async (req, res) => {
-  const { maximumQuantity: _rawMaxIgnored2, cost: _rawCostIgnored2, roq: _rawRoqIgnored2, ...restBody } = req.body;
+  const {
+    maximumQuantity: _rawMaxIgnored2,
+    cost: _rawCostIgnored2,
+    roq: _rawRoqIgnored2,
+    // Keep item-level remarks separate from transaction remarks
+    itemRemarks: _itemRemarksIgnored2,
+    transactionRemarks: _txRemarksIgnored2,
+    remarks: _legacyRemarksIgnored2,
+    ...restBody
+  } = req.body;
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
@@ -135,11 +156,20 @@ router.put('/:id', authenticateToken, async (req, res) => {
     return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
   }
 
+  const itemRemarks = typeof req.body.itemRemarks === 'string' ? req.body.itemRemarks : undefined;
+
+  const quantityChanged = typeof quantity === 'number' && quantity !== currentItem.quantity;
+  // Search / take-quantity flow always sends `transactionRemarks`. Those belong on the Transaction
+  // only — never overwrite spare master-data `remarks` when stock moves.
+  const isStockMovementRequest = Object.prototype.hasOwnProperty.call(req.body, 'transactionRemarks');
+  const skipItemRemarksBecauseOfStockMove = quantityChanged && isStockMovementRequest;
+
   // Update the item
   const updatedItem = await Inventory.findByIdAndUpdate(
     id,
     {
       ...restBody,
+      ...(itemRemarks !== undefined && !skipItemRemarksBecauseOfStockMove ? { remarks: itemRemarks } : {}),
       quantity,
       minimumQuantity,
       ...(roq !== undefined ? { roq } : {}),
@@ -150,13 +180,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
   );
 
   // If quantity changed, create a transaction
-  if (typeof quantity === 'number' && quantity !== currentItem.quantity) {
+  if (quantityChanged) {
     const change = quantity - currentItem.quantity;
     const transactionType = change > 0 ? 'added' : 'taken';
     const normalizedPurpose = (req.body.purpose || 'others').toString().toLowerCase() === 'breakdown'
       ? 'breakdown'
       : 'others';
     const isBreakdown = normalizedPurpose === 'breakdown';
+    const transactionRemarks =
+      typeof req.body.transactionRemarks === 'string'
+        ? req.body.transactionRemarks
+        : (typeof req.body.remarks === 'string' ? req.body.remarks : '');
     const transaction = new Transaction({
       itemId: id,
       itemName: currentItem.name,
@@ -168,7 +202,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       requestedBy: isBreakdown ? (req.user?.username || '') : '',
       requestStatus: isBreakdown ? 'pending' : '',
       resolvedBy: '',
-      remarks: typeof req.body.remarks === 'string' ? req.body.remarks : '',
+      remarks: transactionRemarks,
       // Include full item specifications for better analytics
       make: currentItem.make || '',
       model: currentItem.model || '',
