@@ -86,7 +86,7 @@ const fromISTDateTimeLocal = (datetimeLocal: string): string => {
 };
 
 const Analytics: React.FC = () => {
-  const { token } = useAuth();
+  const { token, plant } = useAuth();
   const { socket, isConnected } = useSocket();
   const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -156,9 +156,9 @@ const Analytics: React.FC = () => {
     if (!socket || !isConnected) return;
 
     // Listen for transaction updates
-    socket.on('transactionCreated', (newTransaction: any) => {
+    socket.on('transactionCreated', (newTransaction: { plant?: string }) => {
+      if (newTransaction?.plant && newTransaction.plant !== plant) return;
       console.log('🔌 Received transactionCreated event:', newTransaction);
-      // Refresh analytics when new transaction is created
       fetchAnalytics();
     });
 
@@ -174,7 +174,7 @@ const Analytics: React.FC = () => {
       socket.off('transactionCreated');
       socket.off('transactionsCleared');
     };
-  }, [socket, isConnected]);
+  }, [socket, isConnected, plant]);
 
   const fetchAnalytics = async () => {
     try {

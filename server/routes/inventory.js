@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import Inventory from '../models/Inventory.js';
 import Transaction from '../models/Transaction.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { getPlant } from '../constants/plants.js';
 import mongoose from 'mongoose';
 
 const router = express.Router();
@@ -27,7 +28,8 @@ const upload = multer({
 
 // Get all inventory items
 router.get('/', authenticateToken, async (req, res) => {
-  const items = await Inventory.find();
+  const plant = getPlant(req);
+  const items = await Inventory.find({ plant });
   // Map _id to id as string
   const itemsWithId = items.map(item => ({
     ...item.toObject(),
@@ -88,6 +90,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
   const item = new Inventory({
     ...restBody,
+    plant: getPlant(req),
     remarks: itemRemarks,
     quantity,
     minimumQuantity,
@@ -112,11 +115,12 @@ router.put('/:id', authenticateToken, async (req, res) => {
     ...restBody
   } = req.body;
   const { id } = req.params;
+  const plant = getPlant(req);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
   }
   // Find the current item
-  const currentItem = await Inventory.findById(id);
+  const currentItem = await Inventory.findOne({ _id: id, plant });
   if (!currentItem) {
     return res.status(404).json({ success: false, message: 'Item not found' });
   }
@@ -192,6 +196,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         ? req.body.transactionRemarks
         : (typeof req.body.remarks === 'string' ? req.body.remarks : '');
     const transaction = new Transaction({
+      plant,
       itemId: id,
       itemName: currentItem.name,
       type: transactionType,
@@ -226,15 +231,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
 // Delete an item
 router.delete('/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
+  const plant = getPlant(req);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
   }
-  const deletedItem = await Inventory.findByIdAndDelete(id);
+  const deletedItem = await Inventory.findOneAndDelete({ _id: id, plant });
   if (!deletedItem) {
     return res.status(404).json({ success: false, message: 'Item not found' });
   }
   // Create a transaction record for deletion
   const transaction = new Transaction({
+    plant,
     itemId: id,
     itemName: deletedItem.name,
     type: 'deleted',
@@ -340,6 +347,7 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
         : 'consumable';
 
       items.push({
+        plant: getPlant(req),
         name: name.toString().trim(),
         make: make.toString().trim(),
         model: model.toString().trim(),

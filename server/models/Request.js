@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const RequestSchema = new mongoose.Schema({
+  plant: { type: String, enum: ['plant1', 'plant2'], default: 'plant1', index: true },
   itemId: { type: String },
   itemName: { type: String, required: true },
   quantity: { type: Number, required: true },

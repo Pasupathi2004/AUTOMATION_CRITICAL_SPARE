@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
+import PlantSelection from './components/PlantSelection';
 import Login from './components/Login';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
@@ -13,7 +14,7 @@ import Requests from './components/Requests';
 import ItemHistory from './components/ItemHistory';
 
 const AppContent: React.FC = () => {
-  const { user, isLoading } = useAuth();
+  const { user, plant, selectPlant, isLoading } = useAuth();
   const [currentPage, setCurrentPage] = useState('dashboard');
 
   if (isLoading) {
@@ -22,6 +23,10 @@ const AppContent: React.FC = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E8B57]"></div>
       </div>
     );
+  }
+
+  if (!plant) {
+    return <PlantSelection onSelect={selectPlant} />;
   }
 
   if (!user) {

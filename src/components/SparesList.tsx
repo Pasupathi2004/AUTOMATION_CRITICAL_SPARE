@@ -28,7 +28,7 @@ const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
 const isValidObjectId = (id: string) => /^[a-fA-F0-9]{24}$/.test(id);
 
 const SparesList: React.FC = () => {
-  const { user, token } = useAuth();
+  const { user, token, plant } = useAuth();
   const isAdmin = (user?.role || '').toString().trim().toLowerCase() === 'admin';
   const { socket, isConnected } = useSocket();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -108,11 +108,13 @@ const SparesList: React.FC = () => {
 
     // Listen for inventory updates
     socket.on('inventoryCreated', (newItem: InventoryItem) => {
+      if (newItem.plant && newItem.plant !== plant) return;
       console.log('🔌 Received inventoryCreated event:', newItem);
       setInventory(prev => [...prev, newItem]);
     });
 
     socket.on('inventoryUpdated', (updatedItem: InventoryItem) => {
+      if (updatedItem.plant && updatedItem.plant !== plant) return;
       console.log('🔌 Received inventoryUpdated event:', updatedItem);
       setInventory(prev => prev.map(item => 
         item.id === updatedItem.id ? updatedItem : item
@@ -120,17 +122,21 @@ const SparesList: React.FC = () => {
     });
 
     socket.on('inventoryDeleted', (data: { id: string, item: InventoryItem }) => {
+      if (data.item?.plant && data.item.plant !== plant) return;
       console.log('🔌 Received inventoryDeleted event:', data);
       setInventory(prev => prev.filter(item => item.id !== data.id));
       setFilteredInventory(prev => prev.filter(item => item.id !== data.id));
     });
 
     socket.on('bulkUploadCompleted', (data: { count: number, items: InventoryItem[] }) => {
+      const plantItems = data.items.filter(item => !item.plant || item.plant === plant);
+      if (plantItems.length === 0) return;
       console.log('🔌 Received bulkUploadCompleted event:', data);
-      setInventory(prev => [...prev, ...data.items]);
+      setInventory(prev => [...prev, ...plantItems]);
     });
 
     socket.on('lowStockAlert', (data: { item: InventoryItem, message: string }) => {
+      if (data.item?.plant && data.item.plant !== plant) return;
       console.log('🔌 Received lowStockAlert event:', data);
       // You can show a notification here
       alert(`⚠️ ${data.message}`);
@@ -143,7 +149,7 @@ const SparesList: React.FC = () => {
       socket.off('bulkUploadCompleted');
       socket.off('lowStockAlert');
     };
-  }, [socket, isConnected]);
+  }, [socket, isConnected, plant]);
 
   const fetchInventory = async () => {
     try {

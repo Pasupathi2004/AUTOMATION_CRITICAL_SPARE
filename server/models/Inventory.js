@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const InventorySchema = new mongoose.Schema({
+  plant: { type: String, enum: ['plant1', 'plant2'], default: 'plant1', index: true },
   name: String,
   make: String,
   model: String,

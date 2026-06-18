@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { LogIn, Package } from 'lucide-react';
+import { LogIn, Package, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { PLANT_LABELS } from '../constants/plants';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, plant, clearPlant } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,12 +28,24 @@ const Login: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#2E8B57] to-[#228B22] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-8">
+          <button
+            type="button"
+            onClick={clearPlant}
+            className="flex items-center text-sm text-gray-500 hover:text-[#2E8B57] mb-4 transition-colors"
+          >
+            <ArrowLeft size={16} className="mr-1" />
+            Change plant
+          </button>
+
           <div className="text-center mb-8">
             <div className="bg-[#2E8B57] rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <Package className="text-white" size={32} />
             </div>
             <h1 className="text-3xl font-bold text-gray-800">Inventory Manager</h1>
-            <p className="text-gray-600 mt-2">Sign in to your account</p>
+            <p className="text-[#2E8B57] font-medium mt-2">
+              {plant ? PLANT_LABELS[plant] : ''}
+            </p>
+            <p className="text-gray-600 mt-1">Sign in to your account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

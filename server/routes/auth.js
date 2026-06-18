@@ -4,18 +4,26 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { isValidPlant } from '../constants/plants.js';
 
 const router = express.Router();
 
 // Login
 router.post('/login', asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
-  console.log('Login attempt:', username, password);
+  const { username, password, plant } = req.body;
+  console.log('Login attempt:', username, plant);
 
   if (!username || !password) {
     return res.status(400).json({
       success: false,
       message: 'Username and password are required'
+    });
+  }
+
+  if (!plant || !isValidPlant(plant)) {
+    return res.status(400).json({
+      success: false,
+      message: 'A valid plant selection is required'
     });
   }
 
@@ -44,7 +52,8 @@ router.post('/login', asyncHandler(async (req, res) => {
     { 
       id: user.id, 
       username: user.username, 
-      role: user.role 
+      role: user.role,
+      plant
     },
     process.env.JWT_SECRET || 'fallback-secret-key',
     { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
@@ -56,6 +65,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     success: true,
     user: userWithoutPassword,
     token,
+    plant,
     expiresIn: process.env.JWT_EXPIRES_IN || '24h'
   });
 }));
@@ -86,7 +96,8 @@ router.post('/refresh', authenticateToken, asyncHandler(async (req, res) => {
     { 
       id: req.user.id, 
       username: req.user.username, 
-      role: req.user.role 
+      role: req.user.role,
+      plant: req.user.plant
     },
     process.env.JWT_SECRET || 'fallback-secret-key',
     { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }

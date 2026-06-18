@@ -18,6 +18,7 @@ import {
 import { API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { PLANT_LABELS } from '../constants/plants';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) => {
-  const { user, logout, token } = useAuth();
+  const { user, logout, token, plant } = useAuth();
   const { socket, isConnected } = useSocket();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -125,7 +126,14 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
             </div>
             {/* Centered title */}
             <div className="flex-1 flex justify-center items-center absolute left-0 right-0 pointer-events-none">
-              <h1 className="text-base sm:text-xl font-bold truncate max-w-[70vw] sm:max-w-none pointer-events-auto">Automation Inventory Manager</h1>
+              <h1 className="text-base sm:text-xl font-bold truncate max-w-[70vw] sm:max-w-none pointer-events-auto">
+                Automation Inventory Manager
+                {plant && (
+                  <span className="block sm:inline text-sm sm:text-base font-medium text-green-100 sm:ml-2">
+                    — {PLANT_LABELS[plant]}
+                  </span>
+                )}
+              </h1>
             </div>
             {/* Empty right side for spacing on mobile */}
             <div className="flex-shrink-0 ml-auto hidden sm:block" style={{ width: '200px' }}></div>

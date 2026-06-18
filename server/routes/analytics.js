@@ -4,14 +4,16 @@ import Transaction from '../models/Transaction.js';
 import User from '../models/User.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { getPlant } from '../constants/plants.js';
 import mongoose from 'mongoose';
 
 const router = express.Router();
 
 // Get analytics data
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
-  const inventory = await Inventory.find();
-  const transactions = await Transaction.find();
+  const plant = getPlant(req);
+  const inventory = await Inventory.find({ plant });
+  const transactions = await Transaction.find({ plant });
 
   // Allow selecting month/year via query params; default to current
   const now = new Date();
@@ -182,9 +184,10 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get analytics dashboard data (duplicate of root for compatibility)
-router.get('/dashboard', async (req, res) => {
-  const inventory = await Inventory.find();
-  const transactions = await Transaction.find();
+router.get('/dashboard', authenticateToken, async (req, res) => {
+  const plant = getPlant(req);
+  const inventory = await Inventory.find({ plant });
+  const transactions = await Transaction.find({ plant });
 
   // Allow selecting month/year via query params; default to current
   const now = new Date();
@@ -349,9 +352,10 @@ router.get('/dashboard', async (req, res) => {
 // Data Integrity Endpoint
 router.get('/integrity', authenticateToken, async (req, res) => {
   try {
+    const plant = getPlant(req);
     const userCount = await User.countDocuments();
-    const inventoryCount = await Inventory.countDocuments();
-    const transactionCount = await Transaction.countDocuments();
+    const inventoryCount = await Inventory.countDocuments({ plant });
+    const transactionCount = await Transaction.countDocuments({ plant });
     res.json({
       success: true,
       integrity: {

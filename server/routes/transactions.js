@@ -1,25 +1,28 @@
 import express from 'express';
 import Transaction from '../models/Transaction.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { getPlant } from '../constants/plants.js';
 
 const router = express.Router();
 
 // Get all transactions
-router.get('/', async (req, res) => {
-  const transactions = await Transaction.find();
+router.get('/', authenticateToken, async (req, res) => {
+  const plant = getPlant(req);
+  const transactions = await Transaction.find({ plant });
   res.json({ success: true, transactions });
 });
 
 // Add a new transaction
-router.post('/', async (req, res) => {
-  const transaction = new Transaction(req.body);
+router.post('/', authenticateToken, async (req, res) => {
+  const transaction = new Transaction({ ...req.body, plant: getPlant(req) });
   await transaction.save();
   res.json({ success: true, transaction });
 });
 
 // Delete all transactions
-router.delete('/', async (req, res) => {
-  await Transaction.deleteMany({});
+router.delete('/', authenticateToken, async (req, res) => {
+  const plant = getPlant(req);
+  await Transaction.deleteMany({ plant });
   res.json({ success: true });
 });
 
@@ -33,6 +36,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     const { id } = req.params;
+    const plant = getPlant(req);
     const { timestamp, remarks, quantity, editedBy, specification, purpose } = req.body;
 
     const update = {
@@ -46,7 +50,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       editedAt: new Date()
     };
 
-    const tx = await Transaction.findByIdAndUpdate(id, update, { new: true });
+    const tx = await Transaction.findOneAndUpdate({ _id: id, plant }, update, { new: true });
     if (!tx) {
       return res.status(404).json({ success: false, message: 'Transaction not found' });
     }

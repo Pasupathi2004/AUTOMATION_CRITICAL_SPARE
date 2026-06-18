@@ -10,7 +10,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
-  const { user, token } = useAuth();
+  const { user, token, plant } = useAuth();
   const { socket, isConnected } = useSocket();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,9 +34,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
     if (!socket || !isConnected) return;
 
     // Listen for transaction updates to refresh analytics
-    socket.on('transactionCreated', (newTransaction: any) => {
+    socket.on('transactionCreated', (newTransaction: { plant?: string }) => {
+      if (newTransaction?.plant && newTransaction.plant !== plant) return;
       console.log('🔌 Received transactionCreated event in Dashboard:', newTransaction);
-      // Refresh analytics when new transaction is created
       fetchAnalytics();
     });
 
@@ -50,7 +50,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       socket.off('transactionCreated');
       socket.off('transactionsCleared');
     };
-  }, [socket, isConnected]);
+  }, [socket, isConnected, plant]);
 
   const fetchAnalytics = async () => {
     try {

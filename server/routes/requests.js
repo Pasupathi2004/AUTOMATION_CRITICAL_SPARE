@@ -1,6 +1,8 @@
 import express from 'express';
 import Request from '../models/Request.js';
+import Transaction from '../models/Transaction.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { getPlant } from '../constants/plants.js';
 
 const router = express.Router();
 
@@ -10,7 +12,8 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { status } = req.query;
-    const filter = {};
+    const plant = getPlant(req);
+    const filter = { plant };
     if (status) filter.status = status;
     if ((req.user?.role || '').toLowerCase() !== 'admin') {
       filter.requestedBy = req.user?.username || '';
@@ -34,6 +37,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 
     const request = new Request({
+      plant: getPlant(req),
       itemId,
       itemName,
       quantity: Number(quantity),
@@ -72,7 +76,8 @@ router.put('/:id', authenticateToken, requireRole(['admin']), async (req, res) =
       resolvedAt: new Date()
     };
 
-    const updated = await Request.findByIdAndUpdate(id, update, { new: true });
+    const plant = getPlant(req);
+    const updated = await Request.findOneAndUpdate({ _id: id, plant }, update, { new: true });
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Request not found' });
     }
@@ -80,6 +85,7 @@ router.put('/:id', authenticateToken, requireRole(['admin']), async (req, res) =
     // Mirror request resolution onto related breakdown transactions (best-effort)
     try {
       const txFilter = {
+        plant,
         itemId: updated.itemId || undefined,
         purpose: 'breakdown',
         requestedBy: updated.requestedBy || '',

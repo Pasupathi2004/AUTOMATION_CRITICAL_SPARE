@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from '../config/api';
 import { format } from 'date-fns';
 
 const SearchPage: React.FC = () => {
-  const { token, user } = useAuth();
+  const { token, user, plant } = useAuth();
   const { socket, isConnected } = useSocket();
   const [searchQuery, setSearchQuery] = useState('');
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -36,16 +36,19 @@ const SearchPage: React.FC = () => {
 
     // Listen for inventory updates
     socket.on('inventoryUpdated', (updatedItem: InventoryItem) => {
+      if (updatedItem.plant && updatedItem.plant !== plant) return;
       setInventory(prev => prev.map(item => 
         item.id === updatedItem.id ? updatedItem : item
       ));
     });
 
-    socket.on('transactionCreated', () => {
+    socket.on('transactionCreated', (tx: { plant?: string }) => {
+      if (tx?.plant && tx.plant !== plant) return;
       fetchInventory();
     });
 
     socket.on('lowStockAlert', (data: { item: InventoryItem, message: string }) => {
+      if (data.item?.plant && data.item.plant !== plant) return;
       alert(`⚠️ ${data.message}`);
     });
 
@@ -54,7 +57,7 @@ const SearchPage: React.FC = () => {
       socket.off('transactionCreated');
       socket.off('lowStockAlert');
     };
-  }, [socket, isConnected]);
+  }, [socket, isConnected, plant]);
 
   const fetchInventory = async () => {
     try {

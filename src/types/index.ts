@@ -8,6 +8,7 @@ export interface User {
 
 export interface InventoryItem {
   id: string;
+  plant?: 'plant1' | 'plant2';
   name: string;
   make: string;
   model: string;
@@ -32,6 +33,7 @@ export interface InventoryItem {
 
 export interface Transaction {
   id: string;
+  plant?: 'plant1' | 'plant2';
   itemId?: string;
   itemName: string;
   type: 'added' | 'taken' | 'deleted';
