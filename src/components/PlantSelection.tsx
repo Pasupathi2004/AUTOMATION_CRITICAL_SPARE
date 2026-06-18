@@ -38,7 +38,7 @@ const PlantSelection: React.FC<PlantSelectionProps> = ({ onSelect }) => {
           </div>
 
           <div className="mt-8 text-center text-sm text-gray-500">
-            <p>Each plant has its own separate inventory</p>
+            <p>TD CONNEX AUTOMATION</p>
             <p className="mt-1">Version 1.0.0 • {new Date().getFullYear()}</p>
           </div>
         </div>
