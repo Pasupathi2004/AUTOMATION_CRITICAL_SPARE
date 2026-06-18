@@ -1,17 +1,1 @@
-import mongoose from 'mongoose';
-
-const RequestSchema = new mongoose.Schema({
-  plant: { type: String, enum: ['plant1', 'plant2'], default: 'plant1', index: true },
-  itemId: { type: String },
-  itemName: { type: String, required: true },
-  quantity: { type: Number, required: true },
-  purpose: { type: String, enum: ['breakdown', 'others'], default: 'breakdown' },
-  remarks: { type: String, default: '' },
-  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
-  requestedBy: { type: String, required: true },
-  resolvedBy: { type: String, default: '' },
-  resolvedAt: { type: Date }
-}, { timestamps: true });
-
-export default mongoose.model('Request', RequestSchema);
-
+export { getRequestModel as default, getRequestModel } from './plantModels.js';

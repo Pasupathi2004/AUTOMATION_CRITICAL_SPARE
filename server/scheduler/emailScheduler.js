@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import Inventory from '../models/Inventory.js';
+import { PLANTS } from '../constants/plants.js';
 import { sendLowStockEmail } from '../utils/emailService.js';
 
 // Weekly email recipient list
@@ -19,8 +20,15 @@ let weeklyEmailJob = null;
 // Get low stock items
 const getLowStockItems = async () => {
   try {
-    const inventory = await Inventory.find();
-    return inventory.filter(i => i.quantity <= i.minimumQuantity);
+    const allItems = [];
+    for (const plant of PLANTS) {
+      const inventory = await Inventory(plant).find();
+      const lowStock = inventory
+        .filter(i => i.quantity <= i.minimumQuantity)
+        .map((item) => ({ ...item.toObject(), plant }));
+      allItems.push(...lowStock);
+    }
+    return allItems;
   } catch (error) {
     console.error('❌ Error fetching low stock items:', error);
     return [];

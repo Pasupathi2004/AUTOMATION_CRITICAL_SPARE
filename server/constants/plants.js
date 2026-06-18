@@ -12,3 +12,7 @@ export function isValidPlant(plant) {
 export function getPlant(req) {
   return req.user?.plant || 'plant1';
 }
+
+export function plantCollectionName(base, plant) {
+  return `${base}_${plant}`;
+}

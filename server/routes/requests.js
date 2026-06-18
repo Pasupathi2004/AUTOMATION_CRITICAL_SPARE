@@ -6,38 +6,46 @@ import { getPlant } from '../constants/plants.js';
 
 const router = express.Router();
 
+const withPlant = (doc, plant) => {
+  const obj = doc?.toObject ? doc.toObject() : doc;
+  return { ...obj, plant, id: obj._id?.toString?.() || obj.id };
+};
+
 // Get requests
-// Admins: can filter all, optionally by status query param.
-// Non-admin: only their own requests.
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { status } = req.query;
     const plant = getPlant(req);
-    const filter = { plant };
+    const RequestModel = Request(plant);
+    const filter = {};
     if (status) filter.status = status;
     if ((req.user?.role || '').toLowerCase() !== 'admin') {
       filter.requestedBy = req.user?.username || '';
     }
-    const requests = await Request.find(filter).sort({ createdAt: -1 });
-    res.json({ success: true, requests });
+    const requests = await RequestModel.find(filter).sort({ createdAt: -1 });
+    res.json({
+      success: true,
+      requests: requests.map((request) => withPlant(request, plant)),
+    });
   } catch (error) {
     console.error('Error fetching requests:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch requests' });
   }
 });
 
-// Create a new request (triggered on breakdown purpose)
+// Create a new request
 router.post('/', authenticateToken, async (req, res) => {
   try {
     const { itemId, itemName, quantity, remarks, purpose } = req.body;
     const normalizedPurpose = (purpose || '').toLowerCase() === 'breakdown' ? 'breakdown' : 'others';
+    const plant = getPlant(req);
+    const RequestModel = Request(plant);
 
     if (!itemName || typeof quantity === 'undefined') {
       return res.status(400).json({ success: false, message: 'Item name and quantity are required' });
     }
 
-    const request = new Request({
-      plant: getPlant(req),
+    const request = new RequestModel({
       itemId,
       itemName,
       quantity: Number(quantity),
@@ -47,12 +55,12 @@ router.post('/', authenticateToken, async (req, res) => {
     });
     await request.save();
 
-    // Notify all connected clients (admins can listen for this)
+    const payload = withPlant(request, plant);
     if (req.app.get('io')) {
-      req.app.get('io').emit('requestCreated', request);
+      req.app.get('io').emit('requestCreated', payload);
     }
 
-    res.json({ success: true, request });
+    res.json({ success: true, request: payload });
   } catch (error) {
     console.error('Error creating request:', error);
     res.status(500).json({ success: false, message: 'Failed to create request' });
@@ -77,30 +85,31 @@ router.put('/:id', authenticateToken, requireRole(['admin']), async (req, res) =
     };
 
     const plant = getPlant(req);
-    const updated = await Request.findOneAndUpdate({ _id: id, plant }, update, { new: true });
+    const RequestModel = Request(plant);
+    const TransactionModel = Transaction(plant);
+    const updated = await RequestModel.findByIdAndUpdate(id, update, { new: true });
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Request not found' });
     }
 
-    // Mirror request resolution onto related breakdown transactions (best-effort)
     try {
       const txFilter = {
-        plant,
         itemId: updated.itemId || undefined,
         purpose: 'breakdown',
         requestedBy: updated.requestedBy || '',
         requestStatus: { $in: ['pending', ''] }
       };
-      await Transaction.updateMany(txFilter, { requestStatus: updated.status, resolvedBy: updated.resolvedBy || '' });
+      await TransactionModel.updateMany(txFilter, { requestStatus: updated.status, resolvedBy: updated.resolvedBy || '' });
     } catch (e) {
       console.error('Failed to sync transaction request status:', e);
     }
 
+    const payload = withPlant(updated, plant);
     if (req.app.get('io')) {
-      req.app.get('io').emit('requestUpdated', updated);
+      req.app.get('io').emit('requestUpdated', payload);
     }
 
-    res.json({ success: true, request: updated });
+    res.json({ success: true, request: payload });
   } catch (error) {
     console.error('Error updating request:', error);
     res.status(500).json({ success: false, message: 'Failed to update request' });
@@ -108,4 +117,3 @@ router.put('/:id', authenticateToken, requireRole(['admin']), async (req, res) =
 });
 
 export default router;
-

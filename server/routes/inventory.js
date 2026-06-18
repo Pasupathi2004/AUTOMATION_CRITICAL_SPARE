@@ -7,6 +7,11 @@ import { authenticateToken } from '../middleware/auth.js';
 import { getPlant } from '../constants/plants.js';
 import mongoose from 'mongoose';
 
+const withPlant = (doc, plant) => {
+  const obj = doc?.toObject ? doc.toObject() : doc;
+  return { ...obj, plant, id: obj._id?.toString?.() || obj.id };
+};
+
 const router = express.Router();
 
 // Configure multer for file uploads
@@ -29,12 +34,9 @@ const upload = multer({
 // Get all inventory items
 router.get('/', authenticateToken, async (req, res) => {
   const plant = getPlant(req);
-  const items = await Inventory.find({ plant });
-  // Map _id to id as string
-  const itemsWithId = items.map(item => ({
-    ...item.toObject(),
-    id: item._id.toString()
-  }));
+  const InventoryModel = Inventory(plant);
+  const items = await InventoryModel.find();
+  const itemsWithId = items.map(item => withPlant(item, plant));
   res.json({ success: true, items: itemsWithId });
 });
 
@@ -88,9 +90,8 @@ router.post('/', authenticateToken, async (req, res) => {
     return res.status(400).json({ success: false, message: 'Cost must be a non-negative number when provided.' });
   }
 
-  const item = new Inventory({
+  const item = new Inventory(getPlant(req))({
     ...restBody,
-    plant: getPlant(req),
     remarks: itemRemarks,
     quantity,
     minimumQuantity,
@@ -99,7 +100,7 @@ router.post('/', authenticateToken, async (req, res) => {
     ...(cost !== undefined ? { cost } : {})
   });
   await item.save();
-  res.json({ success: true, item });
+  res.json({ success: true, item: withPlant(item, getPlant(req)) });
 });
 
 // Update an item
@@ -116,11 +117,12 @@ router.put('/:id', authenticateToken, async (req, res) => {
   } = req.body;
   const { id } = req.params;
   const plant = getPlant(req);
+  const InventoryModel = Inventory(plant);
+  const TransactionModel = Transaction(plant);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
   }
-  // Find the current item
-  const currentItem = await Inventory.findOne({ _id: id, plant });
+  const currentItem = await InventoryModel.findById(id);
   if (!currentItem) {
     return res.status(404).json({ success: false, message: 'Item not found' });
   }
@@ -169,7 +171,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
   const skipItemRemarksBecauseOfStockMove = quantityChanged && isStockMovementRequest;
 
   // Update the item
-  const updatedItem = await Inventory.findByIdAndUpdate(
+  const updatedItem = await InventoryModel.findByIdAndUpdate(
     id,
     {
       ...restBody,
@@ -195,8 +197,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       typeof req.body.transactionRemarks === 'string'
         ? req.body.transactionRemarks
         : (typeof req.body.remarks === 'string' ? req.body.remarks : '');
-    const transaction = new Transaction({
-      plant,
+    const transaction = new TransactionModel({
       itemId: id,
       itemName: currentItem.name,
       type: transactionType,
@@ -218,13 +219,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     await transaction.save();
     // Emit socket event for real-time updates
     if (req.app.get('io')) {
-      const payload = { ...updatedItem.toObject(), id: updatedItem._id.toString() };
+      const payload = withPlant(updatedItem, plant);
       req.app.get('io').emit('inventoryUpdated', payload);
-      req.app.get('io').emit('transactionCreated', transaction);
+      req.app.get('io').emit('transactionCreated', { ...transaction.toObject(), plant });
     }
   }
 
-  const itemPayload = { ...updatedItem.toObject(), id: updatedItem._id.toString() };
+  const itemPayload = withPlant(updatedItem, plant);
   res.json({ success: true, item: itemPayload });
 });
 
@@ -232,16 +233,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   const plant = getPlant(req);
+  const InventoryModel = Inventory(plant);
+  const TransactionModel = Transaction(plant);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ success: false, message: 'Invalid item ID' });
   }
-  const deletedItem = await Inventory.findOneAndDelete({ _id: id, plant });
+  const deletedItem = await InventoryModel.findByIdAndDelete(id);
   if (!deletedItem) {
     return res.status(404).json({ success: false, message: 'Item not found' });
   }
   // Create a transaction record for deletion
-  const transaction = new Transaction({
-    plant,
+  const transaction = new TransactionModel({
     itemId: id,
     itemName: deletedItem.name,
     type: 'deleted',
@@ -258,8 +260,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   await transaction.save();
   // Emit socket event for real-time updates
   if (req.app.get('io')) {
-    req.app.get('io').emit('inventoryDeleted', { id, item: deletedItem });
-    req.app.get('io').emit('transactionCreated', transaction);
+    req.app.get('io').emit('inventoryDeleted', { id, item: withPlant(deletedItem, plant) });
+    req.app.get('io').emit('transactionCreated', { ...transaction.toObject(), plant });
   }
   res.json({ success: true });
 });
@@ -347,7 +349,6 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
         : 'consumable';
 
       items.push({
-        plant: getPlant(req),
         name: name.toString().trim(),
         make: make.toString().trim(),
         model: model.toString().trim(),
@@ -380,13 +381,16 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
     }
 
     // Insert items into database
-    const savedItems = await Inventory.insertMany(items);
+    const plant = getPlant(req);
+    const InventoryModel = Inventory(plant);
+    const savedItems = await InventoryModel.insertMany(items);
     
     // Emit socket event for real-time updates
     if (req.app.get('io')) {
       req.app.get('io').emit('bulkUploadCompleted', {
         count: savedItems.length,
-        items: savedItems
+        plant,
+        items: savedItems.map((item) => withPlant(item, plant))
       });
   }
   

@@ -16,7 +16,7 @@ import analyticsRoutes from './routes/analytics.js';
 import emailRoutes from './routes/emails.js';
 import requestRoutes from './routes/requests.js';
 import User from './models/User.js';
-import { migratePlantFields } from './utils/migratePlant.js';
+import { migratePlantCollections } from './utils/migratePlant.js';
 
 // Import scheduler
 import { startEmailScheduler } from './scheduler/emailScheduler.js';
@@ -96,7 +96,7 @@ app.set('io', io);
 const startServer = async () => {
   try {
     await connectDB(); // Connect to MongoDB
-    await migratePlantFields();
+    await migratePlantCollections();
     await User.ensureDefaultAdmin(); // Ensure default admin user exists
     console.log('Database initialized successfully');
     

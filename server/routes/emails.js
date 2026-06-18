@@ -2,13 +2,15 @@ import express from 'express';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 import Inventory from '../models/Inventory.js';
 import { sendLowStockEmail, sendTestEmail } from '../utils/emailService.js';
+import { getPlant } from '../constants/plants.js';
 
 const router = express.Router();
 
 // Get low stock items
 router.get('/low-stock', authenticateToken, async (req, res) => {
   try {
-    const inventory = await Inventory.find();
+    const plant = getPlant(req);
+    const inventory = await Inventory(plant).find();
     const lowStockItems = inventory.filter(i => i.quantity <= i.minimumQuantity);
     
     res.json({
@@ -36,7 +38,8 @@ router.post('/send-low-stock', authenticateToken, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Recipient emails are required' });
     }
 
-    const inventory = await Inventory.find();
+    const plant = getPlant(req);
+    const inventory = await Inventory(plant).find();
     const lowStockItems = inventory.filter(i => i.quantity <= i.minimumQuantity);
 
     const result = await sendLowStockEmail(lowStockItems, recipientEmails);

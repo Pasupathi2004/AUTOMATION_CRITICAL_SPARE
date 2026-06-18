@@ -12,8 +12,8 @@ const router = express.Router();
 // Get analytics data
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const plant = getPlant(req);
-  const inventory = await Inventory.find({ plant });
-  const transactions = await Transaction.find({ plant });
+  const inventory = await Inventory(plant).find();
+  const transactions = await Transaction(plant).find();
 
   // Allow selecting month/year via query params; default to current
   const now = new Date();
@@ -186,8 +186,8 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 // Get analytics dashboard data (duplicate of root for compatibility)
 router.get('/dashboard', authenticateToken, async (req, res) => {
   const plant = getPlant(req);
-  const inventory = await Inventory.find({ plant });
-  const transactions = await Transaction.find({ plant });
+  const inventory = await Inventory(plant).find();
+  const transactions = await Transaction(plant).find();
 
   // Allow selecting month/year via query params; default to current
   const now = new Date();
@@ -354,8 +354,8 @@ router.get('/integrity', authenticateToken, async (req, res) => {
   try {
     const plant = getPlant(req);
     const userCount = await User.countDocuments();
-    const inventoryCount = await Inventory.countDocuments({ plant });
-    const transactionCount = await Transaction.countDocuments({ plant });
+    const inventoryCount = await Inventory(plant).countDocuments();
+    const transactionCount = await Transaction(plant).countDocuments();
     res.json({
       success: true,
       integrity: {
