@@ -278,30 +278,88 @@ router.post('/bulk-upload', authenticateToken, upload.single('file'), async (req
     const worksheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-    // Skip header row and validate data
+    const normalizeHeader = (h) =>
+      h?.toString().trim().toLowerCase().replace(/[\s_-]+/g, '');
+
+    const buildColumnMap = (headers) => {
+      const map = {};
+      headers.forEach((h, idx) => {
+        const key = normalizeHeader(h);
+        if (key === 'name') map.name = idx;
+        else if (key === 'make') map.make = idx;
+        else if (key === 'model') map.model = idx;
+        else if (key === 'specification' || key === 'spec') map.specification = idx;
+        else if (key === 'rack' || key === 'row') map.rack = idx;
+        else if (key === 'bin' || key === 'column' || key === 'col') map.bin = idx;
+        else if (key === 'quantity' || key === 'qty') map.quantity = idx;
+        else if (key === 'minimumquantity' || key === 'minqty' || key === 'minquantity') map.minimumQuantity = idx;
+        else if (key === 'maximumquantity' || key === 'maxqty' || key === 'maxquantity') map.maximumQuantity = idx;
+        else if (key === 'category' || key === 'cat') map.category = idx;
+        else if (key === 'cost' || key === 'costperitem') map.cost = idx;
+      });
+      return map;
+    };
+
+    const getCell = (row, idx) => (idx === undefined ? undefined : row[idx]);
+
+    const firstRow = data[0] || [];
+    const columnMap = buildColumnMap(firstRow);
+    const hasHeaderRow = columnMap.name !== undefined && columnMap.make !== undefined;
+    const dataStartIndex = hasHeaderRow ? 1 : 0;
+
+    const parseRow = (row) => {
+      if (hasHeaderRow) {
+        return {
+          name: getCell(row, columnMap.name),
+          make: getCell(row, columnMap.make),
+          model: getCell(row, columnMap.model),
+          specification: getCell(row, columnMap.specification),
+          rack: getCell(row, columnMap.rack),
+          bin: getCell(row, columnMap.bin),
+          quantity: getCell(row, columnMap.quantity),
+          minimumQuantity: getCell(row, columnMap.minimumQuantity),
+          rawMaximumQuantity: getCell(row, columnMap.maximumQuantity),
+          category: getCell(row, columnMap.category),
+          rawCost: getCell(row, columnMap.cost),
+        };
+      }
+
+      // Legacy position-based format (no header row)
+      return {
+        name: row[0],
+        make: row[1],
+        model: row[2],
+        specification: row[3],
+        rack: row[4],
+        bin: row[5],
+        quantity: row[6],
+        minimumQuantity: row[7],
+        rawMaximumQuantity: row[8],
+        category: row.length > 9 ? row[9] : row[8],
+        rawCost: row.length > 10 ? row[10] : row[9],
+      };
+    };
+
     const items = [];
     const errors = [];
-    
-    for (let i = 1; i < data.length; i++) {
+
+    for (let i = dataStartIndex; i < data.length; i++) {
       const row = data[i];
       if (!row || row.length < 8) continue;
 
-      // Parse row with optional category field (can be in different positions based on CSV structure)
-      // Try to handle both old format (8 cols) and new format (9+ cols)
-      const name = row[0];
-      const make = row[1];
-      const model = row[2];
-      const specification = row[3];
-      const rack = row[4];
-      const bin = row[5];
-      const quantity = row[6];
-      const minimumQuantity = row[7];
-      // Optional maximum quantity at position 8 in the updated template
-      const rawMaximumQuantity = row[8];
-      // Category is at position 9 in the updated template (or 8 in older files)
-      let category = row.length > 9 ? row[9] : row[8];
-      // Optional cost per item at position 10 in the updated template (or 9 in older files)
-      const rawCost = row.length > 10 ? row[10] : row[9];
+      const {
+        name,
+        make,
+        model,
+        specification,
+        rack,
+        bin,
+        quantity,
+        minimumQuantity,
+        rawMaximumQuantity,
+        category,
+        rawCost,
+      } = parseRow(row);
       
       // Validate required fields
       if (!name || !make || !model || !specification || !rack || !bin) {

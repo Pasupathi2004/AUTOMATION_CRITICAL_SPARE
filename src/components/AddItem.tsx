@@ -398,7 +398,10 @@ const AddItem: React.FC = () => {
                 setBulkUploadStatus('Bulk upload successful!');
                 setRefreshInventory(true);
               } else {
-                setBulkUploadStatus(data.message || 'Bulk upload failed.');
+                const errorDetails = Array.isArray(data.errors) && data.errors.length > 0
+                  ? `: ${data.errors.join('; ')}`
+                  : '';
+                setBulkUploadStatus(`${data.message || 'Bulk upload failed.'}${errorDetails}`);
               }
             } catch (error) {
               setBulkUploadStatus('Network error during bulk upload.');
