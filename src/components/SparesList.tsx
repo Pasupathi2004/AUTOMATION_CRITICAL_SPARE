@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { format } from 'date-fns';
 import { API_ENDPOINTS } from '../config/api';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 // Helper function for safe date formatting in Indian 12-hour format
 const safeFormatDate = (dateValue: any, fmt = 'yyyy-MM-dd HH:mm:ss') => {
@@ -323,7 +323,50 @@ const SparesList: React.FC = () => {
         item.updatedBy
       ]);
 
-      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...excelData]);
+      const colCount = headers.length;
+      const footerRowIndex = excelData.length + 1;
+      const sheetData = [headers, ...excelData, Array(colCount).fill('')];
+      const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+      const thinBorder = {
+        top: { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left: { style: 'thin', color: { rgb: '000000' } },
+        right: { style: 'thin', color: { rgb: '000000' } },
+      };
+
+      const ensureCell = (row: number, col: number) => {
+        const ref = XLSX.utils.encode_cell({ r: row, c: col });
+        if (!worksheet[ref]) {
+          worksheet[ref] = { t: 's', v: '' };
+        }
+        return ref;
+      };
+
+      for (let row = 0; row <= footerRowIndex; row++) {
+        const isHeader = row === 0;
+        const isFooter = row === footerRowIndex;
+
+        for (let col = 0; col < colCount; col++) {
+          const ref = ensureCell(row, col);
+          worksheet[ref].s = {
+            border: thinBorder,
+            ...(isHeader ? { font: { bold: true } } : {}),
+            ...(isFooter
+              ? { alignment: { horizontal: 'right', vertical: 'center' }, font: { bold: true } }
+              : {}),
+          };
+        }
+      }
+
+      const footerCellRef = XLSX.utils.encode_cell({ r: footerRowIndex, c: 0 });
+      worksheet[footerCellRef].v = 'Form#136 Rev A';
+      worksheet[footerCellRef].t = 's';
+
+      worksheet['!merges'] = [
+        { s: { r: footerRowIndex, c: 0 }, e: { r: footerRowIndex, c: colCount - 1 } },
+      ];
+
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventory');
       
